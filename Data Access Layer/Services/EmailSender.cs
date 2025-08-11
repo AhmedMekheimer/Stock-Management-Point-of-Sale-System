@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure_Layer.Services
 {
-    internal class EmailSender
+    public class EmailSender
     {
     }
 }

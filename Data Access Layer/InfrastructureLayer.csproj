@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>Infrastructure_Layer</RootNamespace>
+    <RootNamespace>InfrastructureLayer</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core Layer\Core Layer.csproj" />
+    <ProjectReference Include="..\Core Layer\CoreLayer.csproj" />
   </ItemGroup>
 
 </Project>

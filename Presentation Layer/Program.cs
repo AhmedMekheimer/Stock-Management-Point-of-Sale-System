@@ -41,9 +41,6 @@ namespace Presentation_Layer
             // Authorization
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy($"{SD.Admins}", policy =>
-                      policy.RequireRole($"{SD.Admin}", $"{SD.SuperAdmin}"));
-
                 options.AddPolicy($"{SD.Workers}", policy =>
                       policy.RequireRole($"{SD.StockManager}", $"{SD.InventoryManager}", $"{SD.Cashier}"));
             });

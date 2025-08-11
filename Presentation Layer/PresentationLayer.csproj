@@ -4,7 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Presentation_Layer</RootNamespace>
+    <RootNamespace>PresentationLayer</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +17,7 @@
     <Folder Include="Areas\Stock\Controllers\" />
     <Folder Include="Areas\Stock\ViewModels\" />
     <Folder Include="Areas\Stock\Views\" />
+    <Folder Include="Utility\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core Layer\Core Layer.csproj" />
-    <ProjectReference Include="..\Data Access Layer\Infrastructure Layer.csproj" />
+    <ProjectReference Include="..\Core Layer\CoreLayer.csproj" />
+    <ProjectReference Include="..\Data Access Layer\InfrastructureLayer.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,14 @@
-﻿namespace Infrastructure_Layer.Data
-{
-    public class ApplicationDbContext
-    {
+﻿using Core_Layer.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
+namespace Infrastructure_Layer.Data
+{
+    public class ApplicationDbContext: IdentityDbContext<ApplicationUser>
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+
+        }
     }
 }

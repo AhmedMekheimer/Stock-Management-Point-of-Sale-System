@@ -19,4 +19,9 @@
     <Folder Include="Areas\Stock\Views\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Core Layer\Core Layer.csproj" />
+    <ProjectReference Include="..\Data Access Layer\Infrastructure Layer.csproj" />
+  </ItemGroup>
+
 </Project>

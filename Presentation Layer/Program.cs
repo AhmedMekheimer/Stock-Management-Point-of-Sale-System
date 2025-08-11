@@ -1,3 +1,9 @@
+using Core_Layer;
+using Core_Layer.Models;
+using Infrastructure_Layer.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 namespace Presentation_Layer
 {
     public class Program
@@ -8,6 +14,39 @@ namespace Presentation_Layer
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // DB Configurations
+            builder.Services.AddDbContext<ApplicationDbContext>(
+                option => option.UseSqlServer("Data Source=.;Initial Catalog=Stock and POS System; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;")
+            );
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
+            {
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            //Adding Services (Email Sender, Repos(Unit Of Work), DBInitializer)
+            //...
+
+            // Authentication
+            builder.Services.ConfigureApplicationCookie(
+                options =>
+                {
+                    options.LoginPath = "/Identity/Account/SignIn";
+                    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                }
+                );
+
+            // Authorization
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy($"{SD.Admins}", policy =>
+                      policy.RequireRole($"{SD.Admin}", $"{SD.SuperAdmin}"));
+
+                options.AddPolicy($"{SD.Workers}", policy =>
+                      policy.RequireRole($"{SD.StockManager}", $"{SD.InventoryManager}", $"{SD.Cashier}"));
+            });
 
             var app = builder.Build();
 
@@ -22,6 +61,7 @@ namespace Presentation_Layer
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

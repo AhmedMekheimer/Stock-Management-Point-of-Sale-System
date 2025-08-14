@@ -21,9 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Controllers\" />
-    <Folder Include="Areas\Admin\ViewModels\" />
-    <Folder Include="Areas\Admin\Views\" />
+    <Folder Include="Areas\DashBoard\ViewModels\" />
     <Folder Include="Areas\Identity\Controllers\" />
     <Folder Include="Areas\Identity\ViewModels\" />
     <Folder Include="Areas\Identity\Views\" />

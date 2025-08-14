@@ -1,4 +1,4 @@
-namespace Core_Layer.Models
+namespace CoreLayer.Models
 {
     public class ErrorViewModel
     {

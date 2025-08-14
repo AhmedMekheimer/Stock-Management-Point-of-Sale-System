@@ -1,4 +1,4 @@
-﻿namespace Core_Layer
+﻿namespace CoreLayer
 {
     public class SD
     {

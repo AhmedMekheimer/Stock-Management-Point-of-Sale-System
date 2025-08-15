@@ -30,7 +30,7 @@ namespace CoreLayer.Models
         [Range(0, double.MaxValue)]
         public double GrandTotal { get; set; }
         [Required]
-        public int ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; } = null!;
         public ApplicationUser ApplicationUser { get; set; }=new ApplicationUser();
         public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
     }

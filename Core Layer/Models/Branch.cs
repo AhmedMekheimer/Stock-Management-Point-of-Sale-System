@@ -21,7 +21,7 @@ namespace CoreLayer.Models
 
         // One-to-One: Branch has one manager
         [Required]
-        public int BranchManagerId { get; set; }  // Foreign key for manager
+        public string BranchManagerId { get; set; } = null!;  // Foreign key for manager
         public ApplicationUser BranchManager { get; set; } = new ApplicationUser();
 
         // Many-to-Many: Branch has many Items (Bridge Table Needed)

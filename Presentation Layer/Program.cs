@@ -1,6 +1,8 @@
 using CoreLayer;
 using CoreLayer.Models;
 using Infrastructure_Layer.Data;
+using InfrastructureLayer;
+using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +30,8 @@ namespace Presentation_Layer
 
             //Adding Services (Email Sender, Repos(Unit Of Work), DBInitializer)
             //...
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Authentication
             builder.Services.ConfigureApplicationCookie(

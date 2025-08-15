@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Data\DbInitializer\" />
-    <Folder Include="Repositories\IRepositories\" />
   </ItemGroup>
 
   <ItemGroup>

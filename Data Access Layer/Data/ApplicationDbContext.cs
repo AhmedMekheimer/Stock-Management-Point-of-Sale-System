@@ -35,7 +35,15 @@ namespace Infrastructure_Layer.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             base.OnModelCreating(modelBuilder);
+
+            // ItemType referencing (Tree-Structure)
+            modelBuilder.Entity<ItemType>()
+            .HasOne(it => it.Parent)
+            .WithMany(it => it.Children)
+            .HasForeignKey(it => it.ItemTypeId)
+            .OnDelete(DeleteBehavior.Restrict);  // Prevents cascade delete loops
 
             // Uniqueness of Operation's Reference in a Transaction
             modelBuilder.Entity<Transaction>()

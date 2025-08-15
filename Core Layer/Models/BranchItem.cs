@@ -14,10 +14,10 @@ namespace CoreLayer.Models
 
         [Required]
         [Range(0, int.MaxValue)]
-        public int Quantity { get; set; }  // <-- Your custom column
+        public int Quantity { get; set; }  
 
         // Navigation properties
-        public Branch Branch { get; set; }=new Branch();
-        public Item Item { get; set; } = new Item();
+        public Branch Branch { get; set; }= null!;
+        public Item Item { get; set; } = null!;
     }
 }

@@ -15,7 +15,7 @@ namespace CoreLayer.Models.Operations
         public int SupplierId { get; set; } // FK to Partner (Supplier)
 
         // Navigation properties
-        public Branch Branch { get; set; } = new Branch();
-        public Partner Supplier { get; set; } = new Partner();
+        public Branch Branch { get; set; } = null!;
+        public Partner Supplier { get; set; } = null!;
     }
 }

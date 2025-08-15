@@ -23,10 +23,10 @@ namespace CoreLayer.Models
 
         // Cashier relationship (many-to-one)
         public int? BranchId { get; set; }  // Nullable for cashiers
-        public Branch? Branch { get; set; } = new Branch();  // Navigation to branch for cashiers
+        public Branch? Branch { get; set; } = null!;  // Navigation to branch for cashiers
 
         // Manager relationship (one-to-one)
-        public Branch? ManagedBranch { get; set; } = new Branch();  // Navigation to managed branch
+        public Branch? ManagedBranch { get; set; } = null!;  // Navigation to managed branch
 
         public ICollection<ApplicationUserOTP> ApplicationUserOTPs { get; set; } = new List<ApplicationUserOTP>();
     }

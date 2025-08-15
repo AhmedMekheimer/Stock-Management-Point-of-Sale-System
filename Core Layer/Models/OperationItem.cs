@@ -24,6 +24,6 @@ namespace CoreLayer.Models
 
         [Required]
         public int ItemId { get; set; }
-        public Item Item { get; set; } = new Item();
+        public Item Item { get; set; } = null!;
     }
 }

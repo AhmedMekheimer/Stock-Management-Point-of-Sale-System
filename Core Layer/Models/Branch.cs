@@ -25,7 +25,7 @@ namespace CoreLayer.Models
         // One-to-One: Branch has one manager
         [Required]
         public string BranchManagerId { get; set; } = null!;  // Foreign key for manager
-        public ApplicationUser BranchManager { get; set; } = new ApplicationUser();
+        public ApplicationUser BranchManager { get; set; } = null!;
 
         // One-to-Many: Branch has many Operations
         public ICollection<Invoice>? Invoices { get; set; } = new List<Invoice>();

@@ -16,8 +16,8 @@ namespace CoreLayer.Models.Operations
         public int? VoucherId { get; set; }
 
         // Navigation properties
-        public Branch Branch { get; set; } = new Branch();
-        public Partner RetailCustomer { get; set; } = new Partner();
-        public Voucher? Voucher { get; set; }
+        public Branch Branch { get; set; } = null!;
+        public Partner RetailCustomer { get; set; } = null!;
+        public Voucher? Voucher { get; set; }=null!;
     }
 }

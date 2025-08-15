@@ -49,10 +49,10 @@ namespace CoreLayer.Models
         public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
 
         // Navigation properties
-        public Brand Brand { get; set; } = new Brand();
-        public Color Color { get; set; } = new Color();
-        public ItemType ItemType { get; set; } = new ItemType();
-        public Size Size { get; set; } = new Size();
-        public TargetAudience TargetAudience { get; set; } = new TargetAudience();
+        public Brand Brand { get; set; } = null!;
+        public Color Color { get; set; } = null!;
+        public ItemType ItemType { get; set; } = null!;
+        public Size Size { get; set; } = null!;
+        public TargetAudience TargetAudience { get; set; } = null!;
     }
 }

@@ -20,10 +20,10 @@ namespace CoreLayer.Models
 
         [Required]
         public int OperationId { get; set; }
-        public Operation Operation { get; set; }
+        public Operation Operation { get; set; } = null!;
 
         [Required]
         public int ItemId { get; set; }
-        public Item Item { get; set; }
+        public Item Item { get; set; } = new Item();
     }
 }

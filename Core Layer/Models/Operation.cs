@@ -31,7 +31,7 @@ namespace CoreLayer.Models
         public double GrandTotal { get; set; }
         [Required]
         public int ApplicationUserId { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }=new ApplicationUser();
         public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
     }
 }

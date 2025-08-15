@@ -15,7 +15,7 @@ namespace CoreLayer.Models.Operations
         public int ToBranchId { get; set; }     // Manually made FK
 
         // Navigation properties
-        public Branch FromBranch { get; set; }  // Source branch
-        public Branch ToBranch { get; set; }    // Destination branch
+        public Branch FromBranch { get; set; } = new Branch();  // Source branch
+        public Branch ToBranch { get; set; } = new Branch();    // Destination branch
     }
 }

@@ -12,6 +12,6 @@ namespace CoreLayer.Models
         public int Id { get; set; }
         [Required]
         public int OperationId { get; set; }
-        public Operation Operation { get; set; }
+        public Operation Operation { get; set; } = null!;
     }
 }

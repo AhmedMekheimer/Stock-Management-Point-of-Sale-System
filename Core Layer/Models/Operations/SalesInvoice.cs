@@ -15,7 +15,7 @@ namespace CoreLayer.Models.Operations
         public int CorporateCustomerId { get; set; } // FK to Partner (CorporateCustomer)
 
         // Navigation properties
-        public Branch Branch { get; set; }
-        public Partner CorporateCustomer { get; set; }
+        public Branch Branch { get; set; } = new Branch();
+        public Partner CorporateCustomer { get; set; } = new Partner();
     }
 }

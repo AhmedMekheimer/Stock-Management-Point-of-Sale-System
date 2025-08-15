@@ -31,6 +31,7 @@ namespace CoreLayer.Models
         public int? DiscountPercentage { get; set; }
         [Range(0,int.MaxValue)]
         public int? RestockThreshold { get; set; }
+
         // Many-to-Many: Item is in many Branches (Bridge Table Needed)
         public ICollection<Branch> Branches { get; set; } = new List<Branch>();
 

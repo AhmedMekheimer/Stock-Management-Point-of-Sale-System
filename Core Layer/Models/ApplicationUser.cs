@@ -16,15 +16,6 @@ namespace CoreLayer.Models
         public override string UserName { get; set; } = null!;
 
         [Required]
-        [MinLength(3)]
-        [MaxLength(100)]
-        public string FirstName { get; set; } = null!;
-        [Required]
-        [MinLength(3)]
-        [MaxLength(100)]
-        public string LastName { get; set; } = null!;
-
-        [Required]
         [EmailAddress]
         [MaxLength(256)]
         public override string Email { get; set; } = null!;
@@ -32,9 +23,9 @@ namespace CoreLayer.Models
 
         // Cashier relationship (many-to-one)
         public int? BranchId { get; set; }  // Nullable for cashiers
-        public Branch Branch { get; set; } = new Branch();  // Navigation to branch for cashiers
+        public Branch? Branch { get; set; } = new Branch();  // Navigation to branch for cashiers
 
         // Manager relationship (one-to-one)
-        public Branch ManagedBranch { get; set; } = new Branch();  // Navigation to managed branch
+        public Branch? ManagedBranch { get; set; } = new Branch();  // Navigation to managed branch
     }
 }

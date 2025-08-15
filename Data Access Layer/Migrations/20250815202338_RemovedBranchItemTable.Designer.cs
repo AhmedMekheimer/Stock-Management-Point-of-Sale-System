@@ -4,6 +4,7 @@ using Infrastructure_Layer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure_Layer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250815202338_RemovedBranchItemTable")]
+    partial class RemovedBranchItemTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,24 +120,6 @@ namespace Infrastructure_Layer.Migrations
                         .IsUnique();
 
                     b.ToTable("Branches");
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.BranchItem", b =>
-                {
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("BranchId", "ItemId");
-
-                    b.HasIndex("ItemId");
-
-                    b.ToTable("BranchItems");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -646,25 +631,6 @@ namespace Infrastructure_Layer.Migrations
                     b.Navigation("BranchManager");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.BranchItem", b =>
-                {
-                    b.HasOne("CoreLayer.Models.Branch", "Branch")
-                        .WithMany("BranchItems")
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreLayer.Models.Item", "Item")
-                        .WithMany("BranchItems")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-
-                    b.Navigation("Item");
-                });
-
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
                 {
                     b.HasOne("CoreLayer.Models.ItemVarients.Brand", "Brand")
@@ -925,8 +891,6 @@ namespace Infrastructure_Layer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.Branch", b =>
                 {
-                    b.Navigation("BranchItems");
-
                     b.Navigation("Cashiers");
 
                     b.Navigation("IncomingTransfers");
@@ -942,8 +906,6 @@ namespace Infrastructure_Layer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
                 {
-                    b.Navigation("BranchItems");
-
                     b.Navigation("OperationItems");
                 });
 

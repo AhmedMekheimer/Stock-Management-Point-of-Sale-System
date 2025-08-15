@@ -33,7 +33,7 @@ namespace CoreLayer.Models
         public int? RestockThreshold { get; set; }
 
         // Many-to-Many: Item is in many Branches (Bridge Table Needed)
-        public ICollection<Branch> Branches { get; set; } = new List<Branch>();
+        public List<BranchItem> BranchItems { get; set; } = new List<BranchItem>();
 
         //Item Varients FKs
         [Required]

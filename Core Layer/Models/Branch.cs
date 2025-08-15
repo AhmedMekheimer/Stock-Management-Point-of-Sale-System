@@ -16,6 +16,9 @@ namespace CoreLayer.Models
         [MaxLength(50)]
         public string Name { get; set; } = null!;
 
+        // Many-to-Many: Branch has many Items (Bridge Table Needed)
+        public List<BranchItem> BranchItems { get; set; } = new List<BranchItem>();
+
         // One-to-Many: Branch has many cashiers
         public ICollection<ApplicationUser> Cashiers { get; set; } = new List<ApplicationUser>();
 
@@ -23,9 +26,6 @@ namespace CoreLayer.Models
         [Required]
         public string BranchManagerId { get; set; } = null!;  // Foreign key for manager
         public ApplicationUser BranchManager { get; set; } = new ApplicationUser();
-
-        // Many-to-Many: Branch has many Items (Bridge Table Needed)
-        public ICollection<Item> Items { get; set; } = new List<Item>();
 
         // One-to-Many: Branch has many Operations
         public ICollection<Invoice>? Invoices { get; set; } = new List<Invoice>();

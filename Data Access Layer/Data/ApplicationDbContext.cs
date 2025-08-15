@@ -20,6 +20,7 @@ namespace Infrastructure_Layer.Data
         public DbSet<TargetAudience> TargetAudiences { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<BranchItem> BranchItems { get; set; }
         public DbSet<Operation> Operations { get; set; }
         public DbSet<OperationItem> OperationItems { get; set; }
 
@@ -38,12 +39,26 @@ namespace Infrastructure_Layer.Data
 
             base.OnModelCreating(modelBuilder);
 
+            // Bridge Table relation configuration
+            modelBuilder.Entity<BranchItem>()
+                .HasKey(bi => new { bi.BranchId, bi.ItemId });  // Composite PK
+
+            modelBuilder.Entity<BranchItem>()
+                .HasOne(bi => bi.Branch)
+                .WithMany(b => b.BranchItems)
+                .HasForeignKey(bi => bi.BranchId);
+
+            modelBuilder.Entity<BranchItem>()
+                .HasOne(bi => bi.Item)
+                .WithMany(i => i.BranchItems)
+                .HasForeignKey(bi => bi.ItemId);
+
             // ItemType referencing (Tree-Structure)
             modelBuilder.Entity<ItemType>()
-            .HasOne(it => it.Parent)
-            .WithMany(it => it.Children)
-            .HasForeignKey(it => it.ItemTypeId)
-            .OnDelete(DeleteBehavior.Restrict);  // Prevents cascade delete loops
+                .HasOne(it => it.Parent)
+                .WithMany(it => it.Children)
+                .HasForeignKey(it => it.ItemTypeId)
+                .OnDelete(DeleteBehavior.Restrict);  // Prevents cascade delete loops
 
             // Uniqueness of Operation's Reference in a Transaction
             modelBuilder.Entity<Transaction>()

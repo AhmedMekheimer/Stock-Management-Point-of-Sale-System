@@ -10,16 +10,9 @@ namespace CoreLayer.Models
 {
     public abstract class Operation
     {
-        public enum OperationType
-        {
-            ReceiveOrder = 1,
-            SalesInvoice = 2,
-            BranchesTransfer = 3
-        }
         public int Id { get; set; }
         [Required]
         public DateTime Date { get; set; }
-        public OperationType operationType { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
         public double TotalItemsPrice { get; set; }

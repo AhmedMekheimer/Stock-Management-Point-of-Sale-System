@@ -12,10 +12,11 @@ namespace CoreLayer.Models.ItemVarients
         public int Id { get; set; }
         [Required]
         public string Name { get; set; } = null!;
+        public ICollection<Item> Items { get; set; } = new List<Item>();
+
         // Self-referencing FK (nullable for root categories)
         public int? ItemTypeId { get; set; }
-        public ItemType? Parent { get; set; }                 //Navigation to Parent
-        public List<ItemType> Children { get; set; } = new List<ItemType>(); // Navigation to children
-        public ICollection<Item> Items { get; set; } = new List<Item>();
+        public ItemType? Parent { get; set; }                                       // Navigation to Parent
+        public ICollection<ItemType> Children { get; set; } = new List<ItemType>(); // Navigation to children
     }
 }

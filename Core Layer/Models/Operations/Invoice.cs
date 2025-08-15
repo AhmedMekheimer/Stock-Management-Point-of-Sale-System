@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CoreLayer.Models.Operations
 {
-    public class Invoice:Operation
+    public class Invoice : Operation
     {
         [Required]
         public int BranchId { get; set; }
@@ -18,5 +18,6 @@ namespace CoreLayer.Models.Operations
         // Navigation properties
         public Branch Branch { get; set; }
         public Partner RetailCustomer { get; set; }
+        public Voucher? Voucher { get; set; }
     }
 }

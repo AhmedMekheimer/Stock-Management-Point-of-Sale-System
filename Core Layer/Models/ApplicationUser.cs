@@ -28,13 +28,13 @@ namespace CoreLayer.Models
         [EmailAddress]
         [MaxLength(256)]
         public override string Email { get; set; } = null!;
+        public ICollection<Operation> Operations { get; set; } = new List<Operation>();
+
         // Cashier relationship (many-to-one)
         public int? BranchId { get; set; }  // Nullable for cashiers
         public Branch Branch { get; set; }  // Navigation to branch for cashiers
 
         // Manager relationship (one-to-one)
         public Branch ManagedBranch { get; set; }  // Navigation to managed branch
-
-        public ICollection<Operation> Operations { get; set; } = new List<Operation>();
     }
 }

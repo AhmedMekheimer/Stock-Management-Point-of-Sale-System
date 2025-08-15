@@ -31,7 +31,6 @@ namespace Infrastructure_Layer.Data
 
         public DbSet<Partner> Partners { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<TransactionItem> TransactionItems { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,10 +38,6 @@ namespace Infrastructure_Layer.Data
             base.OnModelCreating(modelBuilder);
 
             // Uniqueness of Operation's Reference in a Transaction
-            modelBuilder.Entity<Transaction>()
-                .HasIndex(p => p.operationType)
-                .IsUnique();
-
             modelBuilder.Entity<Transaction>()
                 .HasIndex(u => u.OperationId)
                 .IsUnique();
@@ -99,7 +94,7 @@ namespace Infrastructure_Layer.Data
                 .HasForeignKey(si => si.CorporateCustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // RetailInvoice relationships
+            // Invoice relationships
             modelBuilder.Entity<Invoice>()
                 .HasOne(si => si.Branch)
                 .WithMany(b => b.Invoices)

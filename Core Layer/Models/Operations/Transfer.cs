@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CoreLayer.Models.Operations
 {
-    public class Transfer:Operation
+    public class Transfer : Operation
     {
         [Required]
         public int FromBranchId { get; set; }   // Manually made FK

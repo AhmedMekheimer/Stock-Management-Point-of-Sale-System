@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CoreLayer.Models.Operations
 {
-    public class SalesInvoice:Operation
+    public class SalesInvoice : Operation
     {
         [Required]
         public int BranchId { get; set; }

@@ -31,6 +31,7 @@ namespace CoreLayer.Models
         public int? DiscountPercentage { get; set; }
         [Range(0,int.MaxValue)]
         public int? RestockThreshold { get; set; }
+        // Many-to-Many: Item is in many Branches (Bridge Table Needed)
         public ICollection<Branch> Branches { get; set; } = new List<Branch>();
 
         //Item Varients FKs
@@ -44,6 +45,7 @@ namespace CoreLayer.Models
         public int SizeId { get; set; }
         [Required]
         public int TargetAudienceId { get; set; }
+        public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
 
         // Navigation properties
         public Brand Brand { get; set; }
@@ -51,7 +53,5 @@ namespace CoreLayer.Models
         public ItemType ItemType { get; set; }
         public Size Size { get; set; }
         public TargetAudience TargetAudience { get; set; }
-        public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
-        public ICollection<TransactionItem> TransactionItems { get; set; } = new List<TransactionItem>();
     }
 }

@@ -32,9 +32,8 @@ namespace CoreLayer.Models
         [EgyptianPhoneList]
         public List<string> PhoneNumbers { get; set; } = new List<string>();
 
-        // Navigation properties
-        public List<SalesInvoice>? CorporateSales { get; set; }
-        public List<ReceiveOrder>? SupplyOrders { get; set; }
-        public List<Invoice>? Invoices { get; set; }
+        public ICollection<SalesInvoice>? CorporateSales { get; set; } = new List<SalesInvoice>();
+        public ICollection<ReceiveOrder>? SupplyOrders { get; set; } = new List<ReceiveOrder>();
+        public ICollection<Invoice>? Invoices { get; set; } = new List<Invoice>();
     }
 }

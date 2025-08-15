@@ -27,5 +27,7 @@ namespace CoreLayer.Models
 
         // Manager relationship (one-to-one)
         public Branch? ManagedBranch { get; set; } = new Branch();  // Navigation to managed branch
+
+        public ICollection<ApplicationUserOTP> ApplicationUserOTPs { get; set; } = new List<ApplicationUserOTP>();
     }
 }

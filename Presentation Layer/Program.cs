@@ -42,7 +42,7 @@ namespace Presentation_Layer
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy($"{SD.Workers}", policy =>
-                      policy.RequireRole($"{SD.StockManager}", $"{SD.InventoryManager}", $"{SD.Cashier}"));
+                      policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", $"{SD.Cashier}"));
             });
 
             var app = builder.Build();

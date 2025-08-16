@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CoreLayer.Models
 {
-    public class Branch
+    public class  Branch
     {
         public int Id { get; set; }
         [Required]

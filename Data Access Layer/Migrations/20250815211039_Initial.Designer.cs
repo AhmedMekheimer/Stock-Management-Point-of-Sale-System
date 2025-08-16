@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Infrastructure_Layer.Migrations
+namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250815142802_AllTablesCreation_Migration")]
-    partial class AllTablesCreation_Migration
+    [Migration("20250815211039_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,22 +56,11 @@ namespace Infrastructure_Layer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -103,7 +92,6 @@ namespace Infrastructure_Layer.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -318,9 +306,6 @@ namespace Infrastructure_Layer.Migrations
 
                     b.Property<double>("TotalTaxes")
                         .HasColumnType("float");
-
-                    b.Property<int>("operationType")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -927,8 +912,7 @@ namespace Infrastructure_Layer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("ManagedBranch")
-                        .IsRequired();
+                    b.Navigation("ManagedBranch");
 
                     b.Navigation("Operations");
                 });

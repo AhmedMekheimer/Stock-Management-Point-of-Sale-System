@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,22 +11,15 @@ namespace CoreLayer.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        [Required]
-        [MinLength(3)]
-        [MaxLength(256)]
-        public override string UserName { get; set; } = null!;
 
-        [Required]
-        [EmailAddress]
-        [MaxLength(256)]
-        public override string Email { get; set; } = null!;
+        [NotMapped]
         public ICollection<Operation> Operations { get; set; } = new List<Operation>();
 
         // Cashier relationship (many-to-one)
         public int? BranchId { get; set; }  // Nullable for cashiers
-        public Branch? Branch { get; set; } = new Branch();  // Navigation to branch for cashiers
+        public Branch? Branch { get; set; }   // Navigation to branch for cashiers
 
         // Manager relationship (one-to-one)
-        public Branch? ManagedBranch { get; set; } = new Branch();  // Navigation to managed branch
+        public Branch? ManagedBranch { get; set; } // Navigation to managed branch
     }
 }

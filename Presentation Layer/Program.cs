@@ -3,6 +3,7 @@ using CoreLayer.Models;
 using Infrastructure_Layer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PresentationLayer.Utility;
 
 namespace Presentation_Layer
 {
@@ -14,10 +15,10 @@ namespace Presentation_Layer
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             // DB Configurations
             builder.Services.AddDbContext<ApplicationDbContext>(
-                option => option.UseSqlServer("Data Source=.;Initial Catalog=Stock and POS System; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;")
+                option => option.UseSqlServer("Data Source=.;Initial Catalog=Stock and POS System2; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;")
             );
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
@@ -61,11 +62,22 @@ namespace Presentation_Layer
             app.UseAuthentication();
             app.UseAuthorization();
 
+    
+
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{area=Dashboard}/{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
+
+            using (var scope = app.Services.CreateScope())
+            {
+
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                // use DbInitializer
+                dbInitializer.Init();
+            }
 
             app.Run();
         }

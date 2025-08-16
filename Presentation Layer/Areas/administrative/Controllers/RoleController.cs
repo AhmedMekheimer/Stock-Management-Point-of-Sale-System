@@ -3,7 +3,7 @@ using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PresentationLayer.Areas.administrative.ViewModels;
+using PresentationLayer.Areas.Administrative.ViewModels;
 
 namespace PresentationLayer.Areas.DashBoard.Controllers
 {

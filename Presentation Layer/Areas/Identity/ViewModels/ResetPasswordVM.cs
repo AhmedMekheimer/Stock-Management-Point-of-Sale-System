@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PresentationLayer.Areas.IDentitiy.ViewModels
+namespace PresentationLayer.Areas.Identity.ViewModels
 {
     public class ResetPasswordVM
     {

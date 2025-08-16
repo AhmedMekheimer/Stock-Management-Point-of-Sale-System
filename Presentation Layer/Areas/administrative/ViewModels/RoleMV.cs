@@ -1,4 +1,4 @@
-﻿namespace PresentationLayer.Areas.administrative.ViewModels
+﻿namespace PresentationLayer.Areas.Administrative.ViewModels
 {
     public class RoleMV
     {

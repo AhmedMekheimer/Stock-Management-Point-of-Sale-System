@@ -1,13 +1,15 @@
 using CoreLayer;
 using CoreLayer.Models;
-using InfrastructureLayer.Data;
 using InfrastructureLayer;
+using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
+using InfrastructureLayer.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Utility;
 
-namespace Presentation_Layer
+namespace PresentationLayer
 {
     public class Program
     {
@@ -29,13 +31,15 @@ namespace Presentation_Layer
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // Authentication
             builder.Services.ConfigureApplicationCookie(
                 options =>
                 {
-                    options.LoginPath = "/Identity/Account/SignIn";
+                    options.LoginPath = "/Identity/Account/Login";
                     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 }
                 );
@@ -45,6 +49,9 @@ namespace Presentation_Layer
             {
                 options.AddPolicy($"{SD.Workers}", policy =>
                       policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", $"{SD.Cashier}"));
+
+                options.AddPolicy($"{SD.Managers}", policy =>
+                      policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}"));
             });
 
             var app = builder.Build();
@@ -68,7 +75,7 @@ namespace Presentation_Layer
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{area=Dashboard}/{controller=Home}/{action=Index}/{id?}")
+                pattern: "{area=Identity}/{controller=Account}/{action=Login}/{id?}")
                 .WithStaticAssets();
 
 

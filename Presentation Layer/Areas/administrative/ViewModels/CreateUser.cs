@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace PresentationLayer.Areas.administrative.ViewModels
+namespace PresentationLayer.Areas.Administrative.ViewModels
 {
     public class CreateUser
     {

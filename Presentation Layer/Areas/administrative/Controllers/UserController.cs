@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json.Linq;
-using PresentationLayer.Areas.administrative.ViewModels;
+using PresentationLayer.Areas.Administrative.ViewModels;
 using System.Formats.Asn1;
 using System.Threading.Tasks;
 

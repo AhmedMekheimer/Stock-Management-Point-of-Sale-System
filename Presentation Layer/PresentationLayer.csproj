@@ -20,9 +20,6 @@
     <Folder Include="Areas\Stock\Controllers\" />
     <Folder Include="Areas\Stock\ViewModels\" />
     <Folder Include="Areas\Stock\Views\" />
-    <Folder Include="Areas\Test\Data\" />
-    <Folder Include="Areas\Test\Models\" />
-    <Folder Include="Areas\Test\Views\" />
   </ItemGroup>
 
   <ItemGroup>

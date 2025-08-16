@@ -1,37 +1,35 @@
 ﻿using CoreLayer.Models;
+using InfrastructureLayer.Interfaces;
 using InfrastructureLayer.Interfaces.IRepositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using PresentationLayer.Areas.IDentitiy.ViewModels;
+using PresentationLayer.Areas.Identity.ViewModels;
 
-namespace PresentationLayer.Areas.IDentitiy.controller
+namespace PresentationLayer.Areas.Identity.controller
 {
+    [Area("Identity")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IRepository<ApplicationUserOTP> _appUserOTP;
-        private async Task SendConfirmationEmail(ApplicationUser applicationUser)
+        private readonly IUnitOfWork _UnitOfWork;
+        public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, IUnitOfWork UnitOfWork)
         {
-            //Generating Email Conf. Token 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
-
-            //Link sent to Email, to be redirected to 'action' that verifies token 
-            var link = Url.Action(nameof(ConfirmEmail), "Account", new { userId = applicationUser.Id, token = token, area = "Identity" }, Request.Scheme);
-
-            //Sending Confirmation Email to New Account
-            await _emailSender.SendEmailAsync(applicationUser.Email!, "Account Confirmation", $"<h1>Confirm Your Account By Clicking <a href='{link}'>here</a></h1>");
+            _userManager = userManager;
+            _emailSender = emailSender;
+            _signInManager = signInManager;
+            _UnitOfWork = UnitOfWork;
         }
 
-        public IActionResult LogIn()
+        public IActionResult Login()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> LogIn(LoginVM LoginVM)
+        public async Task<IActionResult> Login(LoginVM LoginVM)
         {
             if (!ModelState.IsValid)
                 return View(LoginVM);
@@ -45,18 +43,6 @@ namespace PresentationLayer.Areas.IDentitiy.controller
 
                 if (result)
                 {
-                    if (!user.EmailConfirmed)
-                    {
-                        TempData["error-notification"] = "Confirm Your Email, The Confirmation Email has been Sent";
-                        await SendConfirmationEmail(user);
-                        return View(LoginVM);
-                    }
-                    if (!user.LockoutEnabled)
-                    {
-                        TempData["error-notification"] = $"You are locked out until {user.LockoutEnd}";
-                        return View(LoginVM);
-                    }
-
                     await _signInManager.SignInAsync(user, LoginVM.RememberMe);
                     TempData["success-notification"] = "Signed In Successfully";
                     return RedirectToAction("Index", "Home", new { area = "Customer" });
@@ -71,54 +57,6 @@ namespace PresentationLayer.Areas.IDentitiy.controller
             ModelState.AddModelError("Password", "Invalid Password");
             return View(LoginVM);
         }
-
-
-        //  email confirmation
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user is not null)
-            {
-                var result = await _userManager.ConfirmEmailAsync(user, token);
-
-                if (result.Succeeded)
-                    TempData["success-notification"] = "Confirm Email Successfully";
-                else
-                    TempData["error-notification"] = $"{String.Join(",", result.Errors)}";
-
-                return RedirectToAction("SignIn", "Account", new { area = "Identity" });
-            }
-            return NotFound();
-        }
-        public IActionResult EmailConfirmation()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> EmailConfirmation(EmailConfirmationVM emailConfirmationVM)
-        {
-            if (!ModelState.IsValid)
-                return View(emailConfirmationVM);
-
-            var user = await _userManager.FindByNameAsync(emailConfirmationVM.UserNameOrEmail) ??
-                       await _userManager.FindByEmailAsync(emailConfirmationVM.UserNameOrEmail);
-
-            if (user != null)
-            {
-                if (!user.EmailConfirmed)
-                {
-                    TempData["success-notification"] = "The Confirmation Email has been Sent";
-                    await SendConfirmationEmail(user);
-                }
-                else
-                    TempData["error-notification"] = "Your Email is Confirmed";
-                return RedirectToAction("SignIn", "Account", new { area = "Identity" });
-            }
-            TempData["error-notification"] = "Email or UserName Invalid";
-            return View(emailConfirmationVM);
-        }
-
 
         public IActionResult ForgetPassword()
         {
@@ -136,17 +74,10 @@ namespace PresentationLayer.Areas.IDentitiy.controller
 
             if (user != null)
             {
-                if (!user.EmailConfirmed)
-                {
-                    TempData["success-notification"] = "Your Account needs Confirmation. The Confirmation Email has been Sent";
-                    await SendConfirmationEmail(user);
-                    return RedirectToAction("SignIn", "Account", new { area = "Identity" });
-                }
-
                 // Send Reset Password OTP Email
                 var otpNumber = new Random().Next(1000, 9999);
 
-                var totalNumberOfOTPs = (await _appUserOTP.GetAsync(e => e.ApplicationUserId == user.Id ));
+                var totalNumberOfOTPs = (await _UnitOfWork.ApplicationUserOTPs.GetAsync(e => e.ApplicationUserId == user.Id ));
 
                 if (totalNumberOfOTPs.Count() > 5)
                 {
@@ -154,7 +85,7 @@ namespace PresentationLayer.Areas.IDentitiy.controller
                     return View(forgetPasswordVM);
                 }
 
-                await _appUserOTP.CreateAsync(new()
+                await _UnitOfWork.ApplicationUserOTPs.CreateAsync(new()
                 {
                     ApplicationUserId = user.Id,
                     OTPNumber = otpNumber,
@@ -190,7 +121,7 @@ namespace PresentationLayer.Areas.IDentitiy.controller
             {
                 if (!ModelState.IsValid)
                     return View(resetPasswordVM);
-                var lastOTP = (await _appUserOTP.GetAsync(e => e.ApplicationUserId == resetPasswordVM.UserId)).OrderBy(e => e.Id).LastOrDefault();
+                var lastOTP = (await _UnitOfWork.ApplicationUserOTPs.GetAsync(e => e.ApplicationUserId == resetPasswordVM.UserId)).OrderBy(e => e.Id).LastOrDefault();
 
                 if (lastOTP is not null && lastOTP.OTPNumber == resetPasswordVM.OTPNumber && lastOTP.Status && lastOTP.ValidTo > DateTime.UtcNow)
                 {
@@ -214,7 +145,6 @@ namespace PresentationLayer.Areas.IDentitiy.controller
             }
             return NotFound();
         }
-
 
         public async Task<IActionResult> ProfileEdit()
         {

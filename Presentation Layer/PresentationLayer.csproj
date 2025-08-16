@@ -8,9 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Identitiy\Views\**" />
     <Compile Remove="Areas\Identity\**" />
+    <Content Remove="Areas\Identitiy\Views\**" />
     <Content Remove="Areas\Identity\**" />
+    <EmbeddedResource Remove="Areas\Identitiy\Views\**" />
     <EmbeddedResource Remove="Areas\Identity\**" />
+    <None Remove="Areas\Identitiy\Views\**" />
     <None Remove="Areas\Identity\**" />
   </ItemGroup>
 
@@ -24,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\DashBoard\ViewModels\" />
-    <Folder Include="Areas\Identitiy\Views\" />
     <Folder Include="Areas\Stock\Controllers\" />
     <Folder Include="Areas\Stock\ViewModels\" />
     <Folder Include="Areas\Stock\Views\" />

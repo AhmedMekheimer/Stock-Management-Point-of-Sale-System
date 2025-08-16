@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250816132557_ALteringEmailandUserName_InIdentityUser_RemovedfromAppUser")]
-    partial class ALteringEmailandUserName_InIdentityUser_RemovedfromAppUser
+    [Migration("20250816164128_InitialMigration_DbCreated_TablesCreated")]
+    partial class InitialMigration_DbCreated_TablesCreated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

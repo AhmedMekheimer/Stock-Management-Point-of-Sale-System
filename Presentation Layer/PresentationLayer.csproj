@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Identity\**" />
+    <Content Remove="Areas\Identity\**" />
+    <EmbeddedResource Remove="Areas\Identity\**" />
+    <None Remove="Areas\Identity\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,7 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\DashBoard\ViewModels\" />
-    <Folder Include="Areas\Identity\ViewModels\" />
+    <Folder Include="Areas\Identitiy\Views\" />
     <Folder Include="Areas\Stock\Controllers\" />
     <Folder Include="Areas\Stock\ViewModels\" />
     <Folder Include="Areas\Stock\Views\" />

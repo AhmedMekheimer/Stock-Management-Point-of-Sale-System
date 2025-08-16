@@ -22,9 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\DashBoard\ViewModels\" />
-    <Folder Include="Areas\Identity\Controllers\" />
     <Folder Include="Areas\Identity\ViewModels\" />
-    <Folder Include="Areas\Identity\Views\" />
     <Folder Include="Areas\Stock\Controllers\" />
     <Folder Include="Areas\Stock\ViewModels\" />
     <Folder Include="Areas\Stock\Views\" />

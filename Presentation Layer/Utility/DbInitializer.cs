@@ -1,6 +1,6 @@
 ﻿using CoreLayer;
 using CoreLayer.Models;
-using Infrastructure_Layer.Data;
+using InfrastructureLayer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

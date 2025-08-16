@@ -1,5 +1,6 @@
 ﻿using CoreLayer.Models;
-using Infrastructure_Layer.Data;
+using InfrastructureLayer.Data;
+using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Areas.administrative.ViewModels;
@@ -9,12 +10,11 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _RoleManager;
-
-        public RoleController(UserManager<ApplicationUser> userManager,
-    RoleManager<IdentityRole> roleManager, ApplicationDbContext applicationDbContext)
+        private readonly IUnitOfWork _UnitOfWork;
+        public RoleController(RoleManager<IdentityRole> roleManager, IUnitOfWork UnitOfWork)
         {
             _RoleManager = roleManager;
-
+            _UnitOfWork = UnitOfWork;
         }
         public IActionResult Index()
         {

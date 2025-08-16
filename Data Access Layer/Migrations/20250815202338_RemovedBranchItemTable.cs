@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Infrastructure_Layer.Migrations
+namespace InfrastructureLayer.Migrations
 {
     /// <inheritdoc />
     public partial class RemovedBranchItemTable : Migration

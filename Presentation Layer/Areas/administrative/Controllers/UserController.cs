@@ -1,5 +1,5 @@
 ﻿using CoreLayer.Models;
-using Infrastructure_Layer.Data;
+using InfrastructureLayer.Data;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

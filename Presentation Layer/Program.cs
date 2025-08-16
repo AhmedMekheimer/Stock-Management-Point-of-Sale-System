@@ -1,6 +1,6 @@
 using CoreLayer;
 using CoreLayer.Models;
-using Infrastructure_Layer.Data;
+using InfrastructureLayer.Data;
 using InfrastructureLayer;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -28,9 +28,6 @@ namespace Presentation_Layer
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
-            //Adding Services (Email Sender, Repos(Unit Of Work), DBInitializer)
-            //...
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

@@ -4,7 +4,7 @@ using CoreLayer.Models.Operations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure_Layer.Data
+namespace InfrastructureLayer.Data
 {
     public class ApplicationDbContext: IdentityDbContext<ApplicationUser>
     {

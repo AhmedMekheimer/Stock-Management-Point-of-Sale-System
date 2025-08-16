@@ -1,5 +1,5 @@
 ﻿using CoreLayer.Models;
-using Infrastructure_Layer.Data;
+using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
 using InfrastructureLayer.Interfaces.IRepositories;
 using InfrastructureLayer.Interfaces.IRepositories.ItemVarients;

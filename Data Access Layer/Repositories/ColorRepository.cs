@@ -1,6 +1,6 @@
 ﻿using CoreLayer.Models;
 using CoreLayer.Models.ItemVarients;
-using Infrastructure_Layer.Data;
+using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces.IRepositories;
 using InfrastructureLayer.Interfaces.IRepositories.ItemVarients;
 using System;

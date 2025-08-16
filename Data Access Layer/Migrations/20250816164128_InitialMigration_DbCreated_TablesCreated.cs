@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InfrastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialMigration_DbCreated_TablesCreated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -203,6 +203,22 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ApplicationUserOTP",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OTPNumber = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    ValidTo = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationUserOTP", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -339,24 +355,25 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BranchItem",
+                name: "BranchItems",
                 columns: table => new
                 {
-                    BranchesId = table.Column<int>(type: "int", nullable: false),
-                    ItemsId = table.Column<int>(type: "int", nullable: false)
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BranchItem", x => new { x.BranchesId, x.ItemsId });
+                    table.PrimaryKey("PK_BranchItems", x => new { x.BranchId, x.ItemId });
                     table.ForeignKey(
-                        name: "FK_BranchItem_Branches_BranchesId",
-                        column: x => x.BranchesId,
+                        name: "FK_BranchItems_Branches_BranchId",
+                        column: x => x.BranchId,
                         principalTable: "Branches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BranchItem_Items_ItemsId",
-                        column: x => x.ItemsId,
+                        name: "FK_BranchItems_Items_ItemId",
+                        column: x => x.ItemId,
                         principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -540,6 +557,11 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ApplicationUserOTP_ApplicationUserId",
+                table: "ApplicationUserOTP",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -590,9 +612,9 @@ namespace InfrastructureLayer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_BranchItem_ItemsId",
-                table: "BranchItem",
-                column: "ItemsId");
+                name: "IX_BranchItems_ItemId",
+                table: "BranchItems",
+                column: "ItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invoices_BranchId",
@@ -691,6 +713,14 @@ namespace InfrastructureLayer.Migrations
                 column: "ToBranchId");
 
             migrationBuilder.AddForeignKey(
+                name: "FK_ApplicationUserOTP_AspNetUsers_ApplicationUserId",
+                table: "ApplicationUserOTP",
+                column: "ApplicationUserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                 table: "AspNetUserClaims",
                 column: "UserId",
@@ -731,6 +761,9 @@ namespace InfrastructureLayer.Migrations
                 table: "Branches");
 
             migrationBuilder.DropTable(
+                name: "ApplicationUserOTP");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -746,7 +779,7 @@ namespace InfrastructureLayer.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "BranchItem");
+                name: "BranchItems");
 
             migrationBuilder.DropTable(
                 name: "Invoices");

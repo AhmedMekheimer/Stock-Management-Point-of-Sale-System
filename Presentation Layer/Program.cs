@@ -1,6 +1,6 @@
 using CoreLayer;
 using CoreLayer.Models;
-using Infrastructure_Layer.Data;
+using InfrastructureLayer.Data;
 using InfrastructureLayer;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -20,7 +20,7 @@ namespace Presentation_Layer
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             // DB Configurations
             builder.Services.AddDbContext<ApplicationDbContext>(
-                option => option.UseSqlServer("Data Source=.;Initial Catalog=Stock and POS System2; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;")
+                option => option.UseSqlServer("Data Source=.;Initial Catalog=Stock and POS System; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;")
             );
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
@@ -28,9 +28,6 @@ namespace Presentation_Layer
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
-            //Adding Services (Email Sender, Repos(Unit Of Work), DBInitializer)
-            //...
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

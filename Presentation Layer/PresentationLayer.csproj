@@ -16,11 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core Layer\CoreLayer.csproj" />
-    <ProjectReference Include="..\Data Access Layer\InfrastructureLayer.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Areas\DashBoard\ViewModels\" />
     <Folder Include="Areas\Identity\ViewModels\" />
     <Folder Include="Areas\Stock\Controllers\" />
@@ -29,6 +24,11 @@
     <Folder Include="Areas\Test\Data\" />
     <Folder Include="Areas\Test\Models\" />
     <Folder Include="Areas\Test\Views\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core Layer\CoreLayer.csproj" />
+    <ProjectReference Include="..\Data Access Layer\InfrastructureLayer.csproj" />
   </ItemGroup>
 
 </Project>

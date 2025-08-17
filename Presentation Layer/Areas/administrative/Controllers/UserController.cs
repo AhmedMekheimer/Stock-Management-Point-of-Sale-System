@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace PresentationLayer.Areas.DashBoard.Controllers
 {
+    [Area("Administrative")]
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _UserManager;

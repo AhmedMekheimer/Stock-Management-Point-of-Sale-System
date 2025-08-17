@@ -44,8 +44,8 @@ namespace PresentationLayer.Areas.Identity.controller
                 if (result)
                 {
                     await _signInManager.SignInAsync(user, LoginVM.RememberMe);
-                    TempData["success-notification"] = "Signed In Successfully";
-                    return RedirectToAction("Index", "Home", new { area = "Customer" });
+                    TempData["Success"] = "Logged In Successfully";
+                    return RedirectToAction("Index", "Home", new { area = "DashBoard" });
                 }
 
                 ModelState.AddModelError("UserNameOrEmail", "Invalid UserName Or Email");
@@ -81,7 +81,7 @@ namespace PresentationLayer.Areas.Identity.controller
 
                 if (totalNumberOfOTPs.Count() > 5)
                 {
-                    TempData["error-notification"] = "Many Requests of OTPs";
+                    TempData["Error"] = "Many Requests of OTPs";
                     return View(forgetPasswordVM);
                 }
 
@@ -95,11 +95,11 @@ namespace PresentationLayer.Areas.Identity.controller
 
                 await _emailSender.SendEmailAsync(user!.Email ?? "", "OTP Your Account", $"<h1>Reset Password using OTP: {otpNumber}</h1>");
 
-                TempData["success-notification"] = "OTP sent to your Email Successfully";
+                TempData["Success"] = "OTP sent to your Email Successfully";
 
                 return RedirectToAction("ResetPassword", "Account", new { area = "Identity", UserId = user.Id });
             }
-            TempData["error-notification"] = "Email or UserName Invalid";
+            TempData["Error"] = "Email or UserName Invalid";
             return View(forgetPasswordVM);
         }
 
@@ -130,8 +130,8 @@ namespace PresentationLayer.Areas.Identity.controller
 
                     if (result.Succeeded)
                     {
-                        TempData["success-notification"] = "Password Reset Succussfully";
-                        return RedirectToAction("SignIn", "Account", new { area = "Identity" });
+                        TempData["Success"] = "Password Reset Succussfully";
+                        return RedirectToAction("Login", "Account", new { area = "Identity" });
                     }
                     foreach (var item in result.Errors)
                     {
@@ -139,11 +139,18 @@ namespace PresentationLayer.Areas.Identity.controller
                     }
                 }
                 else
-                    TempData["error-notification"] = "OTP is Invalid or Expired";
+                    TempData["Error"] = "OTP is Invalid or Expired";
 
                 return View(resetPasswordVM);
             }
             return NotFound();
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            TempData["Success"] = $"Signed Out Successfully";
+            return RedirectToAction("Login", "Account", new { area = "Identity" });
         }
 
         public async Task<IActionResult> ProfileEdit()
@@ -213,8 +220,8 @@ namespace PresentationLayer.Areas.Identity.controller
                     // Refresh authentication cookie
                     await _signInManager.RefreshSignInAsync(user);
 
-                    TempData["success-notification"] = "Profile is Updated Successfully";
-                    return RedirectToAction("Index", "Home", new { area = "Customer" });
+                    TempData["Success"] = "Profile is Updated Successfully";
+                    return RedirectToAction("Index", "Home", new { area = "DashBoard" });
                 }
                 else
                 {

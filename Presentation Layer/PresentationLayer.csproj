@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\administrative\Controllers\" />
+    <Folder Include="Areas\administrative\ViewModels\" />
+    <Folder Include="Areas\administrative\Views\" />
     <Folder Include="Areas\DashBoard\ViewModels\" />
     <Folder Include="Areas\Stock\Controllers\" />
     <Folder Include="Areas\Stock\ViewModels\" />

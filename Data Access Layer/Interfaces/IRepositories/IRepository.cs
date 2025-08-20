@@ -20,6 +20,8 @@ namespace InfrastructureLayer.Interfaces.IRepositories
 
         Task<T?> GetOneAsync(Expression<Func<T, bool>>? condition = null, List<Func<IQueryable<T>, IQueryable<T>>>? includes = null, bool tracked = true);
 
+        Task<bool> AnyAsync(Expression<Func<T, bool>>? condition = null);
+
         Task<bool> CommitAsync();
         void DetachEntity(T entity);
     }

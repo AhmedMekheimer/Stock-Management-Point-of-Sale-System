@@ -1,6 +1,10 @@
-﻿using CoreLayer.Models;
+﻿using CoreLayer;
+using CoreLayer.Models;
+using InfrastructureLayer;
 using InfrastructureLayer.Data;
+using InfrastructureLayer.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,18 +18,19 @@ using System.Threading.Tasks;
 namespace PresentationLayer.Areas.DashBoard.Controllers
 {
     [Area("Administrative")]
+    [Authorize(Roles = SD.SuperAdmin)]
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _UserManager;
         private readonly RoleManager<IdentityRole> _RoleManager;
-        private readonly ApplicationDbContext _db;
+        private readonly IUnitOfWork _UnitOfWork;
 
         public UserController(UserManager<ApplicationUser> userManager,
-    RoleManager<IdentityRole> roleManager , ApplicationDbContext applicationDbContext)
+    RoleManager<IdentityRole> roleManager, IUnitOfWork UnitOfWork)
         {
             _UserManager = userManager;
             _RoleManager = roleManager;
-            _db = applicationDbContext;
+            _UnitOfWork = UnitOfWork;
 
         }
         public IActionResult Index()
@@ -38,9 +43,18 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
         public async Task<IActionResult> Save(string? id)
         {
             var createUser = new CreateUser();
-            createUser.BranchList = _db.Branches.Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name }).ToList();
-            
-            createUser.RolesList = _RoleManager.Roles.Select(r => new SelectListItem{Value = r.Name, Text = r.Name}).ToList();
+
+            var branches = await _UnitOfWork.Branches.GetAsync();
+
+            createUser.BranchList = branches
+                .Select(b => new SelectListItem
+                {
+                    Value = b.Id.ToString(),
+                    Text = b.Name
+                })
+                .ToList();
+
+            createUser.RolesList = _RoleManager.Roles.Select(r => new SelectListItem { Value = r.Name, Text = r.Name }).ToList();
 
             if (id is not null)
             {
@@ -50,15 +64,13 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                 {
                     ViewBag.Id = user.Id;
 
-                    var branchId = _db.Branches.FirstOrDefault(b => b.Id == user.BranchId)?.Id;
+                    var branchId = (await _UnitOfWork.Branches.GetOneAsync((b => b.Id == user.BranchId)))?.Id??0;
                     var roleId = await _UserManager.GetRolesAsync(user);
                     ViewBag.UserId = user.Id;
                     createUser.UserName = user.UserName ?? "";
                     createUser.Email = user.Email ?? "";
                     createUser.BranchId = branchId;
                     createUser.RoleId = roleId.FirstOrDefault() ?? "";
-
-
 
                     return View(createUser);
                 }
@@ -75,10 +87,16 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
         {
             try
             {
+                var branches = await _UnitOfWork.Branches.GetAsync();
 
-                    createUser.BranchList = _db.Branches.Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name }).ToList();
+                createUser.BranchList = branches
+                    .Select(b => new SelectListItem
+                    {
+                        Value = b.Id.ToString(), Text = b.Name 
+                    })
+                    .ToList();
 
-                    createUser.RolesList = _RoleManager.Roles.Select(r => new SelectListItem { Value = r.Name, Text = r.Name }).ToList();
+                createUser.RolesList = _RoleManager.Roles.Select(r => new SelectListItem { Value = r.Name, Text = r.Name }).ToList();
 
                 var branchId = createUser.BranchId == 0 ? null : createUser.BranchId;
                 ApplicationUser user = new()
@@ -89,7 +107,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                     BranchId = branchId
                 };
 
-                if(createUser.UserId is null)
+                if (createUser.UserId is null)
                 {
                     var result = await _UserManager.CreateAsync(user, createUser.Password);
                     if (result.Succeeded)
@@ -99,7 +117,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                         if (userDb is not null)
                         {
 
-                            if(createUser.RoleId != "0")
+                            if (createUser.RoleId != "0")
                             {
 
                                 var role = await _UserManager.AddToRoleAsync(userDb, createUser.RoleId);
@@ -114,26 +132,29 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
                         }
 
-                    } else
+                    }
+                    else
                     {
                         ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors.Select(e => e.Description)));
 
                         return View(createUser);
                     }
-                        return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-            
 
-                     var oldUser = await _UserManager.FindByIdAsync(createUser.UserId);
+
+                    var oldUser = await _UserManager.FindByIdAsync(createUser.UserId);
 
                     var UserUpdated = createUser.Adapt(oldUser);
 
 
-                    if (createUser.BranchId == 0) {
+                    if (createUser.BranchId == 0)
+                    {
                         UserUpdated.BranchId = null;
-                    } else
+                    }
+                    else
                     {
                         UserUpdated.BranchId = createUser.BranchId;
                     }
@@ -142,30 +163,32 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
                     var newResult = await _UserManager.UpdateAsync(UserUpdated);
 
-                    if(newResult.Succeeded)
+                    if (newResult.Succeeded)
                     {
 
                         var userRole = await _UserManager.GetRolesAsync(UserUpdated);
 
-                        if(userRole.Count() > 0)
+                        if (userRole.Count() > 0)
                         {
-                             await _UserManager.RemoveFromRoleAsync(UserUpdated, userRole.FirstOrDefault() ?? "");
+                            await _UserManager.RemoveFromRoleAsync(UserUpdated, userRole.FirstOrDefault() ?? "");
 
                             if (createUser.RoleId != "0")
-                                 await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
+                                await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
 
-                        } else
+                        }
+                        else
                         {
                             if (createUser.RoleId != "0")
-                             await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
+                                await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
                         }
 
-                            TempData["success"] = "updated";
+                        TempData["success"] = "updated";
                     }
-                        return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 var x = ex.Message;
 
@@ -179,24 +202,23 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
             if (user is not null)
             {
+                var isUserBranchManager = await _UnitOfWork.Branches.AnyAsync(b => b.BranchManagerId == id);
 
-                var isUserBranchManager = _db.Branches.Any(b => b.BranchManagerId == id);
-
-                if(isUserBranchManager)
+                if (isUserBranchManager)
                 {
                     TempData["error"] = "Change branch manager to delete user.";
                     return RedirectToAction(nameof(Index));
                 }
-             
-              var userResult = await _UserManager.DeleteAsync(user);
 
-              if (userResult.Succeeded)
-              {
-                  TempData["success"] = "user delete.";
-                  return RedirectToAction(nameof(Index));
-              }
+                var userResult = await _UserManager.DeleteAsync(user);
+
+                if (userResult.Succeeded)
+                {
+                    TempData["success"] = "user delete.";
+                    return RedirectToAction(nameof(Index));
+                }
             }
-                
+
             return RedirectToAction(nameof(Index));
         }
     }

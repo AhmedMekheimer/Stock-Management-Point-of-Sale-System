@@ -4,6 +4,7 @@ using InfrastructureLayer.Interfaces.IRepositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using PresentationLayer.Areas.Identity.ViewModels;
 
@@ -26,36 +27,43 @@ namespace PresentationLayer.Areas.Identity.controller
 
         public IActionResult Login()
         {
-            return View();
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home", new { area = "DashBoard" });
+            } else
+            {
+                return View();
+            }
         }
         [HttpPost]
         public async Task<IActionResult> Login(LoginVM LoginVM)
         {
-            if (!ModelState.IsValid)
-                return View(LoginVM);
+        
+                if (!ModelState.IsValid)
+                    return View(LoginVM);
 
-            var user = await _userManager.FindByNameAsync(LoginVM.UserNameOrEmail) ??
-                       await _userManager.FindByEmailAsync(LoginVM.UserNameOrEmail);
+                var user = await _userManager.FindByNameAsync(LoginVM.UserNameOrEmail) ??
+                           await _userManager.FindByEmailAsync(LoginVM.UserNameOrEmail);
 
-            if (user != null)
-            {
-                var result = await _userManager.CheckPasswordAsync(user, LoginVM.Password);
-
-                if (result)
+                if (user != null)
                 {
-                    await _signInManager.SignInAsync(user, LoginVM.RememberMe);
-                    TempData["Success"] = "Logged In Successfully";
-                    return RedirectToAction("Index", "Home", new { area = "DashBoard" });
+                    var result = await _userManager.CheckPasswordAsync(user, LoginVM.Password);
+
+                    if (result)
+                    {
+                        await _signInManager.SignInAsync(user, LoginVM.RememberMe);
+                        TempData["Success"] = "Logged In Successfully";
+                        return RedirectToAction("Index", "Home", new { area = "DashBoard" });
+                    }
+
+                    ModelState.AddModelError("UserNameOrEmail", "Invalid UserName Or Email");
+                    ModelState.AddModelError("Password", "Invalid Password");
+                    return View(LoginVM);
                 }
 
                 ModelState.AddModelError("UserNameOrEmail", "Invalid UserName Or Email");
                 ModelState.AddModelError("Password", "Invalid Password");
                 return View(LoginVM);
-            }
-
-            ModelState.AddModelError("UserNameOrEmail", "Invalid UserName Or Email");
-            ModelState.AddModelError("Password", "Invalid Password");
-            return View(LoginVM);
         }
 
         public IActionResult ForgetPassword()

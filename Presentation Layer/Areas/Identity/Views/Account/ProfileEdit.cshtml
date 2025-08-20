@@ -2,50 +2,49 @@
 
 @{
     ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
+<div class="container">
+	<div class="card shadow-lg border-0 rounded-4">
+		<div class="card-body p-4">
+			<h1>Edit your Profile</h1>
 
-<div class="row">
-    <div class="center-container">
-        <h1>Edit your Profile</h1>
-        <br />
-        <form asp-action="ProfileEdit" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="UserId" value="@Model.UserId" />
 
-            <div class="form-group">
-                <label asp-for="UserName" class="control-label">User Name</label>
-                <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
-            </div>
+                <form asp-action="ProfileEdit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="UserId" value="@Model.UserId" />
 
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
+                    <div class="form-group">
+                        <label asp-for="UserName" class="control-label">User Name</label>
+                        <input asp-for="UserName" class="form-control" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn btn-create">
-                    Save Changes
-                </button>
-            </div>
-        </form>
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
 
-        <form id="directResetForm"
-              asp-area="Identity"
-              asp-controller="Account"
-              asp-action="ForgetPassword"
-              method="post">
-            <input type="hidden" name="UserNameOrEmail" value="@(Model.Email ?? Model.UserName)" />
-            <div class="form-actions">
-                <button type="submit" class="btn btn-create">
-                    Want to Change Your Password ?
-                </button>
-            </div>
-        </form>
-    </div>
+                    <div class="form-actions mt-2">
+                        <button type="submit" class="btn btn-primary">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            <form id="directResetForm" asp-area="Identity" asp-controller="Account" asp-action="ForgetPassword"
+                  method="post">
+                <input type="hidden" name="UserNameOrEmail" value="@(Model.Email ?? Model.UserName)" />
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-secondary">
+                         Change Password 
+                    </button>
+                </div>
+            </form>
+		</div>
+	</div>
 </div>
-
 @section Scripts {
 
     @{

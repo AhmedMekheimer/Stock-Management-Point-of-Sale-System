@@ -13,6 +13,8 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
     [Authorize(Roles = SD.SuperAdmin)]
     public class RoleController : Controller
     {
+
+       
         private readonly RoleManager<IdentityRole> _RoleManager;
         private readonly IUnitOfWork _UnitOfWork;
         public RoleController(RoleManager<IdentityRole> roleManager, IUnitOfWork UnitOfWork)

@@ -10,6 +10,7 @@ namespace PresentationLayer.Areas.Identity.ViewModels
         [Required]
         [MinLength(3)]
         [MaxLength(256)]
+        [Display(Name = "User name or email")]
         public string UserNameOrEmail { get; set; } = null!;
 
         [Required]

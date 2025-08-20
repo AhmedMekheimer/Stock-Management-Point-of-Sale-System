@@ -1,14 +1,19 @@
 ﻿using CoreLayer.Models;
 using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Areas.Administrative.ViewModels;
 
 namespace PresentationLayer.Areas.DashBoard.Controllers
 {
+    //[Authorize]
+    [Area("Administrative")]
     public class RoleController : Controller
     {
+
+       
         private readonly RoleManager<IdentityRole> _RoleManager;
         private readonly IUnitOfWork _UnitOfWork;
         public RoleController(RoleManager<IdentityRole> roleManager, IUnitOfWork UnitOfWork)

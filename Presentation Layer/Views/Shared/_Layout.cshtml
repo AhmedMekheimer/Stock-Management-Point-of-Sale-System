@@ -39,6 +39,12 @@
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">administrative</h6>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Identity" asp-controller="Account" asp-action="ProfileEdit">
+                        <i class="material-symbols-rounded opacity-5">table_view</i>
+                        <span class="nav-link-text ms-1">Profile</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-dark" asp-area="Administrative" asp-controller="User" asp-action="Index">
                         <i class="material-symbols-rounded opacity-5">table_view</i>
                         <span class="nav-link-text ms-1">Users</span>
@@ -184,17 +190,19 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item d-flex align-items-center">
-                            <a asp-area="Identity" asp-controller="Account" asp-action="ProfileEdit" class="nav-link text-body font-weight-bold px-0">
-                                <i class="material-symbols-rounded">account_circle</i>
-                            </a>
-                        </li>
+                        <ul class="d-flex gap-3">
+                            <li class="nav-item d-flex align-items-center">
+                                <a asp-area="Identity" asp-controller="Account" asp-action="ProfileEdit" class="nav-link text-body font-weight-bold px-0">
+                                    <i class="material-symbols-rounded">account_circle</i>
+                                </a>
+                            </li>
 
-                        <li class="nav-item d-flex align-items-center">
-                            <a asp-area="Identity" asp-controller="Account" asp-action="Logout" class="nav-link text-body font-weight-bold px-0">
-                                <i class="material-symbols-rounded">Logout</i>
-                            </a>
-                        </li>
+                            <li class="nav-item d-flex align-items-center">
+                                <a asp-area="Identity" asp-controller="Account" asp-action="Logout" class="nav-link text-body font-weight-bold px-0">
+                                    <i class="material-symbols-rounded">Logout</i>
+                                </a>
+                            </li>
+                        </ul>
                     </ul>
                 </div>
             </div>

@@ -2848,6 +2848,7 @@ progress {
 }
 
 .form-control {
+  padding: 10px !important;
   display: block;
   width: 100%;
   padding: 0.5rem 0;

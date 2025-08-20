@@ -2,6 +2,7 @@
 
 namespace PresentationLayer.Areas.DashBoard.Controllers
 {
+    [Area("Administrative")]
     public class SettingController : Controller
     {
         public IActionResult Index()

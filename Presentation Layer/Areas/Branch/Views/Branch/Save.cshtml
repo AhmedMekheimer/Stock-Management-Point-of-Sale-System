@@ -1,4 +1,4 @@
-﻿@model CreateUser
+﻿@model BranchVM
 <div class="container">
 	<div class="card shadow-lg border-0 rounded-4">
 		<div class="card-body p-4">
@@ -6,45 +6,22 @@
 
 			<form asp-action="Save" method="post">
 				<div class="row">
-					<div asp-validation-summary="All" class="text-danger"></div>
+					@* <div asp-validation-summary="All" class="text-danger"></div> *@
 
-					<input asp-for="UserId" type="hidden" value="@ViewBag.Id" />
+					<input asp-for="BranchId" type="hidden" value="@Model.BranchId" />
 					<!-- Username -->
-					<div class="mb-3 col-3">
-						<label asp-for="UserName" class="control-label"></label>
-						<input asp-for="UserName" class="form-control" />
-						<span asp-validation-for="UserName" class="text-danger"></span>
-					</div>
-					@if (@ViewBag.Id is null)
-					{
-						<!-- Password -->
-						<div class="mb-3 col-3">
-							<label asp-for="Password" class="control-label"></label>
-							<input asp-for="Password" class="form-control" />
-							<span asp-validation-for="Password" class="text-danger"></span>
-						</div>
-					}
-
-
-					<!-- Email -->
-					<div class="mb-3 col-6">
-						<label asp-for="Email" class="control-label"></label>
-						<input asp-for="Email" class="form-control" />
-						<span asp-validation-for="Email" class="text-danger"></span>
+					<div class="mb-3 col-12">
+						<label asp-for="Name" class="control-label"></label>
+						<input asp-for="Name" class="form-control" />
+						<span asp-validation-for="Name" class="text-danger"></span>
 					</div>
 
 					<div class="mb-3 col-12">
-						<label asp-for="BranchId" class="form-label">Branch</label>
-						<select class="form-select" asp-for="BranchId" asp-items="@Model.BranchList">
-							<option value="0">Select a branch</option>
+						<label asp-for="BranchManagerId" class="form-label">Role</label>
+						<select class="form-select" asp-for="BranchManagerId" asp-items="@Model.UsersList">
+							<option value="">Select a role</option>
 						</select>
-					</div>
-
-					<div class="mb-3 col-12">
-						<label asp-for="RoleId" class="form-label">Role</label>
-						<select class="form-select" asp-for="RoleId" asp-items="@Model.RolesList">
-							<option value="0">Select a role</option>
-						</select>
+						<span asp-validation-for="BranchManagerId" class="text-danger"></span>
 					</div>
 
 					<!-- Submit -->
@@ -52,7 +29,6 @@
 						<button type="submit" class="btn btn-primary">Submit</button>
 					</div>
 				</div>
-
 			</form>
 		</div>
 	</div>

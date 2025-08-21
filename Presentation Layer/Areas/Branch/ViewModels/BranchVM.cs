@@ -6,9 +6,12 @@ namespace PresentationLayer.Areas.Branch.ViewModels
     public class BranchVM
     {
 
+        public int? BranchId { get; set; }
+
+
         [Required]
         [Display(Name = "Branch name")]
-        public string BranchName { get; set; } = null!;
+        public string Name { get; set; } = null!;
         [Required]
         [Display(Name = "Branch Manager")]
         public string BranchManagerId{ get; set; } = null!;

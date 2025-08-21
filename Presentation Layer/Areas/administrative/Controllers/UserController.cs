@@ -1,6 +1,5 @@
 ﻿using CoreLayer;
 using CoreLayer.Models;
-using InfrastructureLayer;
 using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
 using Mapster;
@@ -87,118 +86,108 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(CreateUser createUser)
         {
-            try
+            var branches = await _UnitOfWork.Branches.GetAsync();
+
+            createUser.BranchList = branches
+                .Select(b => new SelectListItem
+                {
+                    Value = b.Id.ToString(),
+                    Text = b.Name
+                })
+                .ToList();
+
+            createUser.RolesList = _RoleManager.Roles.Select(r => new SelectListItem { Value = r.Name, Text = r.Name }).ToList();
+
+            var branchId = createUser.BranchId == 0 ? null : createUser.BranchId;
+            ApplicationUser user = new()
             {
-                var branches = await _UnitOfWork.Branches.GetAsync();
+                UserName = createUser.UserName,
+                Email = createUser.Email,
+                EmailConfirmed = true,
+                BranchId = branchId
+            };
 
-                createUser.BranchList = branches
-                    .Select(b => new SelectListItem
-                    {
-                        Value = b.Id.ToString(),
-                        Text = b.Name
-                    })
-                    .ToList();
-
-                createUser.RolesList = _RoleManager.Roles.Select(r => new SelectListItem { Value = r.Name, Text = r.Name }).ToList();
-
-                var branchId = createUser.BranchId == 0 ? null : createUser.BranchId;
-                ApplicationUser user = new()
+            if (createUser.UserId is null)
+            {
+                var result = await _UserManager.CreateAsync(user, createUser.Password);
+                if (result.Succeeded)
                 {
-                    UserName = createUser.UserName,
-                    Email = createUser.Email,
-                    EmailConfirmed = true,
-                    BranchId = branchId
-                };
+                    var userDb = await _UserManager.FindByNameAsync(user.UserName);
 
-                if (createUser.UserId is null)
-                {
-                    var result = await _UserManager.CreateAsync(user, createUser.Password);
-                    if (result.Succeeded)
+                    if (userDb is not null)
                     {
-                        var userDb = await _UserManager.FindByNameAsync(user.UserName);
 
-                        if (userDb is not null)
+                        if (createUser.RoleId != "0")
                         {
 
-                            if (createUser.RoleId != "0")
+                            var role = await _UserManager.AddToRoleAsync(userDb, createUser.RoleId);
+
+                            if (role.Succeeded)
                             {
 
-                                var role = await _UserManager.AddToRoleAsync(userDb, createUser.RoleId);
-
-                                if (role.Succeeded)
-                                {
-
-                                    TempData["success"] = "User Added Successfully";
-                                    return RedirectToAction(nameof(Index));
-                                }
+                                TempData["success"] = "User Added Successfully";
+                                return RedirectToAction(nameof(Index));
                             }
-
                         }
 
                     }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors.Select(e => e.Description)));
 
-                        return View(createUser);
-                    }
-                    return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    var oldUser = await _UserManager.FindByIdAsync(createUser.UserId);
+                    ModelState.AddModelError(string.Empty, string.Join(", ", result.Errors.Select(e => e.Description)));
 
-                    var UserUpdated = createUser.Adapt(oldUser);
-
-
-                    if (createUser.BranchId == 0)
-                    {
-                        UserUpdated.BranchId = null;
-                    }
-                    else
-                    {
-                        UserUpdated.BranchId = createUser.BranchId;
-                    }
-
-
-
-                    var newResult = await _UserManager.UpdateAsync(UserUpdated);
-                    if (newResult.Succeeded)
-                    {
-
-                        var userRole = await _UserManager.GetRolesAsync(UserUpdated);
-
-                        if (userRole.Count() > 0)
-                        {
-                            await _UserManager.RemoveFromRoleAsync(UserUpdated, userRole.FirstOrDefault() ?? "");
-
-                            if (createUser.RoleId != "0")
-                                await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
-
-                        }
-                        else
-                        {
-                            if (createUser.RoleId != "0")
-                                await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
-                        }
-
-                        TempData["success"] = "User Updated Successfully";
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, string.Join(", ", newResult.Errors.Select(e => e.Description)));
-
-                        return View(createUser);
-                    }
-                    return RedirectToAction(nameof(Index));
+                    return View(createUser);
                 }
+                return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
+            else
             {
+                var oldUser = await _UserManager.FindByIdAsync(createUser.UserId);
 
-                var x = ex.Message;
+                var UserUpdated = createUser.Adapt(oldUser);
 
-                return View();
+
+                if (createUser.BranchId == 0)
+                {
+                    UserUpdated.BranchId = null;
+                }
+                else
+                {
+                    UserUpdated.BranchId = createUser.BranchId;
+                }
+
+
+
+                var newResult = await _UserManager.UpdateAsync(UserUpdated);
+                if (newResult.Succeeded)
+                {
+
+                    var userRole = await _UserManager.GetRolesAsync(UserUpdated);
+
+                    if (userRole.Count() > 0)
+                    {
+                        await _UserManager.RemoveFromRoleAsync(UserUpdated, userRole.FirstOrDefault() ?? "");
+
+                        if (createUser.RoleId != "0")
+                            await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
+
+                    }
+                    else
+                    {
+                        if (createUser.RoleId != "0")
+                            await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
+                    }
+
+                    TempData["success"] = "User Updated Successfully";
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, string.Join(", ", newResult.Errors.Select(e => e.Description)));
+
+                    return View(createUser);
+                }
+                return RedirectToAction(nameof(Index));
             }
         }
 

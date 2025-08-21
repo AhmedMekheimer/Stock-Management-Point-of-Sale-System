@@ -101,6 +101,17 @@ namespace InfrastructureLayer.Repositories
             return (await GetAsync(expression, include, tracked)).SingleOrDefault();
         }
 
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>>? condition = null)
+        {
+            IQueryable<T> entities = _db;
+            if(condition is not null)
+            {
+                return await entities.AnyAsync(condition);
+            }
+            return await entities.AnyAsync();
+        }
+
+
         public async Task<bool> CommitAsync()
         {
             try

@@ -36,7 +36,6 @@ namespace PresentationLayer.Utility
                 _RoleManager.CreateAsync(new(SD.StockManager)).GetAwaiter().GetResult();
                 _RoleManager.CreateAsync(new(SD.BranchManager)).GetAwaiter().GetResult();
                 _RoleManager.CreateAsync(new(SD.Cashier)).GetAwaiter().GetResult();
-                _RoleManager.CreateAsync(new(SD.Workers)).GetAwaiter().GetResult();
 
                 var result = _UserManager.CreateAsync(new ApplicationUser()
                 {
@@ -47,7 +46,8 @@ namespace PresentationLayer.Utility
 
                 if (result.Succeeded)
                 {
-                    var superAdmin = _UserManager.FindByNameAsync(SD.SuperAdmin).GetAwaiter().GetResult();
+                    var Admin = SD.SuperAdmin == "Super Admin" ? "SuperAdmin" : null;
+                    var superAdmin = _UserManager.FindByNameAsync(Admin).GetAwaiter().GetResult();
 
                     if (superAdmin is not null)
                     {

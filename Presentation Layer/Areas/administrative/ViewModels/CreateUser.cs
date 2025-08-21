@@ -6,6 +6,7 @@ namespace PresentationLayer.Areas.Administrative.ViewModels
 {
     public class CreateUser
     {
+        public string? Id { get; set; }
         [Required]
         [MinLength(5)]
 
@@ -15,8 +16,10 @@ namespace PresentationLayer.Areas.Administrative.ViewModels
         [MinLength(5)]
         [EmailAddress]
         public string Email { get; set; } = null!;
+
+
         [Required]
-        [MinLength(5)]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = null!;
 
 

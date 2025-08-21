@@ -87,7 +87,7 @@ namespace PresentationLayer.Areas.Identity.controller
 
                 var totalNumberOfOTPs = (await _UnitOfWork.ApplicationUserOTPs.GetAsync(e => e.ApplicationUserId == user.Id ));
 
-                if (totalNumberOfOTPs.Count() > 5)
+                if (totalNumberOfOTPs.Count() > 500)
                 {
                     TempData["Error"] = "Many Requests of OTPs";
                     return View(forgetPasswordVM);
@@ -195,31 +195,10 @@ namespace PresentationLayer.Areas.Identity.controller
             if (await _userManager.FindByIdAsync(profileEditVM.UserId) is ApplicationUser user)
             {
                 if (profileEditVM.Email != user.Email)
-                {
-                    // Check if email is already in use
-                    var emailExists = await _userManager.FindByEmailAsync(profileEditVM.Email);
-                    if (emailExists != null)
-                    {
-                        ModelState.AddModelError("Email", "Email is already in use.");
-                        return View(profileEditVM);
-                    }
-                }
-                if (profileEditVM.UserName != user.UserName)
-                {
-                    // Check if username is already in use
-                    var userExists = await _userManager.FindByNameAsync(profileEditVM.UserName);
-                    if (userExists != null)
-                    {
-                        ModelState.AddModelError("UserName", "Username is already in use.");
-                        return View(profileEditVM);
-                    }
-                }
-                if (profileEditVM.Email != user.Email)
                     user.EmailConfirmed = false;
                 user.UserName = profileEditVM.UserName;
 
                 user.Email = profileEditVM.Email;
-
 
                 var result = await _userManager.UpdateAsync(user);
 
@@ -237,6 +216,7 @@ namespace PresentationLayer.Areas.Identity.controller
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
+                    return View(profileEditVM);
                 }
             }
             return NotFound();

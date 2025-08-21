@@ -25,6 +25,8 @@ namespace InfrastructureLayer.Interfaces.IRepositories
     Expression<Func<T, object>>[]? include = null,
      bool tracked = false);
 
+        Task<bool> AnyAsync(Expression<Func<T, bool>>? condition = null);
+
         Task<bool> CommitAsync();
         void DetachEntity(T entity);
     }

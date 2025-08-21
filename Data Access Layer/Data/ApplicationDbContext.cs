@@ -39,6 +39,11 @@ namespace InfrastructureLayer.Data
 
             base.OnModelCreating(modelBuilder);
 
+/*            // Unique index on NormalizedEmail (case-insensitive uniqueness)
+            modelBuilder.Entity<ApplicationUser>()
+                .HasIndex(u => u.NormalizedEmail)
+                .IsUnique();*/
+
             // Bridge Table relation configuration
             modelBuilder.Entity<BranchItem>()
                 .HasKey(bi => new { bi.BranchId, bi.ItemId });  // Composite PK

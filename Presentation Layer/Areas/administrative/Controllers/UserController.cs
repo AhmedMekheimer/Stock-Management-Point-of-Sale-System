@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.Operations;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json.Linq;
 using PresentationLayer.Areas.Administrative.ViewModels;
+using PresentationLayer.Areas.Identity.ViewModels;
 using System.Formats.Asn1;
 using System.Threading.Tasks;
 
@@ -62,9 +63,10 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
                 if (user != null)
                 {
-                    ViewBag.Id = user.Id;
+                    createUser.Id = user.Id;
 
-                    var branchId = (await _UnitOfWork.Branches.GetOneAsync((b => b.Id == user.BranchId)))?.Id??0;
+                    var branchId = (await _UnitOfWork.Branches.GetOneAsync((b => b.Id == user.BranchId)))?.Id ?? 0;
+
                     var roleId = await _UserManager.GetRolesAsync(user);
                     ViewBag.UserId = user.Id;
                     createUser.UserName = user.UserName ?? "";
@@ -92,7 +94,8 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                 createUser.BranchList = branches
                     .Select(b => new SelectListItem
                     {
-                        Value = b.Id.ToString(), Text = b.Name 
+                        Value = b.Id.ToString(),
+                        Text = b.Name
                     })
                     .ToList();
 
@@ -125,7 +128,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                                 if (role.Succeeded)
                                 {
 
-                                    TempData["success"] = "User added";
+                                    TempData["success"] = "User Added Successfully";
                                     return RedirectToAction(nameof(Index));
                                 }
                             }
@@ -143,8 +146,6 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                 }
                 else
                 {
-
-
                     var oldUser = await _UserManager.FindByIdAsync(createUser.UserId);
 
                     var UserUpdated = createUser.Adapt(oldUser);
@@ -162,7 +163,6 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
 
                     var newResult = await _UserManager.UpdateAsync(UserUpdated);
-
                     if (newResult.Succeeded)
                     {
 
@@ -182,7 +182,13 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                                 await _UserManager.AddToRoleAsync(UserUpdated, createUser.RoleId);
                         }
 
-                        TempData["success"] = "updated";
+                        TempData["success"] = "User Updated Successfully";
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, string.Join(", ", newResult.Errors.Select(e => e.Description)));
+
+                        return View(createUser);
                     }
                     return RedirectToAction(nameof(Index));
                 }
@@ -214,7 +220,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
                 if (userResult.Succeeded)
                 {
-                    TempData["success"] = "user delete.";
+                    TempData["success"] = "User Deleted Succussfully";
                     return RedirectToAction(nameof(Index));
                 }
             }

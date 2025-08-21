@@ -87,7 +87,7 @@ namespace PresentationLayer.Areas.Identity.controller
 
                 var totalNumberOfOTPs = (await _UnitOfWork.ApplicationUserOTPs.GetAsync(e => e.ApplicationUserId == user.Id ));
 
-                if (totalNumberOfOTPs.Count() > 5)
+                if (totalNumberOfOTPs.Count() > 500)
                 {
                     TempData["Error"] = "Many Requests of OTPs";
                     return View(forgetPasswordVM);

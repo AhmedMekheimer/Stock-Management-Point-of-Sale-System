@@ -1,0 +1,42 @@
+﻿@model BranchVM
+<div class="container">
+	<div class="card shadow-lg border-0 rounded-4">
+		<div class="card-body p-4">
+			<h4 class="mb-4">Add user</h4>
+
+			<form asp-action="Save" method="post">
+				<div class="row">
+					@* <div asp-validation-summary="All" class="text-danger"></div> *@
+
+					<input asp-for="BranchId" type="hidden" value="@Model.BranchId" />
+					<!-- Username -->
+					<div class="mb-3 col-12">
+						<label asp-for="Name" class="control-label"></label>
+						<input asp-for="Name" class="form-control" />
+						<span asp-validation-for="Name" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3 col-12">
+						<label asp-for="BranchManagerId" class="form-label">Role</label>
+						<select class="form-select" asp-for="BranchManagerId" asp-items="@Model.UsersList">
+							<option value="">Select a role</option>
+						</select>
+						<span asp-validation-for="BranchManagerId" class="text-danger"></span>
+					</div>
+
+					<!-- Submit -->
+					<div class="d-grid col-2 ">
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

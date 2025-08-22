@@ -69,25 +69,26 @@ namespace InfrastructureLayer.Repositories
                 return false;
             }
         }
-
-        public async Task<List<T>> GetAsync(Expression<Func<T, bool>>? condition = null, List<Func<IQueryable<T>, IQueryable<T>>>? includes = null, bool tracked = true)
+        public async Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = false )
         {
+
             IQueryable<T> entities = _db;
 
-            if (condition is not null)
+            if (expression is not null)
             {
-                entities = entities.Where(condition);
+                entities =  entities.Where(expression);
+
             }
 
-            if (includes is not null)
+            if (include is not null)
             {
-                foreach (var item in includes)
+                foreach (var item in include)
                 {
-                    entities = item(entities);
+                    entities = entities.Include(item);
                 }
             }
 
-            if (!tracked)
+            if (tracked)
             {
                 entities = entities.AsNoTracking();
             }
@@ -95,9 +96,9 @@ namespace InfrastructureLayer.Repositories
             return await entities.ToListAsync();
         }
 
-        public async Task<T?> GetOneAsync(Expression<Func<T, bool>>? condition = null, List<Func<IQueryable<T>, IQueryable<T>>>? includes = null, bool tracked = true)
+        public async Task<T?> GetOneAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = false)
         {
-            return (await GetAsync(condition, includes, tracked)).SingleOrDefault();
+            return (await GetAsync(expression, include, tracked)).SingleOrDefault();
         }
 
         public async Task<bool> AnyAsync(Expression<Func<T, bool>>? condition = null)

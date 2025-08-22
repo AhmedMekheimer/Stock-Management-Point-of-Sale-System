@@ -23692,7 +23692,7 @@ body.dark-version {
   font-size: 0.6875rem !important;
   color: #e91e63;
   display: flex;
-  line-height: 1.25 !important;
+  line-height: 0 !important;
 }
 
 .input-group.input-group-outline.is-focused .form-label:before,

@@ -1,4 +1,6 @@
-﻿using InfrastructureLayer.Interfaces;
+﻿using AspNetCoreGeneratedDocument;
+using CoreLayer.Models;
+using InfrastructureLayer.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +28,6 @@ namespace PresentationLayer.Areas.administrative.Controllers
         public async Task<IActionResult> Index()
         {
         var partners =  await _UnitOfWork.Partners.GetAsync();
-        //var partnerVM =  partners.Adapt<PartnerVM>();
 
             return View(partners);
         }
@@ -36,8 +37,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         {
             List<SelectListItem> list = new List<SelectListItem>() { 
              {new SelectListItem{Text = "Supplier" , Value = "1"}},
-             {new SelectListItem{Text = "CorporateCustomer"  , Value = "2"}},
-             {new SelectListItem{Text = "Retail"  , Value = "3"}},
+             {new SelectListItem{Text = "Customer"  , Value = "2"}},
             };
 
             PartnerVM partnerVM = new PartnerVM() { 
@@ -66,11 +66,42 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpPost]
-        public IActionResult Save(PartnerVM partnerVM)
+        public async Task<IActionResult> Save(PartnerVM partnerVM)
         {
 
 
-            return View();
+            if(partnerVM.Id is null)
+            {
+
+              var partner = partnerVM.Adapt<Partner>();
+
+              var result =  await _UnitOfWork.Partners.CreateAsync(partner);
+
+                if(result)
+                {
+                    TempData["success"] = "Partner is added.";
+                    return RedirectToAction(nameof(Index));
+                }
+            } else
+            {
+                var oldPartner = await _UnitOfWork.Partners.GetOneAsync(x => x.Id == partnerVM.Id ,tracked : true);
+
+                if (oldPartner is not null) {
+
+                   oldPartner =  partnerVM.Adapt<Partner>();
+
+                   var result =await  _UnitOfWork.Partners.UpdateAsync(oldPartner);
+
+                    if(result)
+                    {
+                        TempData["success"] = "Partner is updated.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+
+                TempData["error"] = "Somthing is wrong";
+                return RedirectToAction(nameof(Index));
         }
 
 

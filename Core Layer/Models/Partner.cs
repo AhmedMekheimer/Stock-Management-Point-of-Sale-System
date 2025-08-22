@@ -19,18 +19,15 @@ namespace CoreLayer.Models
         }
         public int Id { get; set; }
         [Required]
-        [MinLength(5)]
+        [MinLength(3)]
         [MaxLength(50)]
         public string Name { get; set; } = null!;
-        [Required]
+
         [EmailAddress]
-        [MaxLength(256)]
-        public string Email { get; set; } = null!;
+        public string? Email { get; set; } 
         [Required]
         public PartnerType partnerType { get; set; } 
-        [Required]
-        //[EgyptianPhoneList]
-        public string PhoneNumber { get; set; } = null!;
+        public string? PhoneNumber { get; set; } 
 
         public ICollection<SalesInvoice>? CorporateSales { get; set; } = new List<SalesInvoice>();
         public ICollection<ReceiveOrder>? SupplyOrders { get; set; } = new List<ReceiveOrder>();

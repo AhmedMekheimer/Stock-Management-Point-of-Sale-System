@@ -3,6 +3,7 @@ using CoreLayer.Models;
 using InfrastructureLayer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace PresentationLayer.Utility
 {
@@ -30,7 +31,7 @@ namespace PresentationLayer.Utility
                 _Context.Database.Migrate();
             }
 
-            if (!_Context.Users.Any() || !_Context.Roles.Any())
+            if (!_Context.Users.Any() || !_Context.Roles.Any() || !_Context.Partners.Any())
             {
                 _RoleManager.CreateAsync(new(SD.SuperAdmin)).GetAwaiter().GetResult();
                 _RoleManager.CreateAsync(new(SD.StockManager)).GetAwaiter().GetResult();
@@ -55,6 +56,12 @@ namespace PresentationLayer.Utility
                     }
                 }
 
+                _Context.Partners.Add(new Partner
+                {
+                    Name = "Retail",
+                    partnerType = Partner.PartnerType.RetailCustomer
+                });
+               _Context.SaveChanges();
             }
         }
     }

@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Areas\administrative\Views\Role\" />
     <Folder Include="Areas\DashBoard\ViewModels\" />
   </ItemGroup>
 

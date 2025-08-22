@@ -76,14 +76,14 @@ namespace PresentationLayer.Areas.Branch.Controllers
 
                             if (branchUsers is null)
                             {
-                                var oldUser = await _UserManager.FindByIdAsync(oldBranch.BranchManagerId);
-                                user.BranchId = oldBranch.Id;
-                                oldUser.BranchId = null;
+                                //var oldUser = await _UserManager.FindByIdAsync(oldBranch.BranchManagerId);
+                                //user.BranchId = oldBranch.Id;
+                                //oldUser.BranchId = null;
 
                                 oldBranch.BranchManagerId = branchVM.BranchManagerId;
                                 var resultBranchManager = await _UnitOfWork.Branches.UpdateAsync(oldBranch);
-                                var updatedUserRes = await _UserManager.UpdateAsync(user);
-                                var oldUserRes = await _UserManager.UpdateAsync(oldUser);
+                                //var updatedUserRes = await _UserManager.UpdateAsync(user);
+                                //var oldUserRes = await _UserManager.UpdateAsync(oldUser);
                                 if (resultBranchManager)
                                 {
                                     TempData["success"] = "Branch updated";
@@ -108,7 +108,6 @@ namespace PresentationLayer.Areas.Branch.Controllers
                 }
                 else
                 {
-
                     var oldUserWithBranch = await _UnitOfWork.Branches.GetOneAsync(b => b.BranchManagerId == user.Id);
 
                     if (oldUserWithBranch is not null)
@@ -123,8 +122,8 @@ namespace PresentationLayer.Areas.Branch.Controllers
 
                     if (result)
                     {
-                        user.BranchId = newBranch.Id;
-                        await _UserManager.UpdateAsync(user);
+                        //user.BranchId = newBranch.Id;
+                        //await _UserManager.UpdateAsync(user);
                         TempData["success"] = "Branch added";
                         return RedirectToAction(nameof(Index));
                     }

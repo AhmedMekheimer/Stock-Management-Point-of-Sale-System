@@ -14,7 +14,7 @@ The work is divided into multiple phases, and each phase includes specific deliv
 🚀 Development Phases
 -------------------------------------------
 
-Phase One [Drive Folder](https://drive.google.com/file/d/1zubWoTlxTFp8SeebPHTKI23mORBUjK05/view?usp=sharing):
+Phase One [Drive Folder](https://drive.google.com/drive/folders/1kZgXwLWGEFpQtJhDeq3bleaSgnHeWIl0?usp=drive_link):
 - Requirements & Features Document
 - ERD Diagram
 - N-Tier Architecture

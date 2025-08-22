@@ -46,7 +46,8 @@ namespace PresentationLayer.Utility
 
                 if (result.Succeeded)
                 {
-                    var superAdmin = _UserManager.FindByNameAsync(SD.SuperAdmin).GetAwaiter().GetResult();
+                    var Admin = SD.SuperAdmin == "Super Admin" ? "SuperAdmin" : null;
+                    var superAdmin = _UserManager.FindByNameAsync(Admin).GetAwaiter().GetResult();
 
                     if (superAdmin is not null)
                     {

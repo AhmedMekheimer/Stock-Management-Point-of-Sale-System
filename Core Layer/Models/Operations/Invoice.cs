@@ -12,7 +12,7 @@ namespace CoreLayer.Models.Operations
         [Required]
         public int BranchId { get; set; }
         [Required]
-        public int RetailCustomerId { get; set; }  // FK to Partner (CorporateCustomer)
+        public int RetailCustomerId { get; set; }  // FK to Partner (Retail Customer)
         public int? VoucherId { get; set; }
 
         // Navigation properties

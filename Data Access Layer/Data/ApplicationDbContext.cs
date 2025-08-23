@@ -59,11 +59,22 @@ namespace InfrastructureLayer.Data
                 .HasForeignKey(bi => bi.ItemId);
 
             // ItemType referencing (Tree-Structure)
-            modelBuilder.Entity<ItemType>()
-                .HasOne(it => it.Parent)
-                .WithMany(it => it.Children)
-                .HasForeignKey(it => it.ItemTypeId)
-                .OnDelete(DeleteBehavior.Restrict);  // Prevents cascade delete loops
+            modelBuilder.Entity<ItemType>(e =>
+            {
+                // Self reference: ItemTypeId is the ParentId
+                e.HasOne(x => x.Parent)
+                 .WithMany(x => x.Children)
+                 .HasForeignKey(x => x.ItemTypeId)
+                 .OnDelete(DeleteBehavior.Restrict); // safer; we delete descendants manually
+
+                // Unique among siblings (only when parent exists)
+                e.HasIndex(x => new { x.ItemTypeId, x.Name }).IsUnique();
+
+                // Unique for root nodes (no parent)
+                e.HasIndex(x => x.Name)
+                 .IsUnique()
+                 .HasFilter("[ItemTypeId] IS NULL");
+            });
 
             // Uniqueness of Operation's Reference in a Transaction
             modelBuilder.Entity<Transaction>()

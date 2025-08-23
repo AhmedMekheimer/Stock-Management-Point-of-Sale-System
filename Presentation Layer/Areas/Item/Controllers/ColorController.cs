@@ -8,83 +8,83 @@ namespace PresentationLayer.Areas.Item.Controllers
 {
     [Area("Item")]
     [Authorize(Policy = SD.Managers)]
-    public class BrandController : Controller
+    public class ColorController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
 
-        public BrandController(IUnitOfWork UnitOfWork)
+        public ColorController(IUnitOfWork UnitOfWork)
         {
             _UnitOfWork = UnitOfWork;
         }
         public async Task<IActionResult> Index()
         {
-            var brandsList = await _UnitOfWork.Brands.GetAsync();
-            return View(brandsList);
+            var colorsList = await _UnitOfWork.Colors.GetAsync();
+            return View(colorsList);
         }
 
         [HttpGet]
         public async Task<IActionResult> Save(int id = 0)
         {
-            var brandVM = new Brand();
+            var colorVM = new Color();
 
             // Display Edit Page
             if (id != 0)
             {
-                if ((await _UnitOfWork.Brands.GetOneAsync(b => b.Id == id)) is Brand brand)
+                if ((await _UnitOfWork.Colors.GetOneAsync(b => b.Id == id)) is Color color)
                 {
-                    brandVM = brand;
-                    return View(brandVM);
+                    colorVM = color;
+                    return View(colorVM);
                 }
 
-                TempData["Error"] = "Brand Not Found";
+                TempData["Error"] = "Color Not Found";
                 return RedirectToAction(nameof(Index));
             }
 
             // Display Add Page
-            return View(brandVM);
+            return View(colorVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(Brand brandVM)
+        public async Task<IActionResult> Save(Color colorVM)
         {
-            // Saving a Newly-Added Brand
-            if (brandVM.Id == 0)
+            // Saving a Newly-Added Color
+            if (colorVM.Id == 0)
             {
-                var createResult = await _UnitOfWork.Brands.CreateAsync(brandVM);
+                var createResult = await _UnitOfWork.Colors.CreateAsync(colorVM);
                 if (createResult)
                 {
-                    TempData["Success"] = "Brand Added Successfully";
+                    TempData["Success"] = "Color Added Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Adding Brand";
+                TempData["Error"] = "Error Adding Color";
                 return RedirectToAction(nameof(Index));
             }
 
-            // Saving an Existing Brand
-            var updateResult = await _UnitOfWork.Brands.UpdateAsync(brandVM);
+            // Saving an Existing Color
+            var updateResult = await _UnitOfWork.Colors.UpdateAsync(colorVM);
             if (updateResult)
             {
-                TempData["Success"] = "Brand Updated Successfully";
+                TempData["Success"] = "Color Updated Successfully";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["Error"] = "Error Updating Brand";
+            TempData["Error"] = "Error Updating Color";
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            if ((await _UnitOfWork.Brands.GetOneAsync(b => b.Id == id)) is Brand brand)
+            if ((await _UnitOfWork.Colors.GetOneAsync(b => b.Id == id)) is Color color)
             {
-                var deleteResult = await _UnitOfWork.Brands.DeleteAsync(brand);
+                var deleteResult = await _UnitOfWork.Colors.DeleteAsync(color);
                 if (deleteResult)
                 {
-                    TempData["Success"] = "Brand Deleted Succussfully";
+                    TempData["Success"] = "Color Deleted Succussfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Deleting Brand";
+                TempData["Error"] = "Error Deleting Color";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["Error"] = "Brand Not Found";
+            TempData["Error"] = "Color Not Found";
             return RedirectToAction(nameof(Index));
         }
     }

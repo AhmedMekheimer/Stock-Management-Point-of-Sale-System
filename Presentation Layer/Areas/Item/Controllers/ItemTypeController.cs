@@ -1,0 +1,254 @@
+﻿using CoreLayer;
+using CoreLayer.Models.ItemVarients;
+using InfrastructureLayer.Data;
+using InfrastructureLayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PresentationLayer.Areas.Item.ViewModels;
+
+namespace PresentationLayer.Areas.Item.Controllers
+{
+    [Area("Item")]
+    [Authorize(Policy = SD.Managers)]
+    public class ItemTypeController : Controller
+    {
+        private readonly ApplicationDbContext _db;
+
+        public ItemTypeController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
+        // -------------------- TREE --------------------
+
+        // Loads only level 1 (roots). Children are fetched on demand.
+        public async Task<IActionResult> Index()
+        {
+            var roots = await _db.ItemTypes
+                .AsNoTracking()
+                .Where(t => t.ItemTypeId == null)
+                .OrderBy(t => t.Name)
+                .Select(t => new ItemTypeNodeVM(
+                    t.Id,
+                    t.Name,
+                    t.ItemTypeId,
+                    t.Children.Any()
+                ))
+                .ToListAsync();
+
+            return View(roots);
+        }
+
+        // AJAX endpoint that returns ONLY direct children of a node
+        [HttpGet]
+        public async Task<IActionResult> Children(int id)
+        {
+            var children = await _db.ItemTypes
+                .AsNoTracking()
+                .Where(t => t.ItemTypeId == id)
+                .OrderBy(t => t.Name)
+                .Select(t => new ItemTypeNodeVM(
+                    t.Id,
+                    t.Name,
+                    t.ItemTypeId,
+                    t.Children.Any()
+                ))
+                .ToListAsync();
+
+            // Partial renders <li>... for each child
+            return PartialView("_ItemTypeChildren", children);
+        }
+
+        // -------------------- CREATE --------------------
+
+        [HttpGet]
+        public async Task<IActionResult> Create(int? parentId)
+        {
+            var vm = new ItemTypeInputVM { ParentId = parentId };
+
+            if (parentId is not null)
+                vm.ParentName = await _db.ItemTypes
+                    .Where(t => t.Id == parentId)
+                    .Select(t => t.Name)
+                    .FirstOrDefaultAsync();
+
+            return View(vm);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ItemTypeInputVM vm)
+        {
+            if (!ModelState.IsValid) return View(vm);
+
+            // Enforce unique among siblings
+            var nameTaken = await _db.ItemTypes
+                .AnyAsync(t => t.ItemTypeId == vm.ParentId && t.Name == vm.Name);
+            if (nameTaken)
+            {
+                ModelState.AddModelError(nameof(vm.Name), "A sibling with the same name already exists.");
+                return View(vm);
+            }
+
+            _db.ItemTypes.Add(new ItemType
+            {
+                Name = vm.Name,
+                ItemTypeId = vm.ParentId
+            });
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // -------------------- EDIT --------------------
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var entity = await _db.ItemTypes.FindAsync(id);
+            if (entity is null) return NotFound();
+
+            var vm = new ItemTypeInputVM
+            {
+                ParentId = entity.ItemTypeId,
+                Name = entity.Name,
+                ParentName = entity.ItemTypeId == null
+                    ? "(root)"
+                    : await _db.ItemTypes.Where(t => t.Id == entity.ItemTypeId).Select(t => t.Name).FirstOrDefaultAsync()
+            };
+
+            ViewBag.Id = id; // pass id to form
+            return View(vm);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ItemTypeInputVM vm)
+        {
+            var entity = await _db.ItemTypes.FindAsync(id);
+            if (entity is null) return NotFound();
+
+            if (!ModelState.IsValid) return View(vm);
+
+            // 1. Prevent moving under itself
+            if (vm.ParentId == id)
+            {
+                ModelState.AddModelError(nameof(vm.ParentId), "Cannot set the parent to itself.");
+                return View(vm);
+            }
+
+            // 2. Prevent moving under one of its descendants (cycle check)
+            if (vm.ParentId != null)
+            {
+                var flat = await _db.ItemTypes
+                    .AsNoTracking()
+                    .Select(t => new { t.Id, t.ItemTypeId })
+                    .ToListAsync();
+
+                // Build parent->children map
+                var childMap = flat
+                    .Where(x => x.ItemTypeId != null)
+                    .GroupBy(x => x.ItemTypeId!.Value)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(v => v.Id).ToList()
+                    );
+
+                // Collect all descendants of this node
+                var stack = new Stack<int>();
+                stack.Push(id);
+                var descendants = new HashSet<int>();
+
+                while (stack.Count > 0)
+                {
+                    var current = stack.Pop();
+                    if (childMap.TryGetValue(current, out var kids))
+                    {
+                        foreach (var kid in kids)
+                        {
+                            if (descendants.Add(kid))
+                                stack.Push(kid);
+                        }
+                    }
+                }
+
+                if (descendants.Contains(vm.ParentId.Value))
+                {
+                    ModelState.AddModelError(nameof(vm.ParentId),
+                        "Cannot move this item under one of its descendants.");
+                    return View(vm);
+                }
+            }
+
+            // 3. Prevent duplicate sibling names
+            var nameTaken = await _db.ItemTypes
+                .AnyAsync(t => t.ItemTypeId == vm.ParentId && t.Name == vm.Name && t.Id != id);
+
+            if (nameTaken)
+            {
+                ModelState.AddModelError(nameof(vm.Name), "A sibling with the same name already exists.");
+                ViewBag.Id = id; // pass id to form
+                return View(vm);
+            }
+
+            // Apply updates
+            entity.Name = vm.Name;
+            entity.ItemTypeId = vm.ParentId;
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        // -------------------- DELETE (recursive) --------------------
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // Load all ItemType Id + ParentId
+            var flat = await _db.ItemTypes
+                .AsNoTracking()
+                .Select(t => new { t.Id, t.ItemTypeId })
+                .ToListAsync();
+
+            // Build parent -> children dictionary (only non-null parents)
+            var childMap = flat
+                .Where(x => x.ItemTypeId != null)
+                .GroupBy(x => x.ItemTypeId!.Value) // safe because filtered
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(v => v.Id).ToList()
+                );
+
+            // Collect IDs to delete recursively
+            var toDelete = new List<int>();
+            var stack = new Stack<int>();
+            stack.Push(id);
+
+            while (stack.Count > 0)
+            {
+                var current = stack.Pop();
+                toDelete.Add(current);
+
+                if (childMap.TryGetValue(current, out var kids))
+                {
+                    foreach (var kid in kids)
+                        stack.Push(kid);
+                }
+            }
+
+            // Delete all collected nodes in a transaction
+            using var tx = await _db.Database.BeginTransactionAsync();
+            var entities = await _db.ItemTypes
+                .Where(t => toDelete.Contains(t.Id))
+                .ToListAsync();
+
+            _db.ItemTypes.RemoveRange(entities);
+            await _db.SaveChangesAsync();
+            await tx.CommitAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+    }
+
+}

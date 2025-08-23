@@ -9,11 +9,11 @@ using PresentationLayer.Areas.Stock.ViewModels;
 namespace PresentationLayer.Areas.Stock.Controllers
 {
     [Area("Item")]
-    public class ItemController : Controller
+    public class ClothingItemController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
 
-        public ItemController(IUnitOfWork UnitOfWork)
+        public ClothingItemController(IUnitOfWork UnitOfWork)
         {
             _UnitOfWork = UnitOfWork;
         }

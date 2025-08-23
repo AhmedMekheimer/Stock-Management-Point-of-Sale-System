@@ -1,14 +1,14 @@
-﻿@model Brand
+﻿@model Color
 <div class="container">
 	<div class="card shadow-lg border-0 rounded-4">
 		<div class="card-body p-4">
 			@if (Model.Id == 0)
 			{
-				<h4 class="mb-4">Add Brand</h4>
+				<h4 class="mb-4">Add Color</h4>
 			}
 			else
 			{
-				<h4 class="mb-4">Edit Brand</h4>
+				<h4 class="mb-4">Edit Color</h4>
 			}
 
 			<form asp-action="Save" method="post">
@@ -16,9 +16,9 @@
 					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 					<input asp-for="Id" type="hidden" value="@Model.Id" />
-					<!-- Brand Name -->
+					<!-- Color Name -->
 					<div class="mb-3 col-3">
-						<label asp-for="Name" class="control-label">Brand Name</label>
+						<label asp-for="Name" class="control-label">Color Name</label>
 						<input asp-for="Name" class="form-control" />
 						<span asp-validation-for="Name" class="text-danger"></span>
 

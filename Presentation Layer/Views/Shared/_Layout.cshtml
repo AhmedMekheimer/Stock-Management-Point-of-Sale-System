@@ -76,7 +76,7 @@
 					</li>
 				</ul>
 			}
-			@if (User.IsInRole(SD.BranchManager) || User.IsInRole(SD.StockManager))
+			@if (User.IsInRole(SD.BranchManager) || User.IsInRole(SD.StockManager) || User.IsInRole(SD.SuperAdmin))
 			{
 				// ONLY THIS PART TO CHANGE
 				<ul class="navbar-nav">

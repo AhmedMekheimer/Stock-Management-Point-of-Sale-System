@@ -27,7 +27,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-        var partners =  await _UnitOfWork.Partners.GetAsync();
+            var partners = await _UnitOfWork.Partners.GetAsync();
 
             return View(partners);
         }
@@ -35,13 +35,14 @@ namespace PresentationLayer.Areas.administrative.Controllers
         [HttpGet]
         public async Task<IActionResult> Save(int? Id)
         {
-            List<SelectListItem> list = new List<SelectListItem>() { 
+            List<SelectListItem> list = new List<SelectListItem>() {
              {new SelectListItem{Text = "Supplier" , Value = "1"}},
              {new SelectListItem{Text = "Customer"  , Value = "2"}},
             };
 
-            PartnerVM partnerVM = new PartnerVM() { 
-            PartnerList =  list
+            PartnerVM partnerVM = new PartnerVM()
+            {
+                PartnerList = list
             };
 
             if (Id is null)
@@ -62,37 +63,40 @@ namespace PresentationLayer.Areas.administrative.Controllers
 
             }
 
-                return View();
+            return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Save(PartnerVM partnerVM)
         {
+            if(!ModelState.IsValid)
+                return View(partnerVM);
 
-
-            if(partnerVM.Id is null)
+            if (partnerVM.Id is null)
             {
 
-              var partner = partnerVM.Adapt<Partner>();
+                var partner = partnerVM.Adapt<Partner>();
 
-              var result =  await _UnitOfWork.Partners.CreateAsync(partner);
+                var result = await _UnitOfWork.Partners.CreateAsync(partner);
 
-                if(result)
+                if (result)
                 {
                     TempData["success"] = "Partner is added.";
                     return RedirectToAction(nameof(Index));
                 }
-            } else
+            }
+            else
             {
-                var oldPartner = await _UnitOfWork.Partners.GetOneAsync(x => x.Id == partnerVM.Id ,tracked : true);
+                var oldPartner = await _UnitOfWork.Partners.GetOneAsync(x => x.Id == partnerVM.Id, tracked: true);
 
-                if (oldPartner is not null) {
+                if (oldPartner is not null)
+                {
 
-                   oldPartner =  partnerVM.Adapt<Partner>();
+                    oldPartner = partnerVM.Adapt<Partner>();
 
-                   var result =await  _UnitOfWork.Partners.UpdateAsync(oldPartner);
+                    var result = await _UnitOfWork.Partners.UpdateAsync(oldPartner);
 
-                    if(result)
+                    if (result)
                     {
                         TempData["success"] = "Partner is updated.";
                         return RedirectToAction(nameof(Index));
@@ -100,8 +104,8 @@ namespace PresentationLayer.Areas.administrative.Controllers
                 }
             }
 
-                TempData["error"] = "Somthing is wrong";
-                return RedirectToAction(nameof(Index));
+            TempData["error"] = "Somthing is wrong";
+            return RedirectToAction(nameof(Index));
         }
 
 

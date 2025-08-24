@@ -46,7 +46,7 @@
 						<td>
 							@item.PhoneNumber
 						</td>
-							@if(item.partnerType == PartnerType.RetailCustomer)
+						@if (item.partnerType == PartnerType.RetailCustomer || item.partnerType == PartnerType.Supplier)
 							{
 							<td class="row gap-1">
 								<a asp-action="Save" asp-route-id="@item.Id" class="col-3 btn btn-sm btn-info">Edit</a>

@@ -53,7 +53,7 @@ namespace PresentationLayer
                       policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", $"{SD.Cashier}"));
 
                 options.AddPolicy($"{SD.Managers}", policy =>
-                      policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}"));
+                      policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", "Super Admin"));
             });
 
             var app = builder.Build();

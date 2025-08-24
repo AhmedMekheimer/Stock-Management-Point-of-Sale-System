@@ -7,6 +7,7 @@ namespace PresentationLayer.Areas.Stock.ViewModels
     {
         public int Id { get; set; } 
         [Required]
+        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
         public string Name { get; set; } = null!;
 
         [Required]

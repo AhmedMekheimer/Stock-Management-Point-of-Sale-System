@@ -18,9 +18,6 @@
   <ItemGroup>
     <Folder Include="Areas\administrative\Views\Role\" />
     <Folder Include="Areas\DashBoard\ViewModels\" />
-    <Folder Include="Areas\Stock\Controllers\" />
-    <Folder Include="Areas\Stock\ViewModels\" />
-    <Folder Include="Areas\Stock\Views\" />
   </ItemGroup>
 
   <ItemGroup>

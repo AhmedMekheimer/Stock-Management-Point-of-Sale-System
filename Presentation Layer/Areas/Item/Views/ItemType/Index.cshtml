@@ -1,0 +1,79 @@
+﻿@model List<ItemTypeNodeVM>
+@{
+    ViewData["Title"] = "Item Types";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0">Item Types</h2>
+
+    <!-- Top-right button to add MOST PARENT (root) item types -->
+    <a asp-action="Create" class="btn btn-success" title="Add a root (most parent) item type">
+        Add Root Type
+    </a>
+</div>
+
+<ul id="tree" class="list-unstyled">
+    @foreach (var node in Model)
+    {
+        <li data-id="@node.Id">
+            <div class="d-flex align-items-center gap-2 py-1">
+                @if (node.HasChildren)
+                {
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary js-expand"
+                            data-id="@node.Id" data-loaded="false" aria-label="Expand">
+                        ▸
+                    </button>
+                }
+                else
+                {
+                    <span class="ms-4"></span>
+                }
+
+                <span>@node.Name</span>
+
+                <span class="ms-auto">
+                    <!-- Add child under this node -->
+                    <a asp-action="Create" asp-route-parentId="@node.Id" class="btn btn-sm btn-success">Add</a>
+                    <a asp-action="Edit" asp-route-id="@node.Id" class="btn btn-sm btn-primary">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@node.Id" method="post" class="d-inline"
+                          onsubmit="return confirm('Delete this type and ALL its children?');">
+                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                    </form>
+                </span>
+            </div>
+            <ul class="children list-unstyled ms-4 d-none"></ul>
+        </li>
+    }
+</ul>
+
+@section Scripts {
+    <script>
+        document.addEventListener('click', async (e) => {
+          const btn = e.target.closest('.js-expand');
+          if (!btn) return;
+
+          const li = btn.closest('li');
+          const ul = li.querySelector('ul.children');
+
+          // Toggle if already loaded
+          if (btn.dataset.loaded === 'true') {
+            ul.classList.toggle('d-none');
+            btn.textContent = ul.classList.contains('d-none') ? '▸' : '▾';
+            return;
+          }
+
+          // First time: load children HTML via MVC partial
+          const id = btn.dataset.id;
+          const url = '@Url.Action("Children", "ItemType")' + '?id=' + encodeURIComponent(id);
+
+          const resp = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+          if (!resp.ok) { alert('Failed to load children.'); return; }
+
+          ul.innerHTML = await resp.text();
+          ul.classList.remove('d-none');
+          btn.dataset.loaded = 'true';
+          btn.textContent = '▾';
+        });
+    </script>
+}

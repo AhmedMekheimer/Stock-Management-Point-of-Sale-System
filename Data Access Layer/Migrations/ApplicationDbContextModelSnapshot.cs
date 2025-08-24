@@ -229,6 +229,9 @@ namespace InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -245,6 +248,9 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -263,16 +269,25 @@ namespace InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("ItemTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemTypeId");
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[ItemTypeId] IS NULL");
+
+                    b.HasIndex("ItemTypeId", "Name")
+                        .IsUnique()
+                        .HasFilter("[ItemTypeId] IS NOT NULL");
 
                     b.ToTable("ItemTypes");
                 });
@@ -284,6 +299,9 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -301,6 +319,9 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -434,8 +455,14 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("DiscountValue")
                         .HasColumnType("float");
 
+                    b.Property<DateOnly?>("ExpirationDate")
+                        .HasColumnType("date");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("MaximumUses")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -575,28 +602,6 @@ namespace InfrastructureLayer.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.Operations.Invoice", b =>
-                {
-                    b.HasBaseType("CoreLayer.Models.Operation");
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RetailCustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VoucherId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("BranchId");
-
-                    b.HasIndex("RetailCustomerId");
-
-                    b.HasIndex("VoucherId");
-
-                    b.ToTable("Invoices", (string)null);
-                });
-
             modelBuilder.Entity("CoreLayer.Models.Operations.ReceiveOrder", b =>
                 {
                     b.HasBaseType("CoreLayer.Models.Operation");
@@ -621,12 +626,17 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CorporateCustomerId")
+                    b.Property<int?>("RetailCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VoucherId")
                         .HasColumnType("int");
 
                     b.HasIndex("BranchId");
 
-                    b.HasIndex("CorporateCustomerId");
+                    b.HasIndex("RetailCustomerId");
+
+                    b.HasIndex("VoucherId");
 
                     b.ToTable("SalesInvoices", (string)null);
                 });
@@ -704,31 +714,31 @@ namespace InfrastructureLayer.Migrations
                     b.HasOne("CoreLayer.Models.ItemVarients.Brand", "Brand")
                         .WithMany("Items")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CoreLayer.Models.ItemVarients.Color", "Color")
                         .WithMany("Items")
                         .HasForeignKey("ColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CoreLayer.Models.ItemVarients.ItemType", "ItemType")
                         .WithMany("Items")
                         .HasForeignKey("ItemTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CoreLayer.Models.ItemVarients.Size", "Size")
                         .WithMany("Items")
                         .HasForeignKey("SizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CoreLayer.Models.ItemVarients.TargetAudience", "TargetAudience")
                         .WithMany("Items")
                         .HasForeignKey("TargetAudienceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Brand");
@@ -768,7 +778,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasOne("CoreLayer.Models.Item", "Item")
                         .WithMany("OperationItems")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CoreLayer.Models.Operation", "Operation")
@@ -844,37 +854,6 @@ namespace InfrastructureLayer.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.Operations.Invoice", b =>
-                {
-                    b.HasOne("CoreLayer.Models.Branch", "Branch")
-                        .WithMany("Invoices")
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreLayer.Models.Operation", null)
-                        .WithOne()
-                        .HasForeignKey("CoreLayer.Models.Operations.Invoice", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreLayer.Models.Partner", "RetailCustomer")
-                        .WithMany("Invoices")
-                        .HasForeignKey("RetailCustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CoreLayer.Models.Voucher", "Voucher")
-                        .WithMany("Invoices")
-                        .HasForeignKey("VoucherId");
-
-                    b.Navigation("Branch");
-
-                    b.Navigation("RetailCustomer");
-
-                    b.Navigation("Voucher");
-                });
-
             modelBuilder.Entity("CoreLayer.Models.Operations.ReceiveOrder", b =>
                 {
                     b.HasOne("CoreLayer.Models.Branch", "Branch")
@@ -890,7 +869,7 @@ namespace InfrastructureLayer.Migrations
                         .IsRequired();
 
                     b.HasOne("CoreLayer.Models.Partner", "Supplier")
-                        .WithMany("SupplyOrders")
+                        .WithMany("ReceiveOrders")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -908,21 +887,27 @@ namespace InfrastructureLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoreLayer.Models.Partner", "CorporateCustomer")
-                        .WithMany("CorporateSales")
-                        .HasForeignKey("CorporateCustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("CoreLayer.Models.Operation", null)
                         .WithOne()
                         .HasForeignKey("CoreLayer.Models.Operations.SalesInvoice", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CoreLayer.Models.Partner", "RetailCustomer")
+                        .WithMany("SalesInvoices")
+                        .HasForeignKey("RetailCustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CoreLayer.Models.Voucher", "Voucher")
+                        .WithMany("SalesInvoices")
+                        .HasForeignKey("VoucherId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Branch");
 
-                    b.Navigation("CorporateCustomer");
+                    b.Navigation("RetailCustomer");
+
+                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Operations.Transfer", b =>
@@ -964,8 +949,6 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Cashiers");
 
                     b.Navigation("IncomingTransfers");
-
-                    b.Navigation("Invoices");
 
                     b.Navigation("OutgoingTransfers");
 
@@ -1015,16 +998,14 @@ namespace InfrastructureLayer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.Partner", b =>
                 {
-                    b.Navigation("CorporateSales");
+                    b.Navigation("ReceiveOrders");
 
-                    b.Navigation("Invoices");
-
-                    b.Navigation("SupplyOrders");
+                    b.Navigation("SalesInvoices");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Voucher", b =>
                 {
-                    b.Navigation("Invoices");
+                    b.Navigation("SalesInvoices");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,12 +10,11 @@ namespace CoreLayer.Models.Operations
     public class Transfer : Operation
     {
         [Required]
-        public int FromBranchId { get; set; }   // Manually made FK
-        [Required]
-        public int ToBranchId { get; set; }     // Manually made FK
-
-        // Navigation properties
+        public int FromBranchId { get; set; }   // FK Configured in AppDbContext
         public Branch FromBranch { get; set; } = null!;  // Source branch
+
+        [Required]
+        public int ToBranchId { get; set; }     // FK Configured in AppDbContext
         public Branch ToBranch { get; set; } = null!;    // Destination branch
     }
 }

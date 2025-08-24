@@ -27,7 +27,6 @@ namespace InfrastructureLayer
         // Operations Repos
         public IOperationRepository Operations { get; }
         public ITransferRepository Transfers { get; }
-        public IInvoiceRepository Invoices { get; }
         public ISalesInvoiceRepository SalesInvoices { get; }
         public IReceiveOrderRepository ReceiveOrders { get; }
 
@@ -54,7 +53,6 @@ namespace InfrastructureLayer
             // Initialize Operations Repos
             Operations = new OperationRepository(_context);
             Transfers = new TransferRepository(_context);
-            Invoices = new InvoiceRepository(_context);
             SalesInvoices = new SalesInvoiceRepository(_context);
             ReceiveOrders = new ReceiveOrderRepository(_context);
 

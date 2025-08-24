@@ -14,6 +14,7 @@ namespace CoreLayer.Models
         [Required]
         [MinLength(5)]
         [MaxLength(50)]
+        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
         public string Name { get; set; } = null!;
 
         [Required]
@@ -29,6 +30,7 @@ namespace CoreLayer.Models
 
         [Range(0, 100, ErrorMessage = "Discount is written in percentage values from 0 to 100")]
         public int? DiscountPercentage { get; set; }
+
         [Range(0,int.MaxValue)]
         public int? RestockThreshold { get; set; }
 
@@ -46,6 +48,8 @@ namespace CoreLayer.Models
         public int SizeId { get; set; }
         [Required]
         public int TargetAudienceId { get; set; }
+
+        // An Item is included in many Operation Items
         public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
 
         // Navigation properties

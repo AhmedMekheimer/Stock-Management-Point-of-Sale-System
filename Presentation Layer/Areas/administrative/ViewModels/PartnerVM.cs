@@ -12,9 +12,10 @@ namespace PresentationLayer.Areas.administrative.ViewModels
         [Required]
         [MinLength(3)]
         [MaxLength(50)]
+        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
         public string Name { get; set; } = null!;
         [EmailAddress]
-        public string? Email { get; set; } 
+        public string? Email { get; set; } = string.Empty;
         [Required]
         public PartnerType partnerType { get; set; } 
         [EgyptianPhoneList]

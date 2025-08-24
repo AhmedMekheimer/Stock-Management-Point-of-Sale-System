@@ -27,7 +27,6 @@ namespace InfrastructureLayer.Data
         // Derived DbSets
         public DbSet<Transfer> Transfers { get; set; }
         public DbSet<SalesInvoice> SalesInvoices { get; set; }
-        public DbSet<Invoice> RetailInvoices { get; set; }
         public DbSet<ReceiveOrder> ReceiveOrders { get; set; }
 
         public DbSet<Partner> Partners { get; set; }
@@ -38,11 +37,6 @@ namespace InfrastructureLayer.Data
         {
 
             base.OnModelCreating(modelBuilder);
-
-/*            // Unique index on NormalizedEmail (case-insensitive uniqueness)
-            modelBuilder.Entity<ApplicationUser>()
-                .HasIndex(u => u.NormalizedEmail)
-                .IsUnique();*/
 
             // Bridge Table relation configuration
             modelBuilder.Entity<BranchItem>()
@@ -57,6 +51,38 @@ namespace InfrastructureLayer.Data
                 .HasOne(bi => bi.Item)
                 .WithMany(i => i.BranchItems)
                 .HasForeignKey(bi => bi.ItemId);
+
+            // Item Table relation with Item Variants Tables
+            // Restricted Delete Behavior for any Item Variant if it is used in an Item
+            modelBuilder.Entity<Item>()
+                .HasOne(i=>i.Brand)
+                .WithMany(b => b.Items)
+                .HasForeignKey(i=>i.BrandId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<Item>()
+                .HasOne(i => i.Color)
+                .WithMany(b => b.Items)
+                .HasForeignKey(i => i.ColorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<Item>()
+                .HasOne(i => i.ItemType)
+                .WithMany(b => b.Items)
+                .HasForeignKey(i => i.ItemTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<Item>()
+                .HasOne(i => i.Size)
+                .WithMany(b => b.Items)
+                .HasForeignKey(i => i.SizeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<Item>()
+                .HasOne(i => i.TargetAudience)
+                .WithMany(b => b.Items)
+                .HasForeignKey(i => i.TargetAudienceId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // ItemType referencing (Tree-Structure)
             modelBuilder.Entity<ItemType>(e =>
@@ -99,7 +125,6 @@ namespace InfrastructureLayer.Data
             modelBuilder.Entity<Operation>().ToTable("Operations");
             modelBuilder.Entity<Transfer>().ToTable("Transfers");
             modelBuilder.Entity<SalesInvoice>().ToTable("SalesInvoices");
-            modelBuilder.Entity<Invoice>().ToTable("Invoices");
             modelBuilder.Entity<ReceiveOrder>().ToTable("ReceiveOrders");
 
             // OperationItem relationship
@@ -107,6 +132,12 @@ namespace InfrastructureLayer.Data
                 .HasOne(oi => oi.Operation)
                 .WithMany(o => o.OperationItems)
                 .HasForeignKey(oi => oi.OperationId);
+
+            modelBuilder.Entity<OperationItem>()
+                .HasOne(oi => oi.Item)
+                .WithMany(i => i.OperationItems)
+                .HasForeignKey(oi => oi.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Transfer relationships
             modelBuilder.Entity<Transfer>()
@@ -128,21 +159,15 @@ namespace InfrastructureLayer.Data
                 .HasForeignKey(si => si.BranchId);
 
             modelBuilder.Entity<SalesInvoice>()
-                .HasOne(si => si.CorporateCustomer)
-                .WithMany(p => p.CorporateSales)
-                .HasForeignKey(si => si.CorporateCustomerId)
+                .HasOne(si => si.RetailCustomer)
+                .WithMany(p => p.SalesInvoices)
+                .HasForeignKey(si => si.RetailCustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Invoice relationships
-            modelBuilder.Entity<Invoice>()
-                .HasOne(si => si.Branch)
-                .WithMany(b => b.Invoices)
-                .HasForeignKey(si => si.BranchId);
-
-            modelBuilder.Entity<Invoice>()
-                .HasOne(si => si.RetailCustomer)
-                .WithMany(p => p.Invoices)
-                .HasForeignKey(si => si.RetailCustomerId)
+            modelBuilder.Entity<SalesInvoice>()
+                .HasOne(si => si.Voucher)
+                .WithMany(v => v.SalesInvoices)
+                .HasForeignKey(si => si.VoucherId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ReceiveOrder relationships
@@ -153,7 +178,7 @@ namespace InfrastructureLayer.Data
 
             modelBuilder.Entity<ReceiveOrder>()
                 .HasOne(ro => ro.Supplier)
-                .WithMany(p => p.SupplyOrders)
+                .WithMany(p => p.ReceiveOrders)
                 .HasForeignKey(ro => ro.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

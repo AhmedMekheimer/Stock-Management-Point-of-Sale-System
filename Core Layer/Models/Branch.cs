@@ -14,6 +14,7 @@ namespace CoreLayer.Models
         [Required]
         [MinLength(5)]
         [MaxLength(50)]
+        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
         public string Name { get; set; } = null!;
 
         // Many-to-Many: Branch has many Items (Bridge Table Needed)
@@ -28,7 +29,6 @@ namespace CoreLayer.Models
         public ApplicationUser BranchManager { get; set; } = null!;
 
         // One-to-Many: Branch has many Operations
-        public ICollection<Invoice>? Invoices { get; set; } = new List<Invoice>();
         public ICollection<SalesInvoice>? SalesInvoices { get; set; } = new List<SalesInvoice>();
         public ICollection<ReceiveOrder>? ReceiveOrders { get; set; } = new List<ReceiveOrder>();
         public ICollection<Transfer>? OutgoingTransfers { get; set; } = new List<Transfer>();  // Transfers FROM this branch

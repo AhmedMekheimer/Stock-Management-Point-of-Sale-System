@@ -12,11 +12,14 @@ namespace CoreLayer.Models
     {
         public int Id { get; set; }
         [Required]
+        [RegularExpression(@"\S+", ErrorMessage = "Code cannot be empty or whitespace.")]
         public string Code { get; set; } = null!;
         [Required]
         public double DiscountValue { get; set; }
         [Required]
         public bool IsActive { get; set; }
-        public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        public DateOnly? ExpirationDate { get; set; }
+        public int? MaximumUses { get; set; }
+        public ICollection<SalesInvoice> SalesInvoices { get; set; } = new List<SalesInvoice>();
     }
 }

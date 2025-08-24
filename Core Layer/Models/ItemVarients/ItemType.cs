@@ -11,7 +11,9 @@ namespace CoreLayer.Models.ItemVarients
     {
         public int Id { get; set; }
         [Required]
-        public string Name { get; set; } = string.Empty;
+        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
+        public string Name { get; set; } = null!;
+        public string? Image { get; set; } = string.Empty;
         public ICollection<Item> Items { get; set; } = new List<Item>();
 
         // Self-referencing FK (nullable for root categories)

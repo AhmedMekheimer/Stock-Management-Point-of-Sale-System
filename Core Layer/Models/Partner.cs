@@ -14,23 +14,23 @@ namespace CoreLayer.Models
         public enum PartnerType
         {
             Supplier = 1,
-            CorporateCustomer = 2,
-            RetailCustomer = 3
+            RetailCustomer = 2
         }
         public int Id { get; set; }
         [Required]
         [MinLength(3)]
         [MaxLength(50)]
+        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
         public string Name { get; set; } = null!;
 
         [EmailAddress]
-        public string? Email { get; set; } 
+        public string? Email { get; set; } = string.Empty;
         [Required]
-        public PartnerType partnerType { get; set; } 
-        public string? PhoneNumber { get; set; } 
+        public PartnerType partnerType { get; set; }
+        [EgyptianPhoneList]
+        public string? PhoneNumber { get; set; } = string.Empty;
 
-        public ICollection<SalesInvoice>? CorporateSales { get; set; } = new List<SalesInvoice>();
-        public ICollection<ReceiveOrder>? SupplyOrders { get; set; } = new List<ReceiveOrder>();
-        public ICollection<Invoice>? Invoices { get; set; } = new List<Invoice>();
+        public ICollection<SalesInvoice>? SalesInvoices { get; set; } = new List<SalesInvoice>();
+        public ICollection<ReceiveOrder>? ReceiveOrders { get; set; } = new List<ReceiveOrder>();
     }
 }

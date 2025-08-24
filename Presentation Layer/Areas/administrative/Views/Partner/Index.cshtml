@@ -21,7 +21,7 @@
 						Email
 					</th>
 					<th width="20%">
-						partner type
+						Partner Type
 					</th>
 					<th width="20%">
 						Phone number
@@ -41,12 +41,12 @@
 							@item.Email
 						</td>
 						<td>
-							@(item.partnerType == PartnerType.Supplier ? "Supplier" : item.partnerType == PartnerType.CorporateCustomer ? "Customer" : "Retail")
+							@(item.partnerType == PartnerType.Supplier ? "Supplier" : item.partnerType == PartnerType.RetailCustomer ? "Customer" : "Retail")
 						</td>
 						<td>
 							@item.PhoneNumber
 						</td>
-							@if(item.partnerType != PartnerType.RetailCustomer)
+							@if(item.partnerType == PartnerType.RetailCustomer)
 							{
 							<td class="row gap-1">
 								<a asp-action="Save" asp-route-id="@item.Id" class="col-3 btn btn-sm btn-info">Edit</a>

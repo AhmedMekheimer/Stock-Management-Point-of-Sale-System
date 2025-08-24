@@ -24,7 +24,6 @@ namespace InfrastructureLayer.Interfaces
         // Operations Repos
         IOperationRepository Operations { get; }
         ITransferRepository Transfers { get; }
-        IInvoiceRepository Invoices { get; }
         ISalesInvoiceRepository SalesInvoices { get; }
         IReceiveOrderRepository ReceiveOrders { get; }
 

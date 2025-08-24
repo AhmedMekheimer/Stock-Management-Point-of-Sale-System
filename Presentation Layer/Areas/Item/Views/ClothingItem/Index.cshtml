@@ -34,9 +34,6 @@
 						For
 					</th>
 					<th width="10%">
-						Price
-					</th>
-					<th width="10%">
 						Actions
 					</th>
 
@@ -50,23 +47,21 @@
 							@item.Name
 						</td>
 						<td>
-							@item.Brand
+							@item.Brand.Name
 						</td>
 						<td>
-							@item.Color
+							@item.Color.Name
 						</td>
 						<td>
-							@item.ItemType
+							@item.ItemType.Name
 						</td>
 						<td>
-							@item.Size
+							@item.Size.Name
 						</td>
 						<td>
-							@item.TargetAudience
+							@item.TargetAudience.Name
 						</td>
-						<td>
-							@item.Price
-						</td>
+		
 
 						<td class="row gap-1">
 							<a asp-action="Save" asp-route-id="@item.Id" class="col-3 btn btn-sm btn-info">

@@ -1,0 +1,77 @@
+﻿@using PresentationLayer.Areas.Stock.ViewModels
+@model ItemVM
+
+<div class="container">
+	<div class="card shadow-lg border-0 rounded-4">
+		<div class="card-body p-4">
+			<h4 class="mb-4">Add Item</h4>
+
+			<form asp-action="Save" method="post">
+				<div class="row">
+					@* <div asp-validation-summary="All" class="text-danger"></div> *@
+
+					<input asp-for="Id" type="hidden" value="@Model.Id" />
+					<!-- Username -->
+					<div class="mb-3 col-12">
+						<label asp-for="Name" class="control-label"></label>
+						<input asp-for="Name" class="form-control" />
+						<span asp-validation-for="Name" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="Barcode" class="control-label"></label>
+						<input asp-for="Barcode" class="form-control" />
+						<span asp-validation-for="Barcode" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3 col-12">
+						<label asp-for="SizeId" class="form-label">Size</label>
+						<select class="form-select" asp-for="SizeId" asp-items="@Model.SizesList">
+							<option value="">Select a Size</option>
+						</select>
+						<span asp-validation-for="SizeId" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="ColorId" class="form-label">Color</label>
+						<select class="form-select" asp-for="ColorId" asp-items="@Model.ColorsList">
+							<option value="">Select a Color</option>
+						</select>
+						<span asp-validation-for="ColorId" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="ItemTypeId" class="form-label">Item type</label>
+						<select class="form-select" asp-for="ItemTypeId" asp-items="@Model.ItemTypesList">
+							<option value="">Select Item type</option>
+						</select>
+						<span asp-validation-for="ItemTypeId" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="TargetAudienceId" class="form-label">Audience</label>
+						<select class="form-select" asp-for="TargetAudienceId" asp-items="@Model.TargetAudiencesList">
+							<option value="">Select a Audience</option>
+						</select>
+						<span asp-validation-for="TargetAudienceId" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="BrandId" class="form-label">Brand</label>
+						<select class="form-select" asp-for="BrandId" asp-items="@Model.BrandsList">
+							<option value="">Select a Brand</option>
+						</select>
+						<span asp-validation-for="BrandId" class="text-danger"></span>
+					</div>
+
+					<!-- Submit -->
+					<div class="d-grid col-2 ">
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

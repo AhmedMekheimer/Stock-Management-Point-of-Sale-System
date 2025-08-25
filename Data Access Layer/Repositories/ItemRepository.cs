@@ -16,5 +16,15 @@ namespace InfrastructureLayer.Repositories
         {
             _context = context;
         }
+
+        public bool IsNameExist(string name , int? id)
+        {
+            return _context.Items.Any(i => i.Name == name && i.Id != id);
+        }
+
+        public bool IsBarcodeExist(string barcode, int? id)
+        {
+            return _context.Items.Any(i => i.Barcode == barcode && i.Id != id);
+        }
     }
 }

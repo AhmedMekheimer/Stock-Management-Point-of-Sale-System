@@ -1,17 +1,21 @@
-﻿using CoreLayer.Models;
+﻿using CoreLayer;
+using CoreLayer.Models;
 using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PresentationLayer.Areas.Administrative.ViewModels;
 using PresentationLayer.Areas.Stock.ViewModels;
+using PresentationLayer.Utility;
 using System.Threading.Tasks;
 
 namespace PresentationLayer.Areas.Stock.Controllers
 {
     [Area("Item")]
+    [Authorize(Policy = SD.Managers)]
     public class ClothingItemController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
@@ -29,74 +33,146 @@ namespace PresentationLayer.Areas.Stock.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Save(int? id)
+        public async Task<IActionResult> Save(int? id = 0)
         {
             var itemVM = new ItemVM();
 
-            if (id is not null)
+            // Display Edit Page
+            if (id != 0)
             {
                 var item = await _UnitOfWork.Items.GetOneAsync(i => i.Id == id);
-                itemVM = item.Adapt<ItemVM>();
+                if (item != null)
+                {
+                    itemVM = item.Adapt<ItemVM>();
+                    //itemVM.Image = item.Image;
+                    LoadData(itemVM).GetAwaiter().GetResult();
+                    return View(itemVM);
+                }
+                TempData["Error"] = "Clothing Item Not Found";
+                return RedirectToAction(nameof(Index));
             }
+            // Display Add Page
             LoadData(itemVM).GetAwaiter().GetResult();
-
             return View(itemVM);
         }
-
-
-
 
         [HttpPost]
         public async Task<IActionResult> Save(ItemVM itemVM)
         {
-            LoadData(itemVM).GetAwaiter().GetResult();
-            if (_UnitOfWork.Items.IsNameExist(itemVM.Name, itemVM.Id))
-            {
-                TempData["error"] = "Name is already exist";
+            if (!ModelState.IsValid)
                 return View(itemVM);
-            }
-            if (_UnitOfWork.Items.IsBarcodeExist(itemVM.Barcode, itemVM.Id))
-            {
-                TempData["error"] = "Barcode is already exist";
-                return View(itemVM);
-            }
+            Result resultImg = new Result();
 
+            LoadData(itemVM).GetAwaiter().GetResult();
+
+            // Saving an Existing Item
             if (itemVM.Id != 0)
             {
+                if ((await _UnitOfWork.Items.GetOneAsync(i => i.Id == itemVM.Id) is CoreLayer.Models.Item item))
+                    {
+                    var newItem = new CoreLayer.Models.Item();
+                    newItem=itemVM.Adapt<CoreLayer.Models.Item>();
 
-                var item = await _UnitOfWork.Items.GetOneAsync(i => i.Id == itemVM.Id, tracked: true);
-                item = itemVM.Adapt<CoreLayer.Models.Item>();
+                    // Replacing with a New Image
+                    if (itemVM.formFile != null)
+                    {
+                        if (item.Image != null)
+                        {
+                            // Deleting Old Image Physically
+                            resultImg = ImageService.DeleteImage(item.Image);
+                            if (!resultImg.Success)
+                            {
+                                TempData["Error"] = resultImg.ErrorMessage;
+                                return View(itemVM);
+                            }
+                        }
 
-                var result = await _UnitOfWork.Items.UpdateAsync(item);
+                        // Add new Image Physically
+                        resultImg = ImageService.UploadNewImage(itemVM.formFile);
+                        if (resultImg.Success)
+                            newItem.Image = resultImg.Image;
+                        else
+                        {
+                            TempData["Error"] = resultImg.ErrorMessage;
+                            return View(itemVM);
+                        }
+                    }
+                    else
+                    {
+                        // Old Image deleted
+                        if (itemVM.deleteImage)
+                        {
+                            // Deleting Old Image Physically
+                            resultImg = ImageService.DeleteImage(item.Image!);
+                            if (!resultImg.Success)
+                            {
+                                TempData["Error"] = resultImg.ErrorMessage;
+                                return View(itemVM);
+                            }
+                        }
+                    }
+                    _UnitOfWork.Items.DetachEntity(item);
 
-                if (result)
-                {
-                    TempData["success"] = "Item Updated";
+                    var result = await _UnitOfWork.Items.UpdateAsync(newItem);
+
+                    if (result)
+                    {
+                        TempData["success"] = "Item Updated Successfully";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    TempData["Error"] = "Error Updating Item";
                     return RedirectToAction(nameof(Index));
                 }
-
+                TempData["Error"] = "Clothing Item Not Found";
+                return View(itemVM);
             }
+            // Saving a New Clothing Item
             else
             {
                 var item = itemVM.Adapt<CoreLayer.Models.Item>();
+
+                if (itemVM.formFile != null)
+                {
+                    // Saving Physically
+                    resultImg = ImageService.UploadNewImage(itemVM.formFile);
+                    if (resultImg.Success)
+                        itemVM.Image = resultImg.Image;
+                    else
+                    {
+                        TempData["Error"] = resultImg.ErrorMessage;
+                        return View(itemVM);
+                    }
+                }
 
                 var result = await _UnitOfWork.Items.CreateAsync(item);
 
                 if (result)
                 {
-                    TempData["success"] = "Item Added";
+                    TempData["success"] = "Item Added Successfully";
                     return RedirectToAction(nameof(Index));
                 }
+                TempData["Error"] = "Error Adding Item";
+                return RedirectToAction(nameof(Index));
             }
-            TempData["error"] = "Somthing went wrong!";
-            return RedirectToAction(nameof(Index));
         }
 
 
         public async Task<IActionResult> Delete(int id)
         {
+            var resultImage = new Result();
             if ((await _UnitOfWork.Items.GetOneAsync(b => b.Id == id)) is CoreLayer.Models.Item Item)
             {
+                if (Item.Image != null)
+                {
+                    // Deleting Image Physically
+                    resultImage = ImageService.DeleteImage(Item.Image);
+                    if (!resultImage.Success)
+                    {
+                        TempData["Error"] = resultImage.ErrorMessage;
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
                 var deleteResult = await _UnitOfWork.Items.DeleteAsync(Item);
                 if (deleteResult)
                 {

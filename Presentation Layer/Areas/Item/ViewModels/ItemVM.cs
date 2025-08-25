@@ -7,11 +7,16 @@ namespace PresentationLayer.Areas.Stock.ViewModels
     {
         public int Id { get; set; } 
         [Required]
-        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
+        [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
 
         [Required]
+        [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Barcode cannot be only whitespace.")]
         public string Barcode { get; set; } = null!;
+        public IFormFile? formFile { get; set; }
+
+        public string? Image { get; set; } = string.Empty;
+        public bool deleteImage { get; set; }
         [Required]
         public int SizeId { get; set; }
 

@@ -84,6 +84,10 @@ namespace InfrastructureLayer.Data
                 .HasForeignKey(i => i.TargetAudienceId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+                //Uniquness of Item's Name & Barcode
+                modelBuilder.Entity<Item>(e =>
+                e.HasIndex(x => new { x.Barcode, x.Name }).IsUnique());
+
             // ItemType referencing (Tree-Structure)
             modelBuilder.Entity<ItemType>(e =>
             {

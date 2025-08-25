@@ -110,7 +110,7 @@ namespace PresentationLayer.Areas.Item.Controllers
                 else
                 {
                     // Old Image deleted
-                    if((bool)brandVM.deleteImage!)
+                    if(brandVM.deleteImage)
                     {
                         // Deleting Old Image Physically
                         result = ImageService.DeleteImage(brand.Image!);

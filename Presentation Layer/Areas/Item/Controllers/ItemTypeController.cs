@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Areas.Item.ViewModels;
+using PresentationLayer.Utility;
+using System.Drawing;
 
 namespace PresentationLayer.Areas.Item.Controllers
 {
@@ -79,7 +81,11 @@ namespace PresentationLayer.Areas.Item.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ItemTypeInputVM vm)
         {
-            if (!ModelState.IsValid) return View(vm);
+            ModelState.Remove("ItemType.Name");
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            Result result = new Result();
 
             // Enforce unique among siblings
             var nameTaken = await _db.ItemTypes
@@ -90,10 +96,25 @@ namespace PresentationLayer.Areas.Item.Controllers
                 return View(vm);
             }
 
+            // Image Upload
+            if (vm.formFile != null)
+            {
+                // Saving Physically
+                result = ImageService.UploadNewImage(vm.formFile);
+                if (result.Success)
+                    vm.ItemType.Image = result.Image;
+                else
+                {
+                    TempData["Error"] = result.ErrorMessage;
+                    return View(vm);
+                }
+            }
+
             _db.ItemTypes.Add(new ItemType
             {
                 Name = vm.Name,
-                ItemTypeId = vm.ParentId
+                ItemTypeId = vm.ParentId,
+                Image=vm.ItemType.Image
             });
             await _db.SaveChangesAsync();
 
@@ -106,7 +127,11 @@ namespace PresentationLayer.Areas.Item.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var entity = await _db.ItemTypes.FindAsync(id);
-            if (entity is null) return NotFound();
+            if (entity is null)
+            {
+                TempData["Error"] = "Item Type Not Found";
+                return RedirectToAction(nameof(Index));
+            }
 
             var vm = new ItemTypeInputVM
             {
@@ -114,7 +139,8 @@ namespace PresentationLayer.Areas.Item.Controllers
                 Name = entity.Name,
                 ParentName = entity.ItemTypeId == null
                     ? "(root)"
-                    : await _db.ItemTypes.Where(t => t.Id == entity.ItemTypeId).Select(t => t.Name).FirstOrDefaultAsync()
+                    : await _db.ItemTypes.Where(t => t.Id == entity.ItemTypeId).Select(t => t.Name).FirstOrDefaultAsync(),
+                ItemType = entity
             };
 
             ViewBag.Id = id; // pass id to form
@@ -125,9 +151,15 @@ namespace PresentationLayer.Areas.Item.Controllers
         public async Task<IActionResult> Edit(int id, ItemTypeInputVM vm)
         {
             var entity = await _db.ItemTypes.FindAsync(id);
-            if (entity is null) return NotFound();
+            if (entity is null)
+            {
+                TempData["Error"] = "Item Type Not Found";
+                return RedirectToAction(nameof(Index));
+            }
 
+            ModelState.Remove("ItemType.Name");
             if (!ModelState.IsValid) return View(vm);
+            Result result = new Result();
 
             // 1. Prevent moving under itself
             if (vm.ParentId == id)
@@ -190,10 +222,52 @@ namespace PresentationLayer.Areas.Item.Controllers
                 return View(vm);
             }
 
+            // Replacing with a New Image
+            if (vm.formFile != null)
+            {
+                if (entity.Image != null)
+                {
+                    // Deleting Old Image Physically
+                    result = ImageService.DeleteImage(entity.Image);
+                    if (!result.Success)
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return View(vm);
+                    }
+                }
+
+                // Add new Image Physically 
+                result = ImageService.UploadNewImage(vm.formFile);
+                if (result.Success)
+                    vm.ItemType.Image = result.Image;
+                else
+                {
+                    TempData["Error"] = result.ErrorMessage;
+                    return View(vm);
+                }
+            }
+            else
+            {
+                // Old Image deleted
+                if (vm.deleteImage)
+                {
+                    // Deleting Old Image Physically
+                    result = ImageService.DeleteImage(entity.Image!);
+                    if (!result.Success)
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return View(vm);
+                    }
+                }
+                else
+                    // Old Image Submitted
+                    vm.ItemType.Image = entity.Image;
+            }
+
             // Apply updates
             entity.Name = vm.Name;
             entity.ItemTypeId = vm.ParentId;
-
+            entity.Image = vm.ItemType.Image;
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -204,6 +278,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
+            var result = new Result();
             // Load all ItemType Id + ParentId
             var flat = await _db.ItemTypes
                 .AsNoTracking()
@@ -241,6 +316,20 @@ namespace PresentationLayer.Areas.Item.Controllers
             var entities = await _db.ItemTypes
                 .Where(t => toDelete.Contains(t.Id))
                 .ToListAsync();
+
+            foreach (var item in entities)
+            {
+                if (item.Image != null)
+                {
+                    // Deleting Image Physically
+                    result = ImageService.DeleteImage(item.Image);
+                    if (!result.Success)
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
 
             _db.ItemTypes.RemoveRange(entities);
             await _db.SaveChangesAsync();

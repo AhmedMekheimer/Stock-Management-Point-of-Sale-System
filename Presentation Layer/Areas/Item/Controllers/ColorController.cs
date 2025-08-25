@@ -1,8 +1,11 @@
 ﻿using CoreLayer;
+using CoreLayer.Models;
 using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Areas.Item.ViewModels;
+using PresentationLayer.Utility;
 
 namespace PresentationLayer.Areas.Item.Controllers
 {
@@ -25,14 +28,14 @@ namespace PresentationLayer.Areas.Item.Controllers
         [HttpGet]
         public async Task<IActionResult> Save(int id = 0)
         {
-            var colorVM = new Color();
+            var colorVM = new ItemVariantVM<Color>();
 
             // Display Edit Page
             if (id != 0)
             {
                 if ((await _UnitOfWork.Colors.GetOneAsync(b => b.Id == id)) is Color color)
                 {
-                    colorVM = color;
+                    colorVM.ItemVariant = color;
                     return View(colorVM);
                 }
 
@@ -45,12 +48,30 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(Color colorVM)
+        public async Task<IActionResult> Save(ItemVariantVM<Color> colorVM)
         {
+            if (!ModelState.IsValid)
+                return View(colorVM);
+            Result result = new Result();
+
             // Saving a Newly-Added Color
-            if (colorVM.Id == 0)
+            if (colorVM.ItemVariant.Id == 0)
             {
-                var createResult = await _UnitOfWork.Colors.CreateAsync(colorVM);
+                if (colorVM.formFile != null)
+                {
+                    // Saving Physically
+                    result = ImageService.UploadNewImage(colorVM.formFile);
+                    if (result.Success)
+                        colorVM.ItemVariant.Image = result.Image;
+                    else
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return View(colorVM);
+                    }
+                }
+
+                // Saving in Db
+                var createResult = await _UnitOfWork.Colors.CreateAsync(colorVM.ItemVariant);
                 if (createResult)
                 {
                     TempData["Success"] = "Color Added Successfully";
@@ -61,20 +82,80 @@ namespace PresentationLayer.Areas.Item.Controllers
             }
 
             // Saving an Existing Color
-            var updateResult = await _UnitOfWork.Colors.UpdateAsync(colorVM);
-            if (updateResult)
+            if ((await _UnitOfWork.Colors.GetOneAsync(b => b.Id == colorVM.ItemVariant.Id)) is Color color)
             {
-                TempData["Success"] = "Color Updated Successfully";
+                // Replacing with a New Image
+                if (colorVM.formFile != null)
+                {
+                    if (color.Image != null)
+                    {
+                        // Deleting Old Image Physically
+                        result = ImageService.DeleteImage(color.Image);
+                        if (!result.Success)
+                        {
+                            TempData["Error"] = result.ErrorMessage;
+                            return View(colorVM);
+                        }
+                    }
+
+                    // Add new Image Physically
+                    result = ImageService.UploadNewImage(colorVM.formFile);
+                    if (result.Success)
+                        colorVM.ItemVariant.Image = result.Image;
+                    else
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return View(colorVM);
+                    }
+                }
+                else
+                {
+                    // Old Image deleted
+                    if (colorVM.deleteImage)
+                    {
+                        // Deleting Old Image Physically
+                        result = ImageService.DeleteImage(color.Image!);
+                        if (!result.Success)
+                        {
+                            TempData["Error"] = result.ErrorMessage;
+                            return View(colorVM);
+                        }
+                    }
+                    else
+                        // Old Image Submitted
+                        colorVM.ItemVariant.Image = color.Image;
+                }
+                _UnitOfWork.Colors.DetachEntity(color);
+
+                var updateResult = await _UnitOfWork.Colors.UpdateAsync(colorVM.ItemVariant);
+                if (updateResult)
+                {
+                    TempData["Success"] = "Color Updated Successfully";
+                    return RedirectToAction(nameof(Index));
+                }
+                TempData["Error"] = "Error Updating Color";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["Error"] = "Error Updating Color";
-            return RedirectToAction(nameof(Index));
+            TempData["Error"] = "Color Not Found";
+            return View(colorVM);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
+            var result = new Result();
             if ((await _UnitOfWork.Colors.GetOneAsync(b => b.Id == id)) is Color color)
             {
+                if (color.Image != null)
+                {
+                    // Deleting Image Physically
+                    result = ImageService.DeleteImage(color.Image);
+                    if (!result.Success)
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
                 var deleteResult = await _UnitOfWork.Colors.DeleteAsync(color);
                 if (deleteResult)
                 {

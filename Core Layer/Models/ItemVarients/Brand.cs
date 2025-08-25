@@ -12,7 +12,7 @@ namespace CoreLayer.Models.ItemVarients
     {
         public int Id { get; set; }
         [Required]
-        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
+        [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
         public string? Image { get; set; } = string.Empty;
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CoreLayer.Models.ItemVarients;
+using System.ComponentModel.DataAnnotations;
 
 namespace PresentationLayer.Areas.Item.ViewModels
 {
@@ -13,5 +14,8 @@ namespace PresentationLayer.Areas.Item.ViewModels
         public string Name { get; set; } = string.Empty;
 
         public string? ParentName { get; set; } // display only
+        public ItemType ItemType { get; set; } = new ItemType();
+        public IFormFile? formFile { get; set; }
+        public bool deleteImage { get; set; }
     }
 }

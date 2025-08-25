@@ -20,7 +20,7 @@ namespace CoreLayer.Models
         [Required]
         [MinLength(3)]
         [MaxLength(50)]
-        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
+        [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
 
         [EmailAddress]

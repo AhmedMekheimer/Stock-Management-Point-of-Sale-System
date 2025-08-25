@@ -3,6 +3,8 @@ using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Areas.Item.ViewModels;
+using PresentationLayer.Utility;
 
 namespace PresentationLayer.Areas.Item.Controllers
 {
@@ -25,14 +27,14 @@ namespace PresentationLayer.Areas.Item.Controllers
         [HttpGet]
         public async Task<IActionResult> Save(int id = 0)
         {
-            var sizeVM = new Size();
+            var sizeVM = new ItemVariantVM<Size>();
 
             // Display Edit Page
             if (id != 0)
             {
                 if ((await _UnitOfWork.Sizes.GetOneAsync(b => b.Id == id)) is Size size)
                 {
-                    sizeVM = size;
+                    sizeVM.ItemVariant = size;
                     return View(sizeVM);
                 }
 
@@ -45,12 +47,28 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(Size sizeVM)
+        public async Task<IActionResult> Save(ItemVariantVM<Size> sizeVM)
         {
-            // Saving a Newly-Added Size
-            if (sizeVM.Id == 0)
+            if (!ModelState.IsValid)
+                return View(sizeVM);
+
+            Result result = new Result();
+
+            if (sizeVM.ItemVariant.Id == 0) // Create
             {
-                var createResult = await _UnitOfWork.Sizes.CreateAsync(sizeVM);
+                if (sizeVM.formFile != null)
+                {
+                    result = ImageService.UploadNewImage(sizeVM.formFile);
+                    if (result.Success)
+                        sizeVM.ItemVariant.Image = result.Image;
+                    else
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return View(sizeVM);
+                    }
+                }
+
+                var createResult = await _UnitOfWork.Sizes.CreateAsync(sizeVM.ItemVariant);
                 if (createResult)
                 {
                     TempData["Success"] = "Size Added Successfully";
@@ -60,21 +78,78 @@ namespace PresentationLayer.Areas.Item.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Saving an Existing Color
-            var updateResult = await _UnitOfWork.Sizes.UpdateAsync(sizeVM);
-            if (updateResult)
+            // Update existing
+            if ((await _UnitOfWork.Sizes.GetOneAsync(s => s.Id == sizeVM.ItemVariant.Id)) is Size size)
             {
-                TempData["Success"] = "Size Updated Successfully";
+                if (sizeVM.formFile != null) // Replace
+                {
+                    if (size.Image != null)
+                    {
+                        result = ImageService.DeleteImage(size.Image);
+                        if (!result.Success)
+                        {
+                            TempData["Error"] = result.ErrorMessage;
+                            return View(sizeVM);
+                        }
+                    }
+                    result = ImageService.UploadNewImage(sizeVM.formFile);
+                    if (result.Success)
+                        sizeVM.ItemVariant.Image = result.Image;
+                    else
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return View(sizeVM);
+                    }
+                }
+                else
+                {
+                    if (sizeVM.deleteImage) // Delete old
+                    {
+                        if (size.Image != null)
+                        {
+                            result = ImageService.DeleteImage(size.Image);
+                            if (!result.Success)
+                            {
+                                TempData["Error"] = result.ErrorMessage;
+                                return View(sizeVM);
+                            }
+                        }
+                    }
+                    else
+                        sizeVM.ItemVariant.Image = size.Image; // Keep
+                }
+
+                _UnitOfWork.Sizes.DetachEntity(size);
+                var updateResult = await _UnitOfWork.Sizes.UpdateAsync(sizeVM.ItemVariant);
+                if (updateResult)
+                {
+                    TempData["Success"] = "Size Updated Successfully";
+                    return RedirectToAction(nameof(Index));
+                }
+                TempData["Error"] = "Error Updating Size";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["Error"] = "Error Updating Size";
-            return RedirectToAction(nameof(Index));
+
+            TempData["Error"] = "Size Not Found";
+            return View(sizeVM);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
+            var result = new Result();
             if ((await _UnitOfWork.Sizes.GetOneAsync(b => b.Id == id)) is Size size)
             {
+                if (size.Image != null)
+                {
+                    // Deleting Image Physically
+                    result = ImageService.DeleteImage(size.Image);
+                    if (!result.Success)
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
                 var deleteResult = await _UnitOfWork.Sizes.DeleteAsync(size);
                 if (deleteResult)
                 {

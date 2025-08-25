@@ -3,6 +3,8 @@ using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Areas.Item.ViewModels;
+using PresentationLayer.Utility;
 
 namespace PresentationLayer.Areas.Item.Controllers
 {
@@ -25,14 +27,14 @@ namespace PresentationLayer.Areas.Item.Controllers
         [HttpGet]
         public async Task<IActionResult> Save(int id = 0)
         {
-            var brandVM = new Brand();
+            var brandVM = new ItemVariantVM<Brand>();
 
             // Display Edit Page
             if (id != 0)
             {
                 if ((await _UnitOfWork.Brands.GetOneAsync(b => b.Id == id)) is Brand brand)
                 {
-                    brandVM = brand;
+                    brandVM.ItemVariant = brand;
                     return View(brandVM);
                 }
 
@@ -45,12 +47,30 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(Brand brandVM)
+        public async Task<IActionResult> Save(ItemVariantVM<Brand> brandVM)
         {
+            if (!ModelState.IsValid)
+                return View(brandVM);
+            Result result = new Result();
+
             // Saving a Newly-Added Brand
-            if (brandVM.Id == 0)
+            if (brandVM.ItemVariant.Id == 0)
             {
-                var createResult = await _UnitOfWork.Brands.CreateAsync(brandVM);
+                if (brandVM.formFile != null)
+                {
+                    // Saving Physically
+                    result = ImageService.UploadNewImage(brandVM.formFile);
+                    if (result.Success)
+                        brandVM.ItemVariant.Image = result.Image;
+                    else
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return View(brandVM);
+                    }
+                }
+
+                // Saving in Db
+                var createResult = await _UnitOfWork.Brands.CreateAsync(brandVM.ItemVariant);
                 if (createResult)
                 {
                     TempData["Success"] = "Brand Added Successfully";
@@ -61,20 +81,79 @@ namespace PresentationLayer.Areas.Item.Controllers
             }
 
             // Saving an Existing Brand
-            var updateResult = await _UnitOfWork.Brands.UpdateAsync(brandVM);
-            if (updateResult)
+            if((await _UnitOfWork.Brands.GetOneAsync(b => b.Id == brandVM.ItemVariant.Id)) is Brand brand)
             {
-                TempData["Success"] = "Brand Updated Successfully";
+                // Replacing with a New Image
+                if (brandVM.formFile != null)
+                {
+                    if (brand.Image != null)
+                    {
+                        // Deleting Old Image Physically
+                        result = ImageService.DeleteImage(brand.Image);
+                        if(!result.Success)
+                        {
+                            TempData["Error"] = result.ErrorMessage;
+                            return View(brandVM);
+                        }
+                    }
+
+                    // Add new Image Physically
+                    result = ImageService.UploadNewImage(brandVM.formFile);
+                    if(result.Success)
+                        brandVM.ItemVariant.Image=result.Image;
+                    else
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return View(brandVM);
+                    }
+                }
+                else
+                {
+                    // Old Image deleted
+                    if((bool)brandVM.deleteImage!)
+                    {
+                        // Deleting Old Image Physically
+                        result = ImageService.DeleteImage(brand.Image!);
+                        if (!result.Success)
+                        {
+                            TempData["Error"] = result.ErrorMessage;
+                            return View(brandVM);
+                        }
+                    }
+                    else
+                        // Old Image Submitted
+                        brandVM.ItemVariant.Image = brand.Image;
+                }
+                _UnitOfWork.Brands.DetachEntity(brand);
+
+                var updateResult = await _UnitOfWork.Brands.UpdateAsync(brandVM.ItemVariant);
+                if (updateResult)
+                {
+                    TempData["Success"] = "Brand Updated Successfully";
+                    return RedirectToAction(nameof(Index));
+                }
+                TempData["Error"] = "Error Updating Brand";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["Error"] = "Error Updating Brand";
-            return RedirectToAction(nameof(Index));
+            TempData["Error"] = "Brand Not Found";
+            return View(brandVM);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
+            var result = new Result();
             if ((await _UnitOfWork.Brands.GetOneAsync(b => b.Id == id)) is Brand brand)
             {
+                if(brand.Image != null)
+                {
+                    // Deleting Image Physically
+                    result = ImageService.DeleteImage(brand.Image);
+                    if (!result.Success)
+                    {
+                        TempData["Error"] = result.ErrorMessage;
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
                 var deleteResult = await _UnitOfWork.Brands.DeleteAsync(brand);
                 if (deleteResult)
                 {

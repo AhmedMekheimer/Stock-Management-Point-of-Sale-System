@@ -12,7 +12,7 @@ namespace CoreLayer.Models
     {
         public int Id { get; set; }
         [Required]
-        [RegularExpression(@"\S+", ErrorMessage = "Code cannot be empty or whitespace.")]
+        [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Code { get; set; } = null!;
         [Required]
         public double DiscountValue { get; set; }

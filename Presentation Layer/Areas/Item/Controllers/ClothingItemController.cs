@@ -126,6 +126,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 TempData["Error"] = "Clothing Item Not Found";
                 return View(itemVM);
             }
+
             // Saving a New Clothing Item
             else
             {
@@ -136,7 +137,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
                     // Saving Physically
                     resultImg = ImageService.UploadNewImage(itemVM.formFile);
                     if (resultImg.Success)
-                        itemVM.Image = resultImg.Image;
+                        item.Image = resultImg.Image;
                     else
                     {
                         TempData["Error"] = resultImg.ErrorMessage;

@@ -14,7 +14,10 @@ namespace CoreLayer.Models
 
         [Required]
         [Range(0, int.MaxValue)]
-        public int Quantity { get; set; }  
+        public int Quantity { get; set; }
+        public double BuyingPriceAvg { get; set; }
+        public double lastBuyingPrice { get; set; }
+        public double? SellingPrice { get; set; }
 
         // Navigation properties
         public Branch Branch { get; set; }= null!;

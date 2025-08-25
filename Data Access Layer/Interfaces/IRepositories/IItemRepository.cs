@@ -10,6 +10,7 @@ namespace InfrastructureLayer.Interfaces.IRepositories
 {
     public interface IItemRepository : IRepository<Item>
     {
-
+        bool IsNameExist(string name, int? id);
+        bool IsBarcodeExist(string name, int? id);
     }
 }

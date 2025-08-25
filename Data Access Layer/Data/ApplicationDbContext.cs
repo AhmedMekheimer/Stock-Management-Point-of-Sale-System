@@ -84,24 +84,6 @@ namespace InfrastructureLayer.Data
                 .HasForeignKey(i => i.TargetAudienceId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Uniqueness of Item Variants Names
-            modelBuilder.Entity<Brand>(e =>
-            {
-                e.HasIndex(x => x.Name).IsUnique();
-            });
-            modelBuilder.Entity<Color>(e =>
-            {
-                e.HasIndex(x => x.Name).IsUnique();
-            });
-            modelBuilder.Entity<Size>(e =>
-            {
-                e.HasIndex(x => x.Name).IsUnique();
-            });
-            modelBuilder.Entity<TargetAudience>(e =>
-            {
-                e.HasIndex(x => x.Name).IsUnique();
-            });
-
             // ItemType referencing (Tree-Structure)
             modelBuilder.Entity<ItemType>(e =>
             {

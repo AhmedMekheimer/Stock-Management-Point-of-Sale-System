@@ -18,12 +18,7 @@ namespace CoreLayer.Models
         public string Name { get; set; } = null!;
 
         [Required]
-        [Range(1000000000000, 9999999999999, ErrorMessage = "Bar Code Number must be a 13-digit Number")]
-        public Int64 BarcodeNumber { get; set; }
-
-        [Required]
-        [Range(0, double.MaxValue)]
-        public double Price { get; set; }
+        public string Barcode { get; set; } = null!;
 
         [Range(0, 100, ErrorMessage = "Tax is written in percentage values from 0 to 100")]
         public int? TaxPercentage { get; set; }

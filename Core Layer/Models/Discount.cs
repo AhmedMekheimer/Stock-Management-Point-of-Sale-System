@@ -1,4 +1,5 @@
-﻿using CoreLayer.Models.Operations;
+﻿using CoreLayer.CustomValidations;
+using CoreLayer.Models.Operations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace CoreLayer.Models
 {
+    [EitherOr("Rate", "RawValue")]
     public class Discount
     {
         public int Id { get; set; }
@@ -15,12 +17,14 @@ namespace CoreLayer.Models
         [MaxLength(50)]
         [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
-        [Range(1, 100)]
-        public int? Rate { get; set; }
-        public int? RawValue { get; set; }
+        [Range(0, 100)]
+        public int? Rate { get; set; } = 0;
+        public int? RawValue { get; set; } = 0;
         public bool IsActive { get; set; }
         public DateOnly? ExpirationDate { get; set; }
-        public int? MaximumUses { get; set; }
+        [Required]
+        public int CurrentUses { get; set; } = 0;
+        public int? MaximumUses { get; set; } = 0;
         public ICollection<DiscountOperation> DiscountOperations { get; set; } = new List<DiscountOperation>();
     }
 }

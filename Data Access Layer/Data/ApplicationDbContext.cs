@@ -3,6 +3,7 @@ using CoreLayer.Models.ItemVarients;
 using CoreLayer.Models.Operations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace InfrastructureLayer.Data
 {
@@ -39,6 +40,32 @@ namespace InfrastructureLayer.Data
         {
 
             base.OnModelCreating(modelBuilder);
+
+            // Either Rate or Raw Value Used for Tax & Discount
+            modelBuilder.Entity<Tax>(entity =>
+            {
+                entity.ToTable(tb =>
+                {
+                    tb.HasCheckConstraint(
+                        "CK_Taxes_RateOrRawValue",
+                        "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) " +
+                        "AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))"
+                    );
+                });
+            });
+
+            modelBuilder.Entity<Discount>(entity =>
+            {
+                entity.ToTable(tb =>
+                {
+                    tb.HasCheckConstraint(
+                        "CK_Discounts_RateOrRawValue",
+                        "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) " +
+                        "AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))"
+                    );
+                });
+            });
+
 
             // Uniqueness of Tax & Discount Names
             modelBuilder.Entity<Tax>(e =>

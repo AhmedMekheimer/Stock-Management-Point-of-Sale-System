@@ -34,5 +34,9 @@ namespace InfrastructureLayer.Interfaces
         IPartnerRepository Partners { get; }
         ITransactionRepository Transactions { get; }
         IApplicationUserOTPRepository ApplicationUserOTPs { get; }
+        ITaxRepository Taxes { get; }
+        ITaxReceiveOrderRepository TaxReceiveOrders { get; }
+        IDiscountRepository Discounts { get; }
+        IDiscountOperationRepository DiscountOperations { get; }
     }
 }

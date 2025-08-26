@@ -37,6 +37,10 @@ namespace InfrastructureLayer
         public IPartnerRepository Partners { get; }
         public ITransactionRepository Transactions { get; }
         public IApplicationUserOTPRepository ApplicationUserOTPs { get; }
+        public ITaxRepository Taxes { get; set; }
+        public ITaxReceiveOrderRepository TaxReceiveOrders { get; }
+        public IDiscountRepository Discounts { get; }
+        public IDiscountOperationRepository DiscountOperations { get; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -62,7 +66,11 @@ namespace InfrastructureLayer
             OperationItems = new OperationItemRepository(_context);
             Partners = new PartnerRepository(_context);
             Transactions = new TransactionRepository(_context);
-            ApplicationUserOTPs=new ApplicationUserOTPRepository(_context);
+            ApplicationUserOTPs = new ApplicationUserOTPRepository(_context);
+            Taxes = new TaxRepository(_context);
+            TaxReceiveOrders = new TaxReceiveOrderRepository(_context);
+            Discounts = new DiscountRepository(_context);
+            DiscountOperations = new DiscountOperationRepository(_context);
         }
 
         public void Dispose() => _context.Dispose();

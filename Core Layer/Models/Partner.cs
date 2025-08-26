@@ -27,7 +27,7 @@ namespace CoreLayer.Models
         public string? Email { get; set; } = string.Empty;
         [Required]
         public PartnerType partnerType { get; set; }
-        [EgyptianPhoneList]
+        [EgyptianPhone]
         public string? PhoneNumber { get; set; } = string.Empty;
 
         public ICollection<SalesInvoice>? SalesInvoices { get; set; } = new List<SalesInvoice>();

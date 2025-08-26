@@ -1,6 +1,7 @@
 ﻿using CoreLayer.Models;
 using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces.IRepositories;
+using InfrastructureLayer.Interfaces.IRepositories.ItemVarients;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace InfrastructureLayer.Repositories
 {
-    public class VoucherRepository : Repository<Voucher>, IVoucherRepository
+    public class DiscountRepository : Repository<Discount>, IDiscountRepository
     {
         private readonly ApplicationDbContext _context;
-        public VoucherRepository(ApplicationDbContext context) : base(context)
+        public DiscountRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }

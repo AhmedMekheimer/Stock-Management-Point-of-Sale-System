@@ -33,7 +33,6 @@ namespace InfrastructureLayer.Interfaces
         IOperationItemRepository OperationItems { get; }
         IPartnerRepository Partners { get; }
         ITransactionRepository Transactions { get; }
-        IVoucherRepository Vouchers { get; }
         IApplicationUserOTPRepository ApplicationUserOTPs { get; }
     }
 }

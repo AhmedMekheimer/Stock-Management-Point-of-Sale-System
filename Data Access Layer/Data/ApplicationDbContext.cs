@@ -21,24 +21,61 @@ namespace InfrastructureLayer.Data
         public DbSet<Branch> Branches { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<BranchItem> BranchItems { get; set; }
+
         public DbSet<Operation> Operations { get; set; }
         public DbSet<OperationItem> OperationItems { get; set; }
-
-        // Derived DbSets
         public DbSet<Transfer> Transfers { get; set; }
         public DbSet<SalesInvoice> SalesInvoices { get; set; }
         public DbSet<ReceiveOrder> ReceiveOrders { get; set; }
 
         public DbSet<Partner> Partners { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<Voucher> Vouchers { get; set; }
+        public DbSet<Tax> Taxes { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<TaxReceiveOrder> TaxReceiveOrders { get; set; }
+        public DbSet<DiscountOperation> DiscountOperations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
             base.OnModelCreating(modelBuilder);
 
-            // Bridge Table relation configuration
+            // Uniqueness of Tax & Discount Names
+            modelBuilder.Entity<Tax>(e =>
+                 e.HasIndex(x => new { x.Name }).IsUnique());
+
+            modelBuilder.Entity<Discount>(e =>
+                 e.HasIndex(x => new { x.Name }).IsUnique());
+
+            // Tax - Receive Order Bridge Table relation configuration
+            modelBuilder.Entity<TaxReceiveOrder>()
+                .HasKey(to => new { to.TaxId, to.OperationId });  // Composite PK
+
+            modelBuilder.Entity<TaxReceiveOrder>()
+                .HasOne(to => to.Tax)
+                .WithMany(b => b.TaxReceiveOrders)
+                .HasForeignKey(to => to.TaxId);
+
+            modelBuilder.Entity<TaxReceiveOrder>()
+                .HasOne(to => to.ReceiveOrder)
+                .WithMany(i => i.TaxReceiveOrders)
+                .HasForeignKey(to => to.OperationId);
+
+            // Discount - Operation Bridge Table relation configuration
+            modelBuilder.Entity<DiscountOperation>()
+                .HasKey(to => new { to.DiscountId, to.OperationId });  // Composite PK
+
+            modelBuilder.Entity<DiscountOperation>()
+                .HasOne(to => to.Discount)
+                .WithMany(b => b.DiscountOperations)
+                .HasForeignKey(to => to.DiscountId);
+
+            modelBuilder.Entity<DiscountOperation>()
+                .HasOne(to => to.Operation)
+                .WithMany(i => i.DiscountOperations)
+                .HasForeignKey(to => to.OperationId);
+
+            // Branch - Item Bridge Table relation configuration
             modelBuilder.Entity<BranchItem>()
                 .HasKey(bi => new { bi.BranchId, bi.ItemId });  // Composite PK
 
@@ -60,33 +97,33 @@ namespace InfrastructureLayer.Data
                 .HasForeignKey(i=>i.BrandId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-                modelBuilder.Entity<Item>()
+            modelBuilder.Entity<Item>()
                 .HasOne(i => i.Color)
                 .WithMany(b => b.Items)
                 .HasForeignKey(i => i.ColorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-                modelBuilder.Entity<Item>()
+            modelBuilder.Entity<Item>()
                 .HasOne(i => i.ItemType)
                 .WithMany(b => b.Items)
                 .HasForeignKey(i => i.ItemTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-                modelBuilder.Entity<Item>()
+            modelBuilder.Entity<Item>()
                 .HasOne(i => i.Size)
                 .WithMany(b => b.Items)
                 .HasForeignKey(i => i.SizeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-                modelBuilder.Entity<Item>()
+            modelBuilder.Entity<Item>()
                 .HasOne(i => i.TargetAudience)
                 .WithMany(b => b.Items)
                 .HasForeignKey(i => i.TargetAudienceId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-                //Uniquness of Item's Name & Barcode
-                modelBuilder.Entity<Item>(e =>
-                e.HasIndex(x => new { x.Barcode, x.Name }).IsUnique());
+            //Uniquness of Item's Name & Barcode
+            modelBuilder.Entity<Item>(e =>
+            e.HasIndex(x => new { x.Barcode, x.Name }).IsUnique());
 
             // ItemType referencing (Tree-Structure)
             modelBuilder.Entity<ItemType>(e =>
@@ -166,12 +203,6 @@ namespace InfrastructureLayer.Data
                 .HasOne(si => si.RetailCustomer)
                 .WithMany(p => p.SalesInvoices)
                 .HasForeignKey(si => si.RetailCustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<SalesInvoice>()
-                .HasOne(si => si.Voucher)
-                .WithMany(v => v.SalesInvoices)
-                .HasForeignKey(si => si.VoucherId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ReceiveOrder relationships

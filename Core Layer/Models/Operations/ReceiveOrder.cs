@@ -16,5 +16,6 @@ namespace CoreLayer.Models.Operations
         [Required]
         public int SupplierId { get; set; } // FK to Partner
         public Partner Supplier { get; set; } = null!;
+        public ICollection<TaxReceiveOrder> TaxReceiveOrders { get; set; } = new List<TaxReceiveOrder>();
     }
 }

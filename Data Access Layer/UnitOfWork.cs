@@ -36,7 +36,6 @@ namespace InfrastructureLayer
         public IOperationItemRepository OperationItems { get; }
         public IPartnerRepository Partners { get; }
         public ITransactionRepository Transactions { get; }
-        public IVoucherRepository Vouchers { get; }
         public IApplicationUserOTPRepository ApplicationUserOTPs { get; }
 
         public UnitOfWork(ApplicationDbContext context)
@@ -63,7 +62,6 @@ namespace InfrastructureLayer
             OperationItems = new OperationItemRepository(_context);
             Partners = new PartnerRepository(_context);
             Transactions = new TransactionRepository(_context);
-            Vouchers = new VoucherRepository(_context);
             ApplicationUserOTPs=new ApplicationUserOTPRepository(_context);
         }
 

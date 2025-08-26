@@ -15,8 +15,5 @@ namespace CoreLayer.Models.Operations
 
         public int? RetailCustomerId { get; set; }  // FK to Partner
         public Partner RetailCustomer { get; set; } = null!;
-
-        public int? VoucherId { get; set; }
-        public Voucher Voucher { get; set; } = null!;
     }
 }

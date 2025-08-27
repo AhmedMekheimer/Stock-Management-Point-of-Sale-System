@@ -4,6 +4,7 @@ using InfrastructureLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250826210208_TaxReceiveOrder_DiscountOperation_Tables_NamesUniqueness_VoucherDeleted_ReposAdded")]
+    partial class TaxReceiveOrder_DiscountOperation_Tables_NamesUniqueness_VoucherDeleted_ReposAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,13 +159,13 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("BuyingPriceAvg")
                         .HasColumnType("float");
 
-                    b.Property<double>("LastBuyingPrice")
-                        .HasColumnType("float");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<double?>("SellingPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double>("lastBuyingPrice")
                         .HasColumnType("float");
 
                     b.HasKey("BranchId", "ItemId");
@@ -179,9 +182,6 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CurrentUses")
-                        .HasColumnType("int");
 
                     b.Property<DateOnly?>("ExpirationDate")
                         .HasColumnType("date");
@@ -208,10 +208,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Discounts", t =>
-                        {
-                            t.HasCheckConstraint("CK_Discounts_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
-                        });
+                    b.ToTable("Discounts");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.DiscountOperation", b =>
@@ -536,10 +533,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Taxes", t =>
-                        {
-                            t.HasCheckConstraint("CK_Taxes_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
-                        });
+                    b.ToTable("Taxes");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.TaxReceiveOrder", b =>

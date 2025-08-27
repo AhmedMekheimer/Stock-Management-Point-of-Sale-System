@@ -4,6 +4,7 @@ using InfrastructureLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250825194013_AddedImageCol_ToItemTable")]
+    partial class AddedImageCol_ToItemTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,13 +159,13 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("BuyingPriceAvg")
                         .HasColumnType("float");
 
-                    b.Property<double>("LastBuyingPrice")
-                        .HasColumnType("float");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<double?>("SellingPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double>("lastBuyingPrice")
                         .HasColumnType("float");
 
                     b.HasKey("BranchId", "ItemId");
@@ -170,63 +173,6 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("ItemId");
 
                     b.ToTable("BranchItems");
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.Discount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CurrentUses")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly?>("ExpirationDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("MaximumUses")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("Rate")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RawValue")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Discounts", t =>
-                        {
-                            t.HasCheckConstraint("CK_Discounts_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
-                        });
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.DiscountOperation", b =>
-                {
-                    b.Property<int>("DiscountId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OperationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("DiscountId", "OperationId");
-
-                    b.HasIndex("OperationId");
-
-                    b.ToTable("DiscountOperations");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -239,7 +185,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<string>("Barcode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("BrandId")
                         .HasColumnType("int");
@@ -284,9 +230,6 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("SizeId");
 
                     b.HasIndex("TargetAudienceId");
-
-                    b.HasIndex("Barcode", "Name")
-                        .IsUnique();
 
                     b.ToTable("Items");
                 });
@@ -414,38 +357,17 @@ namespace InfrastructureLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<double>("GrandTotal")
                         .HasColumnType("float");
 
-                    b.Property<int>("RoundedGrandTotal")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("Time")
-                        .HasColumnType("time");
-
-                    b.Property<double>("TotalAmount")
+                    b.Property<double>("TotalItemsPrice")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalDiscountAmount")
+                    b.Property<double>("TotalTaxes")
                         .HasColumnType("float");
-
-                    b.Property<double>("TotalDiscountRate")
-                        .HasColumnType("float");
-
-                    b.Property<int>("TotalQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TotalTaxesAmount")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalTaxesRate")
-                        .HasColumnType("float");
-
-                    b.Property<int>("status")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -512,51 +434,6 @@ namespace InfrastructureLayer.Migrations
                     b.ToTable("Partners");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.Tax", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("Rate")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RawValue")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Taxes", t =>
-                        {
-                            t.HasCheckConstraint("CK_Taxes_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
-                        });
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.TaxReceiveOrder", b =>
-                {
-                    b.Property<int>("TaxId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OperationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("TaxId", "OperationId");
-
-                    b.HasIndex("OperationId");
-
-                    b.ToTable("TaxReceiveOrders");
-                });
-
             modelBuilder.Entity("CoreLayer.Models.Transaction", b =>
                 {
                     b.Property<int>("Id")
@@ -574,6 +451,35 @@ namespace InfrastructureLayer.Migrations
                         .IsUnique();
 
                     b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.Voucher", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("DiscountValue")
+                        .HasColumnType("float");
+
+                    b.Property<DateOnly?>("ExpirationDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaximumUses")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Vouchers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -736,9 +642,14 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("RetailCustomerId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("VoucherId")
+                        .HasColumnType("int");
+
                     b.HasIndex("BranchId");
 
                     b.HasIndex("RetailCustomerId");
+
+                    b.HasIndex("VoucherId");
 
                     b.ToTable("SalesInvoices", (string)null);
                 });
@@ -809,25 +720,6 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Branch");
 
                     b.Navigation("Item");
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.DiscountOperation", b =>
-                {
-                    b.HasOne("CoreLayer.Models.Discount", "Discount")
-                        .WithMany("DiscountOperations")
-                        .HasForeignKey("DiscountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreLayer.Models.Operation", "Operation")
-                        .WithMany("DiscountOperations")
-                        .HasForeignKey("OperationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Discount");
-
-                    b.Navigation("Operation");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -911,25 +803,6 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Operation");
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.TaxReceiveOrder", b =>
-                {
-                    b.HasOne("CoreLayer.Models.Operations.ReceiveOrder", "ReceiveOrder")
-                        .WithMany("TaxReceiveOrders")
-                        .HasForeignKey("OperationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoreLayer.Models.Tax", "Tax")
-                        .WithMany("TaxReceiveOrders")
-                        .HasForeignKey("TaxId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ReceiveOrder");
-
-                    b.Navigation("Tax");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Transaction", b =>
@@ -1038,9 +911,16 @@ namespace InfrastructureLayer.Migrations
                         .HasForeignKey("RetailCustomerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("CoreLayer.Models.Voucher", "Voucher")
+                        .WithMany("SalesInvoices")
+                        .HasForeignKey("VoucherId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Branch");
 
                     b.Navigation("RetailCustomer");
+
+                    b.Navigation("Voucher");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Operations.Transfer", b =>
@@ -1090,11 +970,6 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("SalesInvoices");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.Discount", b =>
-                {
-                    b.Navigation("DiscountOperations");
-                });
-
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
                 {
                     b.Navigation("BranchItems");
@@ -1131,8 +1006,6 @@ namespace InfrastructureLayer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.Operation", b =>
                 {
-                    b.Navigation("DiscountOperations");
-
                     b.Navigation("OperationItems");
                 });
 
@@ -1143,14 +1016,9 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("SalesInvoices");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.Tax", b =>
+            modelBuilder.Entity("CoreLayer.Models.Voucher", b =>
                 {
-                    b.Navigation("TaxReceiveOrders");
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.Operations.ReceiveOrder", b =>
-                {
-                    b.Navigation("TaxReceiveOrders");
+                    b.Navigation("SalesInvoices");
                 });
 #pragma warning restore 612, 618
         }

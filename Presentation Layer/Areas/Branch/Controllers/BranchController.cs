@@ -122,6 +122,35 @@ namespace PresentationLayer.Areas.Branch.Controllers
 
                     if (result)
                     {
+
+                       var items = await _UnitOfWork.Items.GetAsync();
+                        var branchItems = new List<BranchItem>();
+                        if (items.Count() > 0)
+                        {
+                            foreach (var item in items)
+                            {
+                                var branchItem = new BranchItem()
+                                {
+                                    Quantity = 0,
+                                    SellingPrice = 0,
+                                    BuyingPriceAvg = 0,
+                                    LastBuyingPrice = 0,
+                                    ItemId = item.Id,
+                                    BranchId = newBranch.Id
+                                };
+                                branchItems.Add(branchItem);
+                            }
+
+
+                          var resultAddItemBranch =   await _UnitOfWork.BranchItems.CreateRangeAsync(branchItems);
+
+                            if (!resultAddItemBranch)
+                            {
+                                TempData["success"] = "Couldn't add item branch";
+                                return RedirectToAction(nameof(Index));
+                            }
+                        }
+
                         //user.BranchId = newBranch.Id;
                         //await _UserManager.UpdateAsync(user);
                         TempData["success"] = "Branch added";

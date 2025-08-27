@@ -8,27 +8,24 @@ using PhoneNumbers;
 
 namespace CoreLayer.CustomValidations
 {
-    public class EgyptianPhoneListAttribute: ValidationAttribute
+
+    public class EgyptianPhoneAttribute : ValidationAttribute
     {
         private const string DefaultRegion = "EG";
         private static readonly PhoneNumberUtil PhoneUtil = PhoneNumberUtil.GetInstance();
 
         protected override ValidationResult IsValid(object value, ValidationContext context)
         {
-            if (value is not List<string> phoneNumbers)
-                return ValidationResult.Success;
+            if (value is null or string { Length: 0 })
+                return ValidationResult.Success; // optional: allow empty if nullable
 
-            var invalidNumbers = new List<string>();
+            var number = value as string;
 
-            foreach (var number in phoneNumbers)
-            {
-                if (!IsValidEgyptianNumber(number))
-                    invalidNumbers.Add(number);
-            }
+            if (!IsValidEgyptianNumber(number))
+                return new ValidationResult($"Invalid Egyptian phone number: {number}. " +
+                                            "Valid formats: 01XXXXXXXX or +201XXXXXXXXX");
 
-            return invalidNumbers.Count == 0
-                ? ValidationResult.Success
-                : new ValidationResult(GetErrorMessage(invalidNumbers));
+            return ValidationResult.Success;
         }
 
         private bool IsValidEgyptianNumber(string number)
@@ -43,13 +40,6 @@ namespace CoreLayer.CustomValidations
                 return false;
             }
         }
-
-        private string GetErrorMessage(List<string> invalidNumbers)
-        {
-            var invalidList = string.Join(", ", invalidNumbers.Take(3));
-            var more = invalidNumbers.Count > 3 ? $" (+{invalidNumbers.Count - 3} more)" : "";
-            return $"Invalid Egyptian numbers: {invalidList}{more}. " +
-                   "Valid formats: 01XXXXXXXX or +201XXXXXXXXX";
-        }
     }
+
 }

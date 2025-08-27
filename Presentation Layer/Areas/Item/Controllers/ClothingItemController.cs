@@ -1,17 +1,22 @@
-﻿using CoreLayer.Models;
+﻿using CoreLayer;
+using CoreLayer.Models;
 using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PresentationLayer.Areas.Administrative.ViewModels;
+using PresentationLayer.Areas.Branch.ViewModels;
 using PresentationLayer.Areas.Stock.ViewModels;
+using PresentationLayer.Utility;
 using System.Threading.Tasks;
 
 namespace PresentationLayer.Areas.Stock.Controllers
 {
     [Area("Item")]
+    [Authorize(Policy = SD.Managers)]
     public class ClothingItemController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
@@ -29,74 +34,220 @@ namespace PresentationLayer.Areas.Stock.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Save(int? id)
+        public async Task<IActionResult> Save(int? id = 0)
         {
             var itemVM = new ItemVM();
 
-            if (id is not null)
+            // Display Edit Page
+            if (id != 0)
             {
                 var item = await _UnitOfWork.Items.GetOneAsync(i => i.Id == id);
+<<<<<<< HEAD
                 itemVM = item.Adapt<ItemVM>();
-            }
-            LoadData(itemVM).GetAwaiter().GetResult();
+                ViewBag.ShowBranchItems = true;
 
-            return View(itemVM);
-        }
+                var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == id, include: [b => b.Branch]);
 
-
-
-
-        [HttpPost]
-        public async Task<IActionResult> Save(ItemVM itemVM)
-        {
-            LoadData(itemVM).GetAwaiter().GetResult();
-            if (_UnitOfWork.Items.IsNameExist(itemVM.Name, itemVM.Id))
-            {
-                TempData["error"] = "Name is already exist";
-                return View(itemVM);
-            }
-            if (_UnitOfWork.Items.IsBarcodeExist(itemVM.Barcode, itemVM.Id))
-            {
-                TempData["error"] = "Barcode is already exist";
-                return View(itemVM);
-            }
-
-            if (itemVM.Id != 0)
-            {
-
-                var item = await _UnitOfWork.Items.GetOneAsync(i => i.Id == itemVM.Id, tracked: true);
-                item = itemVM.Adapt<CoreLayer.Models.Item>();
-
-                var result = await _UnitOfWork.Items.UpdateAsync(item);
-
-                if (result)
-                {
-                    TempData["success"] = "Item Updated";
-                    return RedirectToAction(nameof(Index));
-                }
-
+                itemVM.BranchItem = branchItems;
             }
             else
             {
-                var item = itemVM.Adapt<CoreLayer.Models.Item>();
 
+                ViewBag.ShowBranchItems = false;
+=======
+                if (item != null)
+                {
+                    itemVM = item.Adapt<ItemVM>();
+                    //itemVM.Image = item.Image;
+                    LoadData(itemVM).GetAwaiter().GetResult();
+                    return View(itemVM);
+                }
+                TempData["Error"] = "Clothing Item Not Found";
+                return RedirectToAction(nameof(Index));
+>>>>>>> babec553361427de27e3dd6f9cf8b3351f011840
+            }
+            // Display Add Page
+            LoadData(itemVM).GetAwaiter().GetResult();
+            return View(itemVM);
+        }
+
+<<<<<<< HEAD
+
+        [HttpPost]
+
+        public async Task<IActionResult> SaveBranchItem(BranchItemDTO branchItemDTO)
+        {
+            var branchItem = await _UnitOfWork.BranchItems.GetOneAsync(b => b.BranchId == branchItemDTO.BranchId && b.ItemId == branchItemDTO.ItemId);
+
+            if (branchItem is null)
+                return Json(new { status = false });
+
+            branchItem.BuyingPriceAvg = branchItemDTO.BuyingPriceAvg;
+            branchItem.LastBuyingPrice = branchItemDTO.LastBuyingPrice;
+            branchItem.SellingPrice = branchItemDTO.SellingPrice;
+            branchItem.Quantity = branchItemDTO.Quantity;
+
+            var result = await _UnitOfWork.BranchItems.UpdateAsync(branchItem);
+
+            if (result)
+                return Json(new { status = true });
+            else
+                return Json(new { status = false });
+
+        }
+
+
+=======
+>>>>>>> babec553361427de27e3dd6f9cf8b3351f011840
+        [HttpPost]
+        public async Task<IActionResult> Save(ItemVM itemVM)
+        {
+            if (!ModelState.IsValid)
+                return View(itemVM);
+            Result resultImg = new Result();
+
+            LoadData(itemVM).GetAwaiter().GetResult();
+
+            // Saving an Existing Item
+            if (itemVM.Id != 0)
+            {
+                if ((await _UnitOfWork.Items.GetOneAsync(i => i.Id == itemVM.Id) is CoreLayer.Models.Item item))
+                    {
+                    var newItem = new CoreLayer.Models.Item();
+                    newItem=itemVM.Adapt<CoreLayer.Models.Item>();
+
+                    // Replacing with a New Image
+                    if (itemVM.formFile != null)
+                    {
+                        if (item.Image != null)
+                        {
+                            // Deleting Old Image Physically
+                            resultImg = ImageService.DeleteImage(item.Image);
+                            if (!resultImg.Success)
+                            {
+                                TempData["Error"] = resultImg.ErrorMessage;
+                                return View(itemVM);
+                            }
+                        }
+
+                        // Add new Image Physically
+                        resultImg = ImageService.UploadNewImage(itemVM.formFile);
+                        if (resultImg.Success)
+                            newItem.Image = resultImg.Image;
+                        else
+                        {
+                            TempData["Error"] = resultImg.ErrorMessage;
+                            return View(itemVM);
+                        }
+                    }
+                    else
+                    {
+                        // Old Image deleted
+                        if (itemVM.deleteImage)
+                        {
+                            // Deleting Old Image Physically
+                            resultImg = ImageService.DeleteImage(item.Image!);
+                            if (!resultImg.Success)
+                            {
+                                TempData["Error"] = resultImg.ErrorMessage;
+                                return View(itemVM);
+                            }
+                        }
+                    }
+                    _UnitOfWork.Items.DetachEntity(item);
+
+                    var result = await _UnitOfWork.Items.UpdateAsync(newItem);
+
+                    if (result)
+                    {
+                        TempData["success"] = "Item Updated Successfully";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    TempData["Error"] = "Error Updating Item";
+                    return RedirectToAction(nameof(Index));
+                }
+                TempData["Error"] = "Clothing Item Not Found";
+                return View(itemVM);
+            }
+
+            // Saving a New Clothing Item
+            else
+            {
+                var item = itemVM.Adapt<CoreLayer.Models.Item>();
+<<<<<<< HEAD
+=======
+
+                if (itemVM.formFile != null)
+                {
+                    // Saving Physically
+                    resultImg = ImageService.UploadNewImage(itemVM.formFile);
+                    if (resultImg.Success)
+                        item.Image = resultImg.Image;
+                    else
+                    {
+                        TempData["Error"] = resultImg.ErrorMessage;
+                        return View(itemVM);
+                    }
+                }
+
+>>>>>>> babec553361427de27e3dd6f9cf8b3351f011840
                 var result = await _UnitOfWork.Items.CreateAsync(item);
 
                 if (result)
                 {
-                    TempData["success"] = "Item Added";
+<<<<<<< HEAD
+                    var branches = await _UnitOfWork.Branches.GetAsync();
+                    var branchItems = new List<BranchItem>();
+
+
+                    foreach (var itemBranch in branches)
+                    {
+                        var branchItem = new BranchItem()
+                        {
+                            Quantity = 0,
+                            SellingPrice = 0,
+                            BuyingPriceAvg = 0,
+                            LastBuyingPrice = 0,
+                            ItemId = item.Id,
+                            BranchId = itemBranch.Id
+                        };
+                        branchItems.Add(branchItem);
+                    }
+
+                    var resultAddingBranchItem = await _UnitOfWork.BranchItems.CreateRangeAsync(branchItems);
+
+                    if (resultAddingBranchItem)
+                    {
+                        TempData["success"] = "Item Added";
+                        return RedirectToAction(nameof(Index));
+                    }
+=======
+                    TempData["success"] = "Item Added Successfully";
                     return RedirectToAction(nameof(Index));
+>>>>>>> babec553361427de27e3dd6f9cf8b3351f011840
                 }
+                TempData["Error"] = "Error Adding Item";
+                return RedirectToAction(nameof(Index));
             }
-            TempData["error"] = "Somthing went wrong!";
-            return RedirectToAction(nameof(Index));
         }
 
 
         public async Task<IActionResult> Delete(int id)
         {
+            var resultImage = new Result();
             if ((await _UnitOfWork.Items.GetOneAsync(b => b.Id == id)) is CoreLayer.Models.Item Item)
             {
+                if (Item.Image != null)
+                {
+                    // Deleting Image Physically
+                    resultImage = ImageService.DeleteImage(Item.Image);
+                    if (!resultImage.Success)
+                    {
+                        TempData["Error"] = resultImage.ErrorMessage;
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
                 var deleteResult = await _UnitOfWork.Items.DeleteAsync(Item);
                 if (deleteResult)
                 {
@@ -118,6 +269,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
             var itemTypes = await _UnitOfWork.ItemTypes.GetAsync();
             var sizes = await _UnitOfWork.Sizes.GetAsync();
             var targetAudiences = await _UnitOfWork.TargetAudiences.GetAsync();
+            var itemTypesId = _UnitOfWork.ItemTypes.GetAsync().GetAwaiter().GetResult().Select(i => i.ItemTypeId ?? 0).ToList();
 
             itemVM.BrandsList = brands
             .Select(b => new SelectListItem
@@ -133,7 +285,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 Text = b.Name
             }).ToList();
 
-            itemVM.ItemTypesList = itemTypes
+
+            itemVM.ItemTypesList = itemTypes.Where(i => !itemTypesId.Contains(i.Id))
             .Select(b => new SelectListItem
             {
                 Value = b.Id.ToString(),

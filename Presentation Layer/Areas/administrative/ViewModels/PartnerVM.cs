@@ -12,16 +12,19 @@ namespace PresentationLayer.Areas.administrative.ViewModels
         [Required]
         [MinLength(3)]
         [MaxLength(50)]
-        [RegularExpression(@"\S+", ErrorMessage = "Name cannot be empty or whitespace.")]
+        [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
         [EmailAddress]
         public string? Email { get; set; } = string.Empty;
         [Required]
-        public PartnerType partnerType { get; set; } 
-        [EgyptianPhoneList]
+        public PartnerType partnerType { get; set; }
+        [EgyptianPhone]
         public string? PhoneNumber { get; set; }
 
-        public List<SelectListItem> PartnerList = new List<SelectListItem>();
+        public List<SelectListItem> PartnerList = new List<SelectListItem>() {
+        {new SelectListItem{Text = "Supplier" , Value = "1"}},
+             {new SelectListItem{Text = "Customer"  , Value = "2"}}
+        };
 
     }
 }

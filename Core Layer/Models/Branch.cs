@@ -18,7 +18,7 @@ namespace CoreLayer.Models
         public string Name { get; set; } = null!;
 
         // Many-to-Many: Branch has many Items (Bridge Table Needed)
-        public List<BranchItem> BranchItems { get; set; } = new List<BranchItem>();
+        public ICollection<BranchItem> BranchItems { get; set; } = new List<BranchItem>();
 
         // One-to-Many: Branch has many cashiers
         public ICollection<ApplicationUser> Cashiers { get; set; } = new List<ApplicationUser>();

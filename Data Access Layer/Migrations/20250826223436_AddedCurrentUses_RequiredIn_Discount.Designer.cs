@@ -4,6 +4,7 @@ using InfrastructureLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250826223436_AddedCurrentUses_RequiredIn_Discount")]
+    partial class AddedCurrentUses_RequiredIn_Discount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,13 +159,13 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("BuyingPriceAvg")
                         .HasColumnType("float");
 
-                    b.Property<double>("LastBuyingPrice")
-                        .HasColumnType("float");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<double?>("SellingPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double>("lastBuyingPrice")
                         .HasColumnType("float");
 
                     b.HasKey("BranchId", "ItemId");

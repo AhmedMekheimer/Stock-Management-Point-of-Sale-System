@@ -8,23 +8,53 @@ using System.Threading.Tasks;
 
 namespace CoreLayer.Models
 {
+    public enum Status
+    {
+        Draft,
+        Approved
+    }
     public abstract class Operation
     {
         public int Id { get; set; }
         [Required]
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
+        [Required]
+        public TimeOnly Time { get; set; }
+        public Status status { get; set; }
+        [Required]
+        [Range(1, int.MaxValue)]
+        public int TotalQuantity { get; set; }
+        [Required]
+        [Range(1, double.MaxValue)]
+        public double TotalAmount { get; set; }
+
+        [Required]
+        [Range(0, 100)]
+        public double TotalTaxesRate { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
-        public double TotalItemsPrice { get; set; }
+        public double TotalTaxesAmount { get; set; }
+
+        [Required]
+        [Range(0, 100)]
+        public double TotalDiscountRate { get; set; }
         [Required]
         [Range(0, double.MaxValue)]
-        public double TotalTaxes { get; set; }
+        public double TotalDiscountAmount { get; set; }
+
         [Required]
-        [Range(0, double.MaxValue)]
+        [Range(1, double.MaxValue)]
         public double GrandTotal { get; set; }
+
+        [Required]
+        [Range(1, int.MaxValue)]
+        public int RoundedGrandTotal { get; set; }
+
         [Required]
         public string ApplicationUserId { get; set; } = null!;
         public ApplicationUser ApplicationUser { get; set; } = null!;
+
         public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
+        public ICollection<DiscountOperation> DiscountOperations { get; set; } = new List<DiscountOperation>();
     }
 }

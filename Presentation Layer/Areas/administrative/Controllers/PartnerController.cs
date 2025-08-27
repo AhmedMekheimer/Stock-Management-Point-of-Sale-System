@@ -1,4 +1,5 @@
 ﻿using AspNetCoreGeneratedDocument;
+using CoreLayer;
 using CoreLayer.Models;
 using InfrastructureLayer.Interfaces;
 using Mapster;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace PresentationLayer.Areas.administrative.Controllers
 {
     [Area("administrative")]
-    [Authorize]
+    [Authorize(Policy = SD.Managers)]
     public class PartnerController : Controller
     {
 
@@ -33,21 +34,13 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Save(int? Id)
+        public async Task<IActionResult> Save(int Id = 0)
         {
-            List<SelectListItem> list = new List<SelectListItem>() {
-             {new SelectListItem{Text = "Supplier" , Value = "1"}},
-             {new SelectListItem{Text = "Customer"  , Value = "2"}},
-            };
+            PartnerVM partnerVM = new PartnerVM();
 
-            PartnerVM partnerVM = new PartnerVM()
+            if (Id == 0)
             {
-                PartnerList = list
-            };
-
-            if (Id is null)
-            {
-                View(partnerVM);
+                return View(partnerVM);
             }
             else
             {
@@ -57,19 +50,20 @@ namespace PresentationLayer.Areas.administrative.Controllers
                 {
 
                     partnerVM = partner.Adapt<PartnerVM>();
-                    partnerVM.PartnerList = list;
                     return View(partnerVM);
                 }
-
+                else
+                {
+                    TempData["error"] = "Partner not found.";
+                    return RedirectToAction(nameof(Index));
+                }
             }
-
-            return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Save(PartnerVM partnerVM)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return View(partnerVM);
 
             if (partnerVM.Id is null)
@@ -81,7 +75,12 @@ namespace PresentationLayer.Areas.administrative.Controllers
 
                 if (result)
                 {
-                    TempData["success"] = "Partner is added.";
+                    TempData["success"] = "Partner Added Succussfully";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData["error"] = "Error Adding Partner";
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -98,17 +97,22 @@ namespace PresentationLayer.Areas.administrative.Controllers
 
                     if (result)
                     {
-                        TempData["success"] = "Partner is updated.";
+                        TempData["success"] = "Partner Updated Successfully.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        TempData["error"] = "Error Updating Partner";
                         return RedirectToAction(nameof(Index));
                     }
                 }
+                else
+                {
+                    TempData["error"] = "Partner not found.";
+                    return RedirectToAction(nameof(Index));
+                }
             }
-
-            TempData["error"] = "Somthing is wrong";
-            return RedirectToAction(nameof(Index));
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
@@ -124,10 +128,17 @@ namespace PresentationLayer.Areas.administrative.Controllers
                     TempData["success"] = "Partner Deleted Succussfully";
                     return RedirectToAction(nameof(Index));
                 }
+                else
+                {
+                    TempData["error"] = "Error Deleting Partner";
+                    return RedirectToAction(nameof(Index));
+                }
             }
-
-            return RedirectToAction(nameof(Index));
+            else
+            {
+                TempData["error"] = "Partner not found.";
+                return RedirectToAction(nameof(Index));
+            }
         }
-
     }
 }

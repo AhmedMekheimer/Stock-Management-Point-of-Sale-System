@@ -1,72 +1,156 @@
-﻿@using PresentationLayer.Areas.Stock.ViewModels
-@model ItemVM
+﻿@model ItemVM
 
 <div class="container">
 	<div class="card shadow-lg border-0 rounded-4">
 		<div class="card-body p-4">
-			<h4 class="mb-4">Add Item</h4>
+			@if (Model.Id == 0)
+			{
+				<h4 class="mb-4">Add Item</h4>
+			}
+			else
+			{
+				<h4 class="mb-4">Edit Brand</h4>
+			}
 
-			<form asp-action="Save" method="post">
+			<form asp-action="Save" method="post" enctype="multipart/form-data">
 				<div class="row">
-					@* <div asp-validation-summary="All" class="text-danger"></div> *@
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-					<input asp-for="Id" type="hidden" value="@Model.Id" />
-					<!-- Username -->
-					<div class="mb-3 col-12">
-						<label asp-for="Name" class="control-label"></label>
-						<input asp-for="Name" class="form-control" />
-						<span asp-validation-for="Name" class="text-danger"></span>
-					</div>
-					<div class="mb-3 col-12">
-						<label asp-for="Barcode" class="control-label"></label>
-						<input asp-for="Barcode" class="form-control" />
-						<span asp-validation-for="Barcode" class="text-danger"></span>
+                    <input asp-for="Id" type="hidden" value="@Model.Id" />
+                    <!-- Username -->
+                    <div class="mb-3 col-12">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-12">
+                        <label asp-for="Barcode" class="control-label"></label>
+                        <input asp-for="Barcode" class="form-control" />
+                        <span asp-validation-for="Barcode" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 col-12">
+                        <label asp-for="SizeId" class="form-label">Size</label>
+                        <select class="form-select" asp-for="SizeId" asp-items="@Model.SizesList">
+                            <option value="">Select a Size</option>
+                        </select>
+                        <span asp-validation-for="SizeId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-12">
+                        <label asp-for="ColorId" class="form-label">Color</label>
+                        <select class="form-select" asp-for="ColorId" asp-items="@Model.ColorsList">
+                            <option value="">Select a Color</option>
+                        </select>
+                        <span asp-validation-for="ColorId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-12">
+                        <label asp-for="ItemTypeId" class="form-label">Item type</label>
+                        <select class="form-select" asp-for="ItemTypeId" asp-items="@Model.ItemTypesList">
+                            <option value="">Select Item type</option>
+                        </select>
+                        <span asp-validation-for="ItemTypeId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-12">
+                        <label asp-for="TargetAudienceId" class="form-label">Audience</label>
+                        <select class="form-select" asp-for="TargetAudienceId" asp-items="@Model.TargetAudiencesList">
+                            <option value="">Select a Audience</option>
+                        </select>
+                        <span asp-validation-for="TargetAudienceId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-12">
+                        <label asp-for="BrandId" class="form-label">Brand</label>
+                        <select class="form-select" asp-for="BrandId" asp-items="@Model.BrandsList">
+                            <option value="">Select a Brand</option>
+                        </select>
+                        <span asp-validation-for="BrandId" class="text-danger"></span>
+                    </div>
+
+					<!-- Existing Image (only in Edit) -->
+					@if (Model.Id != 0 && !string.IsNullOrEmpty(Model.Image))
+					{
+						<div class="form-group mb-3 col-12">
+							<label class="form-label">Existing Image</label>
+							<div class="position-relative d-inline-block" id="existingImageWrapper">
+								<img src="~/Images/@Model.Image"
+									 alt="@Model.Image"
+									 class="img-thumbnail"
+									 style="max-height:150px;">
+
+								<!-- Delete/Undo Button -->
+								<button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+										onclick="toggleExistingImage(this)">
+									&times;
+								</button>
+
+								<!-- Hidden field to flag deletion -->
+								<input type="hidden" id="DeleteImage" name="deleteImage" value="false" />
+							</div>
+						</div>
+					}
+
+					<!-- Upload New Image -->
+					<div class="form-group mb-3 col-12">
+						<label class="form-label">
+							@(Model.Id == 0 ? "Upload Image" : "Upload New Image")
+						</label>
+						<input type="file" class="form-control" accept="image/*" name="formFile" onchange="previewNewImage(event)">
+
+						<!-- Preview new image -->
+						<div id="newImagePreview" class="mt-2"></div>
 					</div>
 
-					<div class="mb-3 col-12">
-						<label asp-for="SizeId" class="form-label">Size</label>
-						<select class="form-select" asp-for="SizeId" asp-items="@Model.SizesList">
-							<option value="">Select a Size</option>
-						</select>
-						<span asp-validation-for="SizeId" class="text-danger"></span>
-					</div>
-					<div class="mb-3 col-12">
-						<label asp-for="ColorId" class="form-label">Color</label>
-						<select class="form-select" asp-for="ColorId" asp-items="@Model.ColorsList">
-							<option value="">Select a Color</option>
-						</select>
-						<span asp-validation-for="ColorId" class="text-danger"></span>
-					</div>
-					<div class="mb-3 col-12">
-						<label asp-for="ItemTypeId" class="form-label">Item type</label>
-						<select class="form-select" asp-for="ItemTypeId" asp-items="@Model.ItemTypesList">
-							<option value="">Select Item type</option>
-						</select>
-						<span asp-validation-for="ItemTypeId" class="text-danger"></span>
-					</div>
-					<div class="mb-3 col-12">
-						<label asp-for="TargetAudienceId" class="form-label">Audience</label>
-						<select class="form-select" asp-for="TargetAudienceId" asp-items="@Model.TargetAudiencesList">
-							<option value="">Select a Audience</option>
-						</select>
-						<span asp-validation-for="TargetAudienceId" class="text-danger"></span>
-					</div>
-					<div class="mb-3 col-12">
-						<label asp-for="BrandId" class="form-label">Brand</label>
-						<select class="form-select" asp-for="BrandId" asp-items="@Model.BrandsList">
-							<option value="">Select a Brand</option>
-						</select>
-						<span asp-validation-for="BrandId" class="text-danger"></span>
-					</div>
-
-					<!-- Submit -->
-					<div class="d-grid col-2 ">
-						<button type="submit" class="btn btn-primary">Submit</button>
+					<div class="form-actions mt-3">
+						<button type="submit" class="btn btn-primary btn-sm">Submit</button>
 					</div>
 				</div>
 			</form>
 		</div>
 	</div>
+
+    <div>
+        @if (ViewBag.ShowBranchItems)
+        {
+
+            <div class="table-responsive my-5">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>Branch</th>
+                            <th>Quantity</th>
+                            <th>Buying Price Avg</th>
+                            <th>Last Buying Price</th>
+                            <th>Selling Price</th>
+                            <th>Save</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var branchItem in Model.BranchItem)
+                        {
+                            <tr class="saveData">
+                                <td>@branchItem.Branch?.Name</td>
+                                <td>
+                                    <input type="number" name="name" value="@branchItem.Quantity" class="Quantity" />
+                                </td>
+                                <td>
+                                    <input type="number" name="name" value="@branchItem.BuyingPriceAvg" class="BuyingPriceAvg" />
+                                </td>
+                                <td>
+                                    <input type="number" name="name" value="@branchItem.LastBuyingPrice" class="lastBuyingPrice" />
+                                </td>
+                                <td>
+                                    <input type="number" name="name" value="@branchItem.SellingPrice?.ToString("N2")" class="SellingPrice" />
+                                </td>
+                                <td>
+                                    <button type="button" class="btnSaveItemBranch btn btn-secondary" data-branchId="@branchItem.BranchId" data-itemId="@branchItem.ItemId"  name="name" >Save</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        }
+    </div>
 
 </div>
 
@@ -74,4 +158,67 @@
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
+
+	<script>
+		// Toggle delete/undo for existing image
+		function toggleExistingImage(button) {
+			const container = document.getElementById("existingImageWrapper");
+			const hiddenInput = document.getElementById("DeleteImage");
+
+			if (hiddenInput.value === "false") {
+				// Mark for deletion
+				hiddenInput.value = "true";
+				container.style.opacity = "0.5";
+				button.textContent = "Undo";
+				button.classList.remove("btn-danger");
+				button.classList.add("btn-secondary");
+			} else {
+				// Undo deletion
+				hiddenInput.value = "false";
+				container.style.opacity = "1";
+				button.innerHTML = "&times;";
+				button.classList.remove("btn-secondary");
+				button.classList.add("btn-danger");
+			}
+		}
+
+		// Preview newly uploaded image
+		function previewNewImage(event) {
+			const input = event.target;
+			const previewContainer = document.getElementById("newImagePreview");
+
+			previewContainer.innerHTML = ""; // Clear old preview
+
+			if (input.files && input.files[0]) {
+				const file = input.files[0];
+				if (!file.type.match("image.*")) return;
+
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					const img = document.createElement("img");
+					img.src = e.target.result;
+					img.className = "img-thumbnail";
+					img.style.maxHeight = "150px";
+
+					// Remove button for new preview
+					const wrapper = document.createElement("div");
+					wrapper.className = "position-relative d-inline-block";
+
+					const removeBtn = document.createElement("button");
+					removeBtn.innerHTML = "&times;";
+					removeBtn.className = "btn btn-danger btn-sm position-absolute top-0 end-0";
+					removeBtn.style.transform = "translate(50%,-50%)";
+					removeBtn.onclick = () => {
+						input.value = ""; // clear file input
+						previewContainer.innerHTML = "";
+					};
+
+					wrapper.appendChild(img);
+					wrapper.appendChild(removeBtn);
+					previewContainer.appendChild(wrapper);
+				};
+				reader.readAsDataURL(file);
+			}
+		}
+	</script>
 }

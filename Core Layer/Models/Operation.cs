@@ -28,19 +28,14 @@ namespace CoreLayer.Models
         [Range(1, double.MaxValue)]
         public double TotalAmount { get; set; }
 
-        [Required]
         [Range(0, 100)]
-        public double TotalTaxesRate { get; set; }
-        [Required]
+        public double? TotalTaxesRate { get; set; }
         [Range(0, double.MaxValue)]
-        public double TotalTaxesAmount { get; set; }
+        public double? TotalTaxesAmount { get; set; }
 
-        [Required]
-        [Range(0, 100)]
-        public double TotalDiscountRate { get; set; }
-        [Required]
+        public double? TotalDiscountRateOrRawValue { get; set; }
         [Range(0, double.MaxValue)]
-        public double TotalDiscountAmount { get; set; }
+        public double? TotalDiscountAmount { get; set; }
 
         [Required]
         [Range(1, double.MaxValue)]

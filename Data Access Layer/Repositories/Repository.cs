@@ -36,6 +36,22 @@ namespace InfrastructureLayer.Repositories
             }
         }
 
+        public async Task<bool> CreateRangeAsync(IEnumerable<T> entity)
+        {
+            try
+            {
+                await _db.AddRangeAsync(entity);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ex: {ex}");
+                return false;
+            }
+        }
+
         public  async Task<bool> UpdateAsync(T entity)
         {
             try

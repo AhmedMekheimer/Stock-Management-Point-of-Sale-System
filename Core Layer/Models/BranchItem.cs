@@ -16,7 +16,7 @@ namespace CoreLayer.Models
         [Range(0, int.MaxValue)]
         public int Quantity { get; set; }
         public double BuyingPriceAvg { get; set; }
-        public double lastBuyingPrice { get; set; }
+        public double LastBuyingPrice { get; set; }
         public double? SellingPrice { get; set; }
 
         // Navigation properties

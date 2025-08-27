@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using CoreLayer.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace PresentationLayer.Areas.Stock.ViewModels
@@ -31,6 +32,17 @@ namespace PresentationLayer.Areas.Stock.ViewModels
 
         [Required]
         public int TargetAudienceId { get; set; }
+
+
+        public List<BranchItem> BranchItem = new List<BranchItem>();
+
+
+
+
+
+
+
+
         public IEnumerable<SelectListItem> BrandsList { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> ColorsList { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> ItemTypesList { get; set; } = new List<SelectListItem>();

@@ -11,6 +11,7 @@ namespace InfrastructureLayer.Interfaces.IRepositories
     {
         // CRUD
         Task<bool> CreateAsync(T entity);
+        Task<bool> CreateRangeAsync(IEnumerable<T> entity);
 
         Task<bool> UpdateAsync(T entity);
 

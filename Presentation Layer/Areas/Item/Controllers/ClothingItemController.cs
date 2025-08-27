@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PresentationLayer.Areas.Administrative.ViewModels;
+using PresentationLayer.Areas.Branch.ViewModels;
 using PresentationLayer.Areas.Stock.ViewModels;
 using PresentationLayer.Utility;
 using System.Threading.Tasks;
@@ -46,15 +47,44 @@ namespace PresentationLayer.Areas.Stock.Controllers
                     itemVM = item.Adapt<ItemVM>();
                     //itemVM.Image = item.Image;
                     LoadData(itemVM).GetAwaiter().GetResult();
+                    ViewBag.ShowBranchItems = true;
+                    var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == id, include: [b => b.Branch]);
+                    itemVM.BranchItem = branchItems;
                     return View(itemVM);
                 }
                 TempData["Error"] = "Clothing Item Not Found";
                 return RedirectToAction(nameof(Index));
             }
             // Display Add Page
+            ViewBag.ShowBranchItems = false;
             LoadData(itemVM).GetAwaiter().GetResult();
             return View(itemVM);
         }
+
+
+        [HttpPost]
+
+        public async Task<IActionResult> SaveBranchItem(BranchItemDTO branchItemDTO)
+        {
+            var branchItem = await _UnitOfWork.BranchItems.GetOneAsync(b => b.BranchId == branchItemDTO.BranchId && b.ItemId == branchItemDTO.ItemId);
+
+            if (branchItem is null)
+                return Json(new { status = false });
+
+            branchItem.BuyingPriceAvg = branchItemDTO.BuyingPriceAvg;
+            branchItem.LastBuyingPrice = branchItemDTO.LastBuyingPrice;
+            branchItem.SellingPrice = branchItemDTO.SellingPrice;
+            branchItem.Quantity = branchItemDTO.Quantity;
+
+            var result = await _UnitOfWork.BranchItems.UpdateAsync(branchItem);
+
+            if (result)
+                return Json(new { status = true });
+            else
+                return Json(new { status = false });
+
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Save(ItemVM itemVM)
@@ -149,12 +179,35 @@ namespace PresentationLayer.Areas.Stock.Controllers
 
                 if (result)
                 {
-                    TempData["success"] = "Item Added Successfully";
-                    return RedirectToAction(nameof(Index));
+                    var branches = await _UnitOfWork.Branches.GetAsync();
+                    var branchItems = new List<BranchItem>();
+
+
+                    foreach (var itemBranch in branches)
+                    {
+                        var branchItem = new BranchItem()
+                        {
+                            Quantity = 0,
+                            SellingPrice = 0,
+                            BuyingPriceAvg = 0,
+                            LastBuyingPrice = 0,
+                            ItemId = item.Id,
+                            BranchId = itemBranch.Id
+                        };
+                        branchItems.Add(branchItem);
+                    }
+
+                    var resultAddingBranchItem = await _UnitOfWork.BranchItems.CreateRangeAsync(branchItems);
+
+                    if (resultAddingBranchItem)
+                    {
+                        TempData["success"] = "Item Added";
+                        return RedirectToAction(nameof(Index));
+                    }
                 }
-                TempData["Error"] = "Error Adding Item";
-                return RedirectToAction(nameof(Index));
             }
+            TempData["error"] = "Somthing went wrong!";
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -195,6 +248,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
             var itemTypes = await _UnitOfWork.ItemTypes.GetAsync();
             var sizes = await _UnitOfWork.Sizes.GetAsync();
             var targetAudiences = await _UnitOfWork.TargetAudiences.GetAsync();
+            var itemTypesId = _UnitOfWork.ItemTypes.GetAsync().GetAwaiter().GetResult().Select(i => i.ItemTypeId ?? 0).ToList();
 
             itemVM.BrandsList = brands
             .Select(b => new SelectListItem
@@ -210,7 +264,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 Text = b.Name
             }).ToList();
 
-            itemVM.ItemTypesList = itemTypes
+
+            itemVM.ItemTypesList = itemTypes.Where(i => !itemTypesId.Contains(i.Id))
             .Select(b => new SelectListItem
             {
                 Value = b.Id.ToString(),

@@ -42,19 +42,6 @@ namespace PresentationLayer.Areas.Stock.Controllers
             if (id != 0)
             {
                 var item = await _UnitOfWork.Items.GetOneAsync(i => i.Id == id);
-<<<<<<< HEAD
-                itemVM = item.Adapt<ItemVM>();
-                ViewBag.ShowBranchItems = true;
-
-                var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == id, include: [b => b.Branch]);
-
-                itemVM.BranchItem = branchItems;
-            }
-            else
-            {
-
-                ViewBag.ShowBranchItems = false;
-=======
                 if (item != null)
                 {
                     itemVM = item.Adapt<ItemVM>();
@@ -64,14 +51,12 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 }
                 TempData["Error"] = "Clothing Item Not Found";
                 return RedirectToAction(nameof(Index));
->>>>>>> babec553361427de27e3dd6f9cf8b3351f011840
             }
             // Display Add Page
             LoadData(itemVM).GetAwaiter().GetResult();
             return View(itemVM);
         }
 
-<<<<<<< HEAD
 
         [HttpPost]
 
@@ -97,8 +82,6 @@ namespace PresentationLayer.Areas.Stock.Controllers
         }
 
 
-=======
->>>>>>> babec553361427de27e3dd6f9cf8b3351f011840
         [HttpPost]
         public async Task<IActionResult> Save(ItemVM itemVM)
         {
@@ -174,8 +157,6 @@ namespace PresentationLayer.Areas.Stock.Controllers
             else
             {
                 var item = itemVM.Adapt<CoreLayer.Models.Item>();
-<<<<<<< HEAD
-=======
 
                 if (itemVM.formFile != null)
                 {
@@ -190,12 +171,10 @@ namespace PresentationLayer.Areas.Stock.Controllers
                     }
                 }
 
->>>>>>> babec553361427de27e3dd6f9cf8b3351f011840
                 var result = await _UnitOfWork.Items.CreateAsync(item);
 
                 if (result)
                 {
-<<<<<<< HEAD
                     var branches = await _UnitOfWork.Branches.GetAsync();
                     var branchItems = new List<BranchItem>();
 
@@ -221,14 +200,10 @@ namespace PresentationLayer.Areas.Stock.Controllers
                         TempData["success"] = "Item Added";
                         return RedirectToAction(nameof(Index));
                     }
-=======
-                    TempData["success"] = "Item Added Successfully";
-                    return RedirectToAction(nameof(Index));
->>>>>>> babec553361427de27e3dd6f9cf8b3351f011840
                 }
-                TempData["Error"] = "Error Adding Item";
-                return RedirectToAction(nameof(Index));
             }
+            TempData["error"] = "Somthing went wrong!";
+            return RedirectToAction(nameof(Index));
         }
 
 

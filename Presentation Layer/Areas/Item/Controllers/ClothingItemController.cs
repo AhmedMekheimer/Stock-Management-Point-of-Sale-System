@@ -47,12 +47,16 @@ namespace PresentationLayer.Areas.Stock.Controllers
                     itemVM = item.Adapt<ItemVM>();
                     //itemVM.Image = item.Image;
                     LoadData(itemVM).GetAwaiter().GetResult();
+                    ViewBag.ShowBranchItems = true;
+                    var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == id, include: [b => b.Branch]);
+                    itemVM.BranchItem = branchItems;
                     return View(itemVM);
                 }
                 TempData["Error"] = "Clothing Item Not Found";
                 return RedirectToAction(nameof(Index));
             }
             // Display Add Page
+            ViewBag.ShowBranchItems = false;
             LoadData(itemVM).GetAwaiter().GetResult();
             return View(itemVM);
         }

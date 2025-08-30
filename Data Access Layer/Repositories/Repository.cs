@@ -85,7 +85,7 @@ namespace InfrastructureLayer.Repositories
                 return false;
             }
         }
-        public async Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = false )
+        public async Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = true )
         {
 
             IQueryable<T> entities = _db;
@@ -104,7 +104,7 @@ namespace InfrastructureLayer.Repositories
                 }
             }
 
-            if (tracked)
+            if (!tracked)
             {
                 entities = entities.AsNoTracking();
             }
@@ -112,9 +112,39 @@ namespace InfrastructureLayer.Repositories
             return await entities.ToListAsync();
         }
 
-        public async Task<T?> GetOneAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = false)
+        public async Task<T?> GetOneAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = true)
         {
             return (await GetAsync(expression, include, tracked)).SingleOrDefault();
+        }
+
+        public async Task<List<T>> GetAsyncIncludes(Expression<Func<T, bool>>? condition = null, List<Func<IQueryable<T>, IQueryable<T>>>? includes = null, bool tracked = true)
+        {
+            IQueryable<T> entities = _db;
+
+            if (condition is not null)
+            {
+                entities = entities.Where(condition);
+            }
+
+            if (includes is not null)
+            {
+                foreach (var item in includes)
+                {
+                    entities = item(entities);
+                }
+            }
+
+            if (!tracked)
+            {
+                entities = entities.AsNoTracking();
+            }
+
+            return await entities.ToListAsync();
+        }
+
+        public async Task<T?> GetOneAsyncIncludes(Expression<Func<T, bool>>? condition = null, List<Func<IQueryable<T>, IQueryable<T>>>? includes = null, bool tracked = true)
+        {
+            return (await GetAsyncIncludes(condition, includes, tracked)).SingleOrDefault();
         }
 
         public async Task<bool> AnyAsync(Expression<Func<T, bool>>? condition = null)

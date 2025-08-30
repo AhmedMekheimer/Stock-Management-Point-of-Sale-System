@@ -6,6 +6,10 @@
 
 <form asp-action="Create" method="post" enctype="multipart/form-data">
 	<input type="hidden" asp-for="ParentId" />
+	@if (Model.ParentName != null)
+	{
+		<input type="hidden" asp-for="ParentName" />
+	}
 	<div class="mb-3">
 		<label class="form-label">Parent</label>
 		<input class="form-control" value="@(Model.ParentId == null ? "(root)" : Model.ParentName)" disabled />

@@ -34,38 +34,12 @@ namespace InfrastructureLayer.Data
         public DbSet<Tax> Taxes { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<TaxReceiveOrder> TaxReceiveOrders { get; set; }
-        public DbSet<DiscountOperation> DiscountOperations { get; set; }
+        public DbSet<DiscountSalesInvoice> DiscountSalesInvoices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
             base.OnModelCreating(modelBuilder);
-
-            // Either Rate or Raw Value Used for Tax & Discount
-            modelBuilder.Entity<Tax>(entity =>
-            {
-                entity.ToTable(tb =>
-                {
-                    tb.HasCheckConstraint(
-                        "CK_Taxes_RateOrRawValue",
-                        "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) " +
-                        "AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))"
-                    );
-                });
-            });
-
-            modelBuilder.Entity<Discount>(entity =>
-            {
-                entity.ToTable(tb =>
-                {
-                    tb.HasCheckConstraint(
-                        "CK_Discounts_RateOrRawValue",
-                        "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) " +
-                        "AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))"
-                    );
-                });
-            });
-
 
             // Uniqueness of Tax & Discount Names
             modelBuilder.Entity<Tax>(e =>
@@ -88,18 +62,18 @@ namespace InfrastructureLayer.Data
                 .WithMany(i => i.TaxReceiveOrders)
                 .HasForeignKey(to => to.OperationId);
 
-            // Discount - Operation Bridge Table relation configuration
-            modelBuilder.Entity<DiscountOperation>()
+            // Discount - Sales Invoice Bridge Table relation configuration
+            modelBuilder.Entity<DiscountSalesInvoice>()
                 .HasKey(to => new { to.DiscountId, to.OperationId });  // Composite PK
 
-            modelBuilder.Entity<DiscountOperation>()
+            modelBuilder.Entity<DiscountSalesInvoice>()
                 .HasOne(to => to.Discount)
-                .WithMany(b => b.DiscountOperations)
+                .WithMany(b => b.DiscountSalesInvoices)
                 .HasForeignKey(to => to.DiscountId);
 
-            modelBuilder.Entity<DiscountOperation>()
-                .HasOne(to => to.Operation)
-                .WithMany(i => i.DiscountOperations)
+            modelBuilder.Entity<DiscountSalesInvoice>()
+                .HasOne(to => to.SalesInvoice)
+                .WithMany(i => i.DiscountSalesInvoices)
                 .HasForeignKey(to => to.OperationId);
 
             // Branch - Item Bridge Table relation configuration

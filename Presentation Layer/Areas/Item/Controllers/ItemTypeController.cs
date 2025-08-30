@@ -109,12 +109,15 @@ namespace PresentationLayer.Areas.Item.Controllers
                     return View(vm);
                 }
             }
-
+            if(vm.ParentName is not null)
+            {
+                vm.Name = vm.Name + " " + vm.ParentName;
+            }
             _db.ItemTypes.Add(new ItemType
             {
                 Name = vm.Name,
                 ItemTypeId = vm.ParentId,
-                Image=vm.ItemType.Image
+                Image = vm.ItemType.Image
             });
             await _db.SaveChangesAsync();
 

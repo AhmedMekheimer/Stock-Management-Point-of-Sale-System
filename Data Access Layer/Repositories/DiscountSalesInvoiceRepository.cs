@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace InfrastructureLayer.Repositories
 {
-    public class DiscountOperationRepository : Repository<DiscountOperation>, IDiscountOperationRepository
+    public class DiscountSalesInvoiceRepository : Repository<DiscountSalesInvoice>, IDiscountSalesInvoiceRepository
     {
         private readonly ApplicationDbContext _context;
-        public DiscountOperationRepository(ApplicationDbContext context) : base(context)
+        public DiscountSalesInvoiceRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }

@@ -50,6 +50,5 @@ namespace CoreLayer.Models
         public ApplicationUser ApplicationUser { get; set; } = null!;
 
         public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
-        public ICollection<DiscountOperation> DiscountOperations { get; set; } = new List<DiscountOperation>();
     }
 }

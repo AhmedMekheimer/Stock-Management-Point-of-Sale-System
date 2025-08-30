@@ -67,7 +67,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
             }
 
             // Saving an Existing Tax
-            if ((await _UnitOfWork.Taxes.GetOneAsync(b => b.Id == taxVM.Id, null, tracked: true)) is Tax)
+            if ((await _UnitOfWork.Taxes.GetOneAsync(b => b.Id == taxVM.Id, null, tracked: false)) is Tax)
             {
                 var updateResult = await _UnitOfWork.Taxes.UpdateAsync(taxVM);
                 if (updateResult)

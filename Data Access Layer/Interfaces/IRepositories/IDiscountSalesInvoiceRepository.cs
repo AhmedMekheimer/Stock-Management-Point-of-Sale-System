@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace InfrastructureLayer.Interfaces.IRepositories
 {
-    public interface IDiscountOperationRepository : IRepository<DiscountOperation>
+    public interface IDiscountSalesInvoiceRepository : IRepository<DiscountSalesInvoice>
     {
 
     }

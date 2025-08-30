@@ -20,15 +20,6 @@ namespace CoreLayer.Models
         [Required]
         public string Barcode { get; set; } = null!;
 
-        [Range(0, 100, ErrorMessage = "Tax is written in percentage values from 0 to 100")]
-        public int? TaxPercentage { get; set; }
-
-        [Range(0, 100, ErrorMessage = "Discount is written in percentage values from 0 to 100")]
-        public int? DiscountPercentage { get; set; }
-
-        [Range(0,int.MaxValue)]
-        public int? RestockThreshold { get; set; }
-
         public string? Image { get; set; } = string.Empty;
 
         // Many-to-Many: Item is in many Branches (Bridge Table Needed)

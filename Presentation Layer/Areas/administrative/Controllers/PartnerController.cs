@@ -86,7 +86,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
             }
             else
             {
-                var oldPartner = await _UnitOfWork.Partners.GetOneAsync(x => x.Id == partnerVM.Id, tracked: true);
+                var oldPartner = await _UnitOfWork.Partners.GetOneAsync(x => x.Id == partnerVM.Id, tracked: false);
 
                 if (oldPartner is not null)
                 {

@@ -63,7 +63,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
             }
 
             // Saving an Existing Tax
-            if ((await _UnitOfWork.Discounts.GetOneAsync(b => b.Id == discountVM.Id, null, tracked: true)) is Discount)
+            if ((await _UnitOfWork.Discounts.GetOneAsync(b => b.Id == discountVM.Id, null, tracked: false)) is Discount)
             {
                 var updateResult = await _UnitOfWork.Discounts.UpdateAsync(discountVM);
                 if (updateResult)

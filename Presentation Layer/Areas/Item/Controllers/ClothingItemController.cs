@@ -75,6 +75,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
             branchItem.LastBuyingPrice = branchItemDTO.LastBuyingPrice;
             branchItem.SellingPrice = branchItemDTO.SellingPrice;
             branchItem.Quantity = branchItemDTO.Quantity;
+            branchItem.RestockThreshold = branchItemDTO.RestockThreshold;
+            branchItem.DiscountRate = branchItemDTO.DiscountRate;
 
             var result = await _UnitOfWork.BranchItems.UpdateAsync(branchItem);
 
@@ -99,9 +101,9 @@ namespace PresentationLayer.Areas.Stock.Controllers
             if (itemVM.Id != 0)
             {
                 if ((await _UnitOfWork.Items.GetOneAsync(i => i.Id == itemVM.Id) is CoreLayer.Models.Item item))
-                    {
+                {
                     var newItem = new CoreLayer.Models.Item();
-                    newItem=itemVM.Adapt<CoreLayer.Models.Item>();
+                    newItem = itemVM.Adapt<CoreLayer.Models.Item>();
 
                     // Replacing with a New Image
                     if (itemVM.formFile != null)
@@ -192,7 +194,9 @@ namespace PresentationLayer.Areas.Stock.Controllers
                             BuyingPriceAvg = 0,
                             LastBuyingPrice = 0,
                             ItemId = item.Id,
-                            BranchId = itemBranch.Id
+                            BranchId = itemBranch.Id,
+                            DiscountRate = 0,
+                            RestockThreshold = 0
                         };
                         branchItems.Add(branchItem);
                     }

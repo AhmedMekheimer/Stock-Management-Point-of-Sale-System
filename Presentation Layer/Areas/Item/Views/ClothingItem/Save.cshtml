@@ -17,54 +17,54 @@
 				<div class="row">
 					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                    <input asp-for="Id" type="hidden" value="@Model.Id" />
-                    <!-- Username -->
-                    <div class="mb-3 col-12">
-                        <label asp-for="Name" class="control-label"></label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3 col-12">
-                        <label asp-for="Barcode" class="control-label"></label>
-                        <input asp-for="Barcode" class="form-control" />
-                        <span asp-validation-for="Barcode" class="text-danger"></span>
-                    </div>
+					<input asp-for="Id" type="hidden" value="@Model.Id" />
+					<!-- Username -->
+					<div class="mb-3 col-12">
+						<label asp-for="Name" class="control-label"></label>
+						<input asp-for="Name" class="form-control" />
+						<span asp-validation-for="Name" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="Barcode" class="control-label"></label>
+						<input asp-for="Barcode" class="form-control" />
+						<span asp-validation-for="Barcode" class="text-danger"></span>
+					</div>
 
-                    <div class="mb-3 col-12">
-                        <label asp-for="SizeId" class="form-label">Size</label>
-                        <select class="form-select" asp-for="SizeId" asp-items="@Model.SizesList">
-                            <option value="">Select a Size</option>
-                        </select>
-                        <span asp-validation-for="SizeId" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3 col-12">
-                        <label asp-for="ColorId" class="form-label">Color</label>
-                        <select class="form-select" asp-for="ColorId" asp-items="@Model.ColorsList">
-                            <option value="">Select a Color</option>
-                        </select>
-                        <span asp-validation-for="ColorId" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3 col-12">
-                        <label asp-for="ItemTypeId" class="form-label">Item type</label>
-                        <select class="form-select" asp-for="ItemTypeId" asp-items="@Model.ItemTypesList">
-                            <option value="">Select Item type</option>
-                        </select>
-                        <span asp-validation-for="ItemTypeId" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3 col-12">
-                        <label asp-for="TargetAudienceId" class="form-label">Audience</label>
-                        <select class="form-select" asp-for="TargetAudienceId" asp-items="@Model.TargetAudiencesList">
-                            <option value="">Select a Audience</option>
-                        </select>
-                        <span asp-validation-for="TargetAudienceId" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3 col-12">
-                        <label asp-for="BrandId" class="form-label">Brand</label>
-                        <select class="form-select" asp-for="BrandId" asp-items="@Model.BrandsList">
-                            <option value="">Select a Brand</option>
-                        </select>
-                        <span asp-validation-for="BrandId" class="text-danger"></span>
-                    </div>
+					<div class="mb-3 col-12">
+						<label asp-for="SizeId" class="form-label">Size</label>
+						<select class="form-select" asp-for="SizeId" asp-items="@Model.SizesList">
+							<option value="">Select a Size</option>
+						</select>
+						<span asp-validation-for="SizeId" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="ColorId" class="form-label">Color</label>
+						<select class="form-select" asp-for="ColorId" asp-items="@Model.ColorsList">
+							<option value="">Select a Color</option>
+						</select>
+						<span asp-validation-for="ColorId" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="ItemTypeId" class="form-label">Item type</label>
+						<select class="form-select" asp-for="ItemTypeId" asp-items="@Model.ItemTypesList">
+							<option value="">Select Item type</option>
+						</select>
+						<span asp-validation-for="ItemTypeId" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="TargetAudienceId" class="form-label">Audience</label>
+						<select class="form-select" asp-for="TargetAudienceId" asp-items="@Model.TargetAudiencesList">
+							<option value="">Select a Audience</option>
+						</select>
+						<span asp-validation-for="TargetAudienceId" class="text-danger"></span>
+					</div>
+					<div class="mb-3 col-12">
+						<label asp-for="BrandId" class="form-label">Brand</label>
+						<select class="form-select" asp-for="BrandId" asp-items="@Model.BrandsList">
+							<option value="">Select a Brand</option>
+						</select>
+						<span asp-validation-for="BrandId" class="text-danger"></span>
+					</div>
 
 					<!-- Existing Image (only in Edit) -->
 					@if (Model.Id != 0 && !string.IsNullOrEmpty(Model.Image))
@@ -108,50 +108,58 @@
 		</div>
 	</div>
 
-    <div>
-        @if (ViewBag.ShowBranchItems)
-        {
+	<div>
+		@if (ViewBag.ShowBranchItems)
+		{
 
-            <div class="table-responsive my-5">
-                <table class="table table-bordered table-striped">
-                    <thead class="table-secondary">
-                        <tr>
-                            <th>Branch</th>
-                            <th>Quantity</th>
-                            <th>Buying Price Avg</th>
-                            <th>Last Buying Price</th>
-                            <th>Selling Price</th>
-                            <th>Save</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var branchItem in Model.BranchItem)
-                        {
-                            <tr class="saveData">
-                                <td>@branchItem.Branch?.Name</td>
-                                <td>
-                                    <input type="number" name="name" value="@branchItem.Quantity" class="Quantity" />
-                                </td>
-                                <td>
-                                    <input type="number" name="name" value="@branchItem.BuyingPriceAvg" class="BuyingPriceAvg" />
-                                </td>
-                                <td>
-                                    <input type="number" name="name" value="@branchItem.LastBuyingPrice" class="lastBuyingPrice" />
-                                </td>
-                                <td>
-                                    <input type="number" name="name" value="@branchItem.SellingPrice?.ToString("N2")" class="SellingPrice" />
-                                </td>
-                                <td>
-                                    <button type="button" class="btnSaveItemBranch btn btn-secondary" data-branchId="@branchItem.BranchId" data-itemId="@branchItem.ItemId"  name="name" >Save</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+			<div class="table-responsive my-5">
+				<table class="table table-bordered table-striped">
+					<thead class="table-secondary">
+						<tr>
+							<th>Branch</th>
+							<th>Quantity</th>
+							<th>Buying Price Avg</th>
+							<th>Last Buying Price</th>
+							<th>Selling Price</th>
+							<th>Discount Rate (%)</th>
+							<th>Restock Threshold</th>
+							<th>Save</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var branchItem in Model.BranchItem)
+						{
+							<tr class="saveData">
+								<td>@branchItem.Branch?.Name</td>
+								<td>
+									<input type="number" name="name" value="@branchItem.Quantity" class="Quantity" />
+								</td>
+								<td>
+									<input type="number" name="name" value="@branchItem.BuyingPriceAvg" class="BuyingPriceAvg" />
+								</td>
+								<td>
+									<input type="number" name="name" value="@branchItem.LastBuyingPrice" class="lastBuyingPrice" />
+								</td>
+								<td>
+									<input type="number" name="name" value="@branchItem.SellingPrice?.ToString("N2")" class="SellingPrice" />
+								</td>
+								<td>
+									<input type="number" name="name" value="@branchItem.DiscountRate" class="DiscountRate" min="0" max="100" />
+								</td>
+								<td>
+									<input type="number" name="name" value="@branchItem.RestockThreshold" class="RestockThreshold" />
+								</td>
+								<td>
+									<button type="button" class="btnSaveItemBranch btn btn-secondary" data-branchId="@branchItem.BranchId" data-itemId="@branchItem.ItemId" name="name">Save</button>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
 
-        }
-    </div>
+		}
+	</div>
 
 </div>
 
@@ -222,47 +230,51 @@
 			}
 		}
 
-         //Chnage BranchItem Values.
-          $(".btnSaveItemBranch").on("click", function () {
-            let branchId = $(this).data("branchid");
-            let itemId   = $(this).data("itemid");
+		 //Chnage BranchItem Values.
+		  $(".btnSaveItemBranch").on("click", function () {
+			let branchId = $(this).data("branchid");
+			let itemId   = $(this).data("itemid");
 
-            let parent = $(this).closest(".saveData");
+			let parent = $(this).closest(".saveData");
 
-            let quantity        = parent.find(".Quantity").val();
-            let buyingPriceAvg  = parent.find(".BuyingPriceAvg").val();
-            let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
-            let sellingPrice    = parent.find(".SellingPrice").val();
+			let quantity        = parent.find(".Quantity").val();
+			let buyingPriceAvg  = parent.find(".BuyingPriceAvg").val();
+			let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
+			let sellingPrice    = parent.find(".SellingPrice").val();
+			let discountRate	= parent.find(".DiscountRate").val();
+			let restockThreshold= parent.find(".RestockThreshold").val();
 
-            var data = {
-                Quantity: quantity,
-                BuyingPriceAvg: buyingPriceAvg,
-                LastBuyingPrice: lastBuyingPrice,
-                SellingPrice: sellingPrice,
-                BranchId: branchId,
-                ItemId: itemId
-            };
+			var data = {
+				Quantity: quantity,
+				BuyingPriceAvg: buyingPriceAvg,
+				LastBuyingPrice: lastBuyingPrice,
+				SellingPrice: sellingPrice,
+				BranchId: branchId,
+				ItemId: itemId,
+				DiscountRate:discountRate,
+				RestockThreshold:restockThreshold
+			};
 
-            $.ajax({
-                url: '@Url.Action("SaveBranchItem", "ClothingItem", new { area = "Item" })',
-                type: "POST",
+			$.ajax({
+				url: '@Url.Action("SaveBranchItem", "ClothingItem", new { area = "Item" })',
+				type: "POST",
 
-                data: {BranchItemDTO : data},  
-                success: function (res) {
-                    console.log("Saved:", res);
+				data: {BranchItemDTO : data},
+				success: function (res) {
+					console.log("Saved:", res);
 
-                    if (res.status) {
-                        toastr.success("Branch item saved successfully!");
-                    } else {
-                        toastr.error("Failed to save branch item.");
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error:", error);
-                    toastr.error("Something went wrong: " + error);
-                }
-            });
-        });
+					if (res.status) {
+						toastr.success("Branch item saved successfully!");
+					} else {
+						toastr.error("Failed to save branch item.");
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error("Error:", error);
+					toastr.error("Something went wrong: " + error);
+				}
+			});
+		});
 
 	</script>
 }

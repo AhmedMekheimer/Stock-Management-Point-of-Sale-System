@@ -41,6 +41,13 @@ namespace InfrastructureLayer.Data
 
             base.OnModelCreating(modelBuilder);
 
+            // Uniqueness of Partner's Name & Email
+            modelBuilder.Entity<Partner>(e =>
+            {
+                e.HasIndex(x => x.Name).IsUnique();
+                e.HasIndex(x => x.Email).IsUnique();
+            });
+
             // Uniqueness of Tax & Discount Names
             modelBuilder.Entity<Tax>(e =>
                  e.HasIndex(x => new { x.Name }).IsUnique());
@@ -122,9 +129,12 @@ namespace InfrastructureLayer.Data
                 .HasForeignKey(i => i.TargetAudienceId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //Uniquness of Item's Name & Barcode
+            // Uniqueness of Item's Name & Barcode
             modelBuilder.Entity<Item>(e =>
-            e.HasIndex(x => new { x.Barcode, x.Name }).IsUnique());
+            {
+                e.HasIndex(x => x.Barcode).IsUnique();
+                e.HasIndex(x => x.Name).IsUnique();
+            });
 
             // ItemType referencing (Tree-Structure)
             modelBuilder.Entity<ItemType>(e =>

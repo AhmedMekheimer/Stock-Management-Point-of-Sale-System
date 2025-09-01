@@ -1,4 +1,5 @@
 ﻿using CoreLayer.Models;
+using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Areas.Branch.ViewModels;
+using System;
 using System.Threading.Tasks;
 
 namespace PresentationLayer.Areas.Branch.Controllers
@@ -66,7 +68,12 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     var oldBranch = await _UnitOfWork.Branches.GetOneAsync(b => b.Id == branchVM.BranchId);
                     if (oldBranch is not null)
                     {
-
+                        // Checking Name Uniqueness
+                        if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name && e.Id != branchVM.BranchId) is CoreLayer.Models.Branch))
+                        {
+                            ModelState.AddModelError(nameof(branchVM.Name), "Name already exists");
+                            return View(branchVM);
+                        }
                         oldBranch.Name = branchVM.Name;
 
                         if (oldBranch.BranchManagerId != branchVM.BranchManagerId)
@@ -103,6 +110,8 @@ namespace PresentationLayer.Areas.Branch.Controllers
                             TempData["success"] = "Branch updated";
                             return RedirectToAction(nameof(Index));
                         }
+                        TempData["Error"] = "A Db Error Updating Branch";
+                        return RedirectToAction(nameof(Index));
                     }
 
                 }
@@ -113,6 +122,13 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     if (oldUserWithBranch is not null)
                     {
                         TempData["error"] = "User already on a branch";
+                        return View(branchVM);
+                    }
+
+                    // Checking Name Uniqueness
+                    if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name) is CoreLayer.Models.Branch))
+                    {
+                        ModelState.AddModelError(nameof(branchVM.Name), "Name already exists");
                         return View(branchVM);
                     }
 
@@ -156,7 +172,8 @@ namespace PresentationLayer.Areas.Branch.Controllers
                         TempData["success"] = "Branch added";
                         return RedirectToAction(nameof(Index));
                     }
-
+                    TempData["Error"] = "A Db Error Adding Branch";
+                    return RedirectToAction(nameof(Index));
                 }
             }
             return View();

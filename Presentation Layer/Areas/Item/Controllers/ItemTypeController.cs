@@ -89,7 +89,7 @@ namespace PresentationLayer.Areas.Item.Controllers
 
             // Enforce unique among siblings
             var nameTaken = await _db.ItemTypes
-                .AnyAsync(t => t.ItemTypeId == vm.ParentId && t.Name == vm.Name);
+                .AnyAsync(t => t.ItemTypeId == vm.ParentId && t.Name == vm.Name+" "+vm.ParentName);
             if (nameTaken)
             {
                 ModelState.AddModelError(nameof(vm.Name), "A sibling with the same name already exists.");
@@ -161,13 +161,23 @@ namespace PresentationLayer.Areas.Item.Controllers
             }
 
             ModelState.Remove("ItemType.Name");
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid)
+            {
+                vm.ItemType.Image = entity.Image;
+                vm.ItemType.Id = entity.Id;
+                ViewBag.Id = id; // pass id to form
+                return View(vm);
+            }
+
             Result result = new Result();
 
             // 1. Prevent moving under itself
-            if (vm.ParentId == id)
+            if (vm.ParentId == id || vm.ParentName==vm.Name)
             {
-                ModelState.AddModelError(nameof(vm.ParentId), "Cannot set the parent to itself.");
+                ModelState.AddModelError(nameof(vm.Name), "Cannot set the parent to itself.");
+                vm.ItemType.Image = entity.Image;
+                vm.ItemType.Id = entity.Id;
+                ViewBag.Id = id; // pass id to form
                 return View(vm);
             }
 
@@ -210,6 +220,9 @@ namespace PresentationLayer.Areas.Item.Controllers
                 {
                     ModelState.AddModelError(nameof(vm.ParentId),
                         "Cannot move this item under one of its descendants.");
+                    vm.ItemType.Image = entity.Image;
+                    vm.ItemType.Id = entity.Id;
+                    ViewBag.Id = id; // pass id to form
                     return View(vm);
                 }
             }
@@ -221,6 +234,8 @@ namespace PresentationLayer.Areas.Item.Controllers
             if (nameTaken)
             {
                 ModelState.AddModelError(nameof(vm.Name), "A sibling with the same name already exists.");
+                vm.ItemType.Image = entity.Image;
+                vm.ItemType.Id = entity.Id;
                 ViewBag.Id = id; // pass id to form
                 return View(vm);
             }

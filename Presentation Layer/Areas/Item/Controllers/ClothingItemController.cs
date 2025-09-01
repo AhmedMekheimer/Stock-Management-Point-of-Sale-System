@@ -45,7 +45,6 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 if (item != null)
                 {
                     itemVM = item.Adapt<ItemVM>();
-                    //itemVM.Image = item.Image;
                     LoadData(itemVM).GetAwaiter().GetResult();
                     ViewBag.ShowBranchItems = true;
                     var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == id, include: [b => b.Branch]);
@@ -102,6 +101,31 @@ namespace PresentationLayer.Areas.Stock.Controllers
             {
                 if ((await _UnitOfWork.Items.GetOneAsync(i => i.Id == itemVM.Id) is CoreLayer.Models.Item item))
                 {
+                    // Checking Name & Barcode Uniqueness
+                    if ((await _UnitOfWork.Items.GetOneAsync(e => e.Name == itemVM.Name && e.Id != itemVM.Id) is CoreLayer.Models.Item))
+                    {
+
+                        ModelState.AddModelError(nameof(itemVM.Name), "Name already exists");
+                        if ((await _UnitOfWork.Items.GetOneAsync(e => e.Barcode == itemVM.Barcode && e.Id != itemVM.Id) is CoreLayer.Models.Item))
+                        {
+                            ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
+                        }
+                        ViewBag.ShowBranchItems = true;
+                        var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == itemVM.Id, include: [b => b.Branch]);
+                        itemVM.BranchItem = branchItems;
+                        itemVM.Image = item.Image;
+                        return View(itemVM);
+                    }
+                    else if ((await _UnitOfWork.Items.GetOneAsync(e => e.Barcode == itemVM.Barcode && e.Id != itemVM.Id) is CoreLayer.Models.Item))
+                    {
+                        ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
+                        ViewBag.ShowBranchItems = true;
+                        var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == itemVM.Id, include: [b => b.Branch]);
+                        itemVM.BranchItem = branchItems;
+                        itemVM.Image = item.Image;
+                        return View(itemVM);
+                    }
+
                     var newItem = new CoreLayer.Models.Item();
                     newItem = itemVM.Adapt<CoreLayer.Models.Item>();
 
@@ -152,7 +176,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
                         TempData["success"] = "Item Updated Successfully";
                         return RedirectToAction(nameof(Index));
                     }
-                    TempData["Error"] = "Error Updating Item";
+                    TempData["Error"] = "A Db Error Updating Item";
                     return RedirectToAction(nameof(Index));
                 }
                 TempData["Error"] = "Clothing Item Not Found";
@@ -162,6 +186,26 @@ namespace PresentationLayer.Areas.Stock.Controllers
             // Saving a New Clothing Item
             else
             {
+                // Checking Name & Barcode Uniqueness
+                if ((await _UnitOfWork.Items.GetOneAsync(e => e.Name == itemVM.Name) is CoreLayer.Models.Item))
+                {
+                    ModelState.AddModelError(nameof(itemVM.Name), "Name already exists");
+                    if ((await _UnitOfWork.Items.GetOneAsync(e => e.Barcode == itemVM.Barcode) is CoreLayer.Models.Item))
+                    {
+                        ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
+                    }
+                    ViewBag.ShowBranchItems = false;
+                    LoadData(itemVM).GetAwaiter().GetResult();
+                    return View(itemVM);
+                }
+                else if ((await _UnitOfWork.Items.GetOneAsync(e => e.Barcode == itemVM.Barcode) is CoreLayer.Models.Item))
+                {
+                    ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
+                    ViewBag.ShowBranchItems = false;
+                    LoadData(itemVM).GetAwaiter().GetResult();
+                    return View(itemVM);
+                }
+
                 var item = itemVM.Adapt<CoreLayer.Models.Item>();
 
                 if (itemVM.formFile != null)
@@ -209,9 +253,9 @@ namespace PresentationLayer.Areas.Stock.Controllers
                         return RedirectToAction(nameof(Index));
                     }
                 }
+                TempData["Error"] = "A Db Error Adding Item";
+                return RedirectToAction(nameof(Index));
             }
-            TempData["error"] = "Somthing went wrong!";
-            return RedirectToAction(nameof(Index));
         }
 
 

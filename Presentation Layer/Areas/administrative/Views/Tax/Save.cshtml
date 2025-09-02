@@ -1,57 +1,61 @@
 ﻿@model Tax
 
 <div class="container">
-	<div class="card shadow-lg border-0 rounded-4">
-		<div class="card-body p-4">
-			@if (Model.Id == 0)
-			{
-				<h4 class="mb-4">Add Tax</h4>
-			}
-			else
-			{
-				<h4 class="mb-4">Edit Tax</h4>
-			}
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+            @if (Model.Id == 0)
+            {
+                <h4 class="mb-4">Add Tax</h4>
+            }
+            else
+            {
+                <h4 class="mb-4">Edit Tax</h4>
+            }
 
-			<form asp-action="Save" method="post">
-				<div class="row">
-					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <form asp-action="Save" method="post">
+                <div class="row">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-					<input asp-for="Id" type="hidden" />
+                    <input asp-for="Id" type="hidden" />
 
-					<!-- Tax Name -->
-					<div class="mb-3 col-4">
-						<label asp-for="Name" class="form-label">Tax Name</label>
-						<input asp-for="Name" class="form-control" />
-						<span asp-validation-for="Name" class="text-danger"></span>
-					</div>
+                    <!-- Tax Name -->
+                    <div class="mb-3 col-4">
+                        <label asp-for="Name" class="form-label">Tax Name</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
 
-					<!-- Tax Rate -->
-					<div class="mb-3 col-4">
-						<label asp-for="Rate" class="form-label">Tax Rate(%)</label>
-						<input asp-for="Rate" class="form-control" />
-						<span asp-validation-for="Rate" class="text-danger"></span>
-					</div>
+                    <!-- Tax Rate -->
+                    <div class="mb-3 col-4">
+                        <label asp-for="Rate" class="form-label">Tax Rate(%)</label>
+                        <input asp-for="Rate" class="form-control" />
+                        <span asp-validation-for="Rate" class="text-danger"></span>
+                    </div>
 
-					<!-- Tax Raw Value -->
-					<div class="mb-3 col-4">
-						<label asp-for="RawValue" class="form-label">Tax Raw Value(EGP)</label>
-						<input asp-for="RawValue" class="form-control" />
-						<span asp-validation-for="RawValue" class="text-danger"></span>
-					</div>
+                    <!-- Tax Raw Value -->
+                    <div class="mb-3 col-4">
+                        <label asp-for="RawValue" class="form-label">Tax Raw Value(EGP)</label>
+                        <input asp-for="RawValue" class="form-control" />
+                        <span asp-validation-for="RawValue" class="text-danger"></span>
+                    </div>
+
+                    @if (User.HasClaim("Permission", "Tax.Add"))
+                    {
+
+                        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+
+                    }
 
 
-					<div class="form-actions mt-3">
-						<button type="submit" class="btn btn-primary btn-sm">Submit</button>
-					</div>
-				</div>
-			</form>
-		</div>
-	</div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 
 @section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

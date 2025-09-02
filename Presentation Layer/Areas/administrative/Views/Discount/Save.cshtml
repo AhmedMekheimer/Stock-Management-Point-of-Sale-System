@@ -73,9 +73,12 @@
 						<span asp-validation-for="MaximumUses" class="text-danger"></span>
 					</div>
 
-					<div class="form-actions mt-3">
-						<button type="submit" class="btn btn-primary btn-sm">Submit</button>
-					</div>
+					@if (User.HasClaim("Permission", "Discount.Add"))
+					{
+						<div class="form-actions mt-3">
+							<button type="submit" class="btn btn-primary btn-sm">Submit</button>
+						</div>
+					}
 				</div>
 			</form>
 		</div>

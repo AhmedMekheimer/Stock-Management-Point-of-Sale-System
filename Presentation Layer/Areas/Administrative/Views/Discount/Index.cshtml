@@ -1,13 +1,19 @@
 ﻿@model List<Discount>
+@if (User.HasClaim("Permission", "Discount.View"))
+{
+
 
 <div class="p-3">
 
 	<div class="d-flex justify-content-between">
 		<h1>Discounts</h1>
+		@if (User.HasClaim("Permission", "Discount.Add"))
+		{
+			<p>
+				<a asp-action="Save" class="btn btn-primary">Add</a>
+			</p>
+		}
 
-		<p>
-			<a asp-action="Save" class="btn btn-primary">Add</a>
-		</p>
 
 	</div>
 
@@ -101,17 +107,25 @@
 
 						<td>
 							<div class="d-flex gap-2">
-								<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
-									Edit
-								</a>
 
-								<button type="button" class="btn btn-sm btn-danger"
-										data-bs-toggle="modal"
-										data-bs-target="#confirmDeleteModal"
-										data-id="@item.Id"
-										data-name="@item.Name">
-									Delete
-								</button>
+									@if (User.HasClaim("Permission", "Discount.Edit"))
+									{
+										<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+											Edit
+										</a>
+									}
+
+									@if (User.HasClaim("Permission", "Discount.Delete"))
+									{
+										<button type="button" class="btn btn-sm btn-danger"
+												data-bs-toggle="modal"
+												data-bs-target="#confirmDeleteModal"
+												data-id="@item.Id"
+												data-name="@item.Name">
+											Delete
+										</button>
+									}
+
 							</div>
 						</td>
 
@@ -140,4 +154,6 @@
 			$('#deleteUser').submit();
 		});
 	</script>
+}
+
 }

@@ -10,7 +10,7 @@ using PresentationLayer.Utility;
 namespace PresentationLayer.Areas.administrative.Controllers
 {
     [Area("administrative")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class TaxController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
@@ -21,6 +21,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Tax.View")]
         public async Task<IActionResult> Index()
         {
             var taxesList = await _UnitOfWork.Taxes.GetAsync();
@@ -28,6 +29,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Tax.Add|Tax.Edit")]
         public async Task<IActionResult> Save(int id = 0)
         {
             var taxVM = new Tax();
@@ -47,7 +49,9 @@ namespace PresentationLayer.Areas.administrative.Controllers
             return View(taxVM);
         }
 
+
         [HttpPost]
+        [Authorize(Policy = "Tax.Add|Tax.Edit")]
         public async Task<IActionResult> Save(Tax taxVM)
         {
             if (!ModelState.IsValid)
@@ -82,6 +86,9 @@ namespace PresentationLayer.Areas.administrative.Controllers
             return View(taxVM);
         }
 
+
+        [HttpPost]
+        [Authorize(Policy = "Tax.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             if ((await _UnitOfWork.Taxes.GetOneAsync(b => b.Id == id)) is Tax tax)

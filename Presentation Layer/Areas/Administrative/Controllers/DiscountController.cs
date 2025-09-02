@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace PresentationLayer.Areas.administrative.Controllers
 {
     [Area("administrative")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class DiscountController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
@@ -17,6 +17,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
             _UnitOfWork = unitOfWork;
         }
         [HttpGet]
+        [Authorize(Policy = "Discount.View")]
         public async Task<IActionResult> Index()
         {
             var discountsList = await _UnitOfWork.Discounts.GetAsync();
@@ -24,6 +25,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Discount.Add|Discount.Edit")]
         public async Task<IActionResult> Save(int id = 0)
         {
             var discountVM = new Discount();
@@ -44,6 +46,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Discount.Add|Discount.Edit")]
         public async Task<IActionResult> Save(Discount discountVM)
         {
             if (!ModelState.IsValid)
@@ -77,7 +80,8 @@ namespace PresentationLayer.Areas.administrative.Controllers
             TempData["Error"] = "Discount Not Found";
             return View(discountVM);
         }
-
+        [HttpPost]
+        [Authorize(Policy = "Discount.AddOrEdit")]
         public async Task<IActionResult> Delete(int id)
         {
             if ((await _UnitOfWork.Discounts.GetOneAsync(b => b.Id == id)) is Discount discount)

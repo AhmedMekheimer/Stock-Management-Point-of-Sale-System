@@ -512,6 +512,556 @@ namespace InfrastructureLayer.Migrations
                     b.ToTable("Partners");
                 });
 
+            modelBuilder.Entity("CoreLayer.Models.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EnglishName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            EnglishName = "System",
+                            Name = "System"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            EnglishName = "Branch",
+                            Name = "Branch",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 100,
+                            EnglishName = "Stock",
+                            Name = "Stock",
+                            ParentId = 10
+                        },
+                        new
+                        {
+                            Id = 101,
+                            EnglishName = "View Stock",
+                            Name = "Stock.View",
+                            ParentId = 100
+                        },
+                        new
+                        {
+                            Id = 102,
+                            EnglishName = "Add Stock",
+                            Name = "Stock.Add",
+                            ParentId = 100
+                        },
+                        new
+                        {
+                            Id = 103,
+                            EnglishName = "Edit Stock",
+                            Name = "Stock.Edit",
+                            ParentId = 100
+                        },
+                        new
+                        {
+                            Id = 104,
+                            EnglishName = "Delete Stock",
+                            Name = "Stock.Delete",
+                            ParentId = 100
+                        },
+                        new
+                        {
+                            Id = 120,
+                            EnglishName = "Receive Order",
+                            Name = "ReceiveOrder",
+                            ParentId = 10
+                        },
+                        new
+                        {
+                            Id = 121,
+                            EnglishName = "View Receive Order",
+                            Name = "ReceiveOrder.View",
+                            ParentId = 120
+                        },
+                        new
+                        {
+                            Id = 122,
+                            EnglishName = "Add Receive Order",
+                            Name = "ReceiveOrder.Add",
+                            ParentId = 120
+                        },
+                        new
+                        {
+                            Id = 123,
+                            EnglishName = "Edit Receive Order",
+                            Name = "ReceiveOrder.Edit",
+                            ParentId = 120
+                        },
+                        new
+                        {
+                            Id = 124,
+                            EnglishName = "Delete Receive Order",
+                            Name = "ReceiveOrder.Delete",
+                            ParentId = 120
+                        },
+                        new
+                        {
+                            Id = 11,
+                            EnglishName = "Item",
+                            Name = "Item",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 140,
+                            EnglishName = "Clothing ClothingItem",
+                            Name = "ClothingItem",
+                            ParentId = 11
+                        },
+                        new
+                        {
+                            Id = 141,
+                            EnglishName = "View ClothingItem",
+                            Name = "ClothingItem.View",
+                            ParentId = 140
+                        },
+                        new
+                        {
+                            Id = 142,
+                            EnglishName = "Add ClothingItem",
+                            Name = "ClothingItem.Add",
+                            ParentId = 140
+                        },
+                        new
+                        {
+                            Id = 143,
+                            EnglishName = "Edit ClothingItem",
+                            Name = "ClothingItem.Edit",
+                            ParentId = 140
+                        },
+                        new
+                        {
+                            Id = 144,
+                            EnglishName = "Delete ClothingItem",
+                            Name = "ClothingItem.Delete",
+                            ParentId = 140
+                        },
+                        new
+                        {
+                            Id = 145,
+                            EnglishName = "Add Data To A Branch",
+                            Name = "ClothingItem.BranchItem",
+                            ParentId = 140
+                        },
+                        new
+                        {
+                            Id = 160,
+                            EnglishName = "Color",
+                            Name = "Color",
+                            ParentId = 11
+                        },
+                        new
+                        {
+                            Id = 161,
+                            EnglishName = "View Color",
+                            Name = "Color.View",
+                            ParentId = 160
+                        },
+                        new
+                        {
+                            Id = 162,
+                            EnglishName = "Add Color",
+                            Name = "Color.Add",
+                            ParentId = 160
+                        },
+                        new
+                        {
+                            Id = 163,
+                            EnglishName = "Edit Color",
+                            Name = "Color.Edit",
+                            ParentId = 160
+                        },
+                        new
+                        {
+                            Id = 164,
+                            EnglishName = "Delete Color",
+                            Name = "Color.Delete",
+                            ParentId = 160
+                        },
+                        new
+                        {
+                            Id = 180,
+                            EnglishName = "Size",
+                            Name = "Size",
+                            ParentId = 11
+                        },
+                        new
+                        {
+                            Id = 181,
+                            EnglishName = "View Size",
+                            Name = "Size.View",
+                            ParentId = 180
+                        },
+                        new
+                        {
+                            Id = 182,
+                            EnglishName = "Add Size",
+                            Name = "Size.Add",
+                            ParentId = 180
+                        },
+                        new
+                        {
+                            Id = 183,
+                            EnglishName = "Edit Size",
+                            Name = "Size.Edit",
+                            ParentId = 180
+                        },
+                        new
+                        {
+                            Id = 184,
+                            EnglishName = "Delete Size",
+                            Name = "Size.Delete",
+                            ParentId = 180
+                        },
+                        new
+                        {
+                            Id = 200,
+                            EnglishName = "Item Type",
+                            Name = "ItemType",
+                            ParentId = 11
+                        },
+                        new
+                        {
+                            Id = 201,
+                            EnglishName = "View Item Type",
+                            Name = "ItemType.View",
+                            ParentId = 200
+                        },
+                        new
+                        {
+                            Id = 202,
+                            EnglishName = "Add Item Type",
+                            Name = "ItemType.Add",
+                            ParentId = 200
+                        },
+                        new
+                        {
+                            Id = 203,
+                            EnglishName = "Edit Item Type",
+                            Name = "ItemType.Edit",
+                            ParentId = 200
+                        },
+                        new
+                        {
+                            Id = 204,
+                            EnglishName = "Delete Item Type",
+                            Name = "ItemType.Delete",
+                            ParentId = 200
+                        },
+                        new
+                        {
+                            Id = 220,
+                            EnglishName = "Target Audience",
+                            Name = "TargetAudience",
+                            ParentId = 11
+                        },
+                        new
+                        {
+                            Id = 221,
+                            EnglishName = "View Target Audience",
+                            Name = "TargetAudience.View",
+                            ParentId = 220
+                        },
+                        new
+                        {
+                            Id = 222,
+                            EnglishName = "Add Target Audience",
+                            Name = "TargetAudience.Add",
+                            ParentId = 220
+                        },
+                        new
+                        {
+                            Id = 223,
+                            EnglishName = "Edit Target Audience",
+                            Name = "TargetAudience.Edit",
+                            ParentId = 220
+                        },
+                        new
+                        {
+                            Id = 224,
+                            EnglishName = "Delete Target Audience",
+                            Name = "TargetAudience.Delete",
+                            ParentId = 220
+                        },
+                        new
+                        {
+                            Id = 240,
+                            EnglishName = "Brand",
+                            Name = "Brand",
+                            ParentId = 11
+                        },
+                        new
+                        {
+                            Id = 241,
+                            EnglishName = "View Brand",
+                            Name = "Brand.View",
+                            ParentId = 240
+                        },
+                        new
+                        {
+                            Id = 242,
+                            EnglishName = "Add Brand",
+                            Name = "Brand.Add",
+                            ParentId = 240
+                        },
+                        new
+                        {
+                            Id = 243,
+                            EnglishName = "Edit Brand",
+                            Name = "Brand.Edit",
+                            ParentId = 240
+                        },
+                        new
+                        {
+                            Id = 244,
+                            EnglishName = "Delete Brand",
+                            Name = "Brand.Delete",
+                            ParentId = 240
+                        },
+                        new
+                        {
+                            Id = 12,
+                            EnglishName = "Administrative",
+                            Name = "Administrative",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 260,
+                            EnglishName = "Partner",
+                            Name = "Partner",
+                            ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 261,
+                            EnglishName = "View Partner",
+                            Name = "Partner.View",
+                            ParentId = 260
+                        },
+                        new
+                        {
+                            Id = 262,
+                            EnglishName = "Add Partner",
+                            Name = "Partner.Add",
+                            ParentId = 260
+                        },
+                        new
+                        {
+                            Id = 263,
+                            EnglishName = "Edit Partner",
+                            Name = "Partner.Edit",
+                            ParentId = 260
+                        },
+                        new
+                        {
+                            Id = 264,
+                            EnglishName = "Delete Partner",
+                            Name = "Partner.Delete",
+                            ParentId = 260
+                        },
+                        new
+                        {
+                            Id = 280,
+                            EnglishName = "User",
+                            Name = "User",
+                            ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 281,
+                            EnglishName = "View User",
+                            Name = "User.View",
+                            ParentId = 280
+                        },
+                        new
+                        {
+                            Id = 282,
+                            EnglishName = "Add User",
+                            Name = "User.Add",
+                            ParentId = 280
+                        },
+                        new
+                        {
+                            Id = 283,
+                            EnglishName = "Edit User",
+                            Name = "User.Edit",
+                            ParentId = 280
+                        },
+                        new
+                        {
+                            Id = 284,
+                            EnglishName = "Delete User",
+                            Name = "User.Delete",
+                            ParentId = 280
+                        },
+                        new
+                        {
+                            Id = 300,
+                            EnglishName = "Role",
+                            Name = "Role",
+                            ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 301,
+                            EnglishName = "View Role",
+                            Name = "Role.View",
+                            ParentId = 300
+                        },
+                        new
+                        {
+                            Id = 302,
+                            EnglishName = "Add Role",
+                            Name = "Role.Add",
+                            ParentId = 300
+                        },
+                        new
+                        {
+                            Id = 303,
+                            EnglishName = "Edit Role",
+                            Name = "Role.Edit",
+                            ParentId = 300
+                        },
+                        new
+                        {
+                            Id = 304,
+                            EnglishName = "Delete Role",
+                            Name = "Role.Delete",
+                            ParentId = 300
+                        },
+                        new
+                        {
+                            Id = 320,
+                            EnglishName = "Setting",
+                            Name = "Setting",
+                            ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 340,
+                            EnglishName = "Tax",
+                            Name = "Tax",
+                            ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 341,
+                            EnglishName = "View Tax",
+                            Name = "Tax.View",
+                            ParentId = 340
+                        },
+                        new
+                        {
+                            Id = 342,
+                            EnglishName = "Add Tax",
+                            Name = "Tax.Add",
+                            ParentId = 340
+                        },
+                        new
+                        {
+                            Id = 343,
+                            EnglishName = "Edit Tax",
+                            Name = "Tax.Edit",
+                            ParentId = 340
+                        },
+                        new
+                        {
+                            Id = 344,
+                            EnglishName = "Delete Tax",
+                            Name = "Tax.Delete",
+                            ParentId = 340
+                        },
+                        new
+                        {
+                            Id = 360,
+                            EnglishName = "Discount",
+                            Name = "Discount",
+                            ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 361,
+                            EnglishName = "View Discount",
+                            Name = "Discount.View",
+                            ParentId = 360
+                        },
+                        new
+                        {
+                            Id = 362,
+                            EnglishName = "Add Discount",
+                            Name = "Discount.Add",
+                            ParentId = 360
+                        },
+                        new
+                        {
+                            Id = 363,
+                            EnglishName = "Edit Discount",
+                            Name = "Discount.Edit",
+                            ParentId = 360
+                        },
+                        new
+                        {
+                            Id = 364,
+                            EnglishName = "Delete Discount",
+                            Name = "Discount.Delete",
+                            ParentId = 360
+                        },
+                        new
+                        {
+                            Id = 380,
+                            EnglishName = "User Login History",
+                            Name = "UserLoginHistory",
+                            ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 381,
+                            EnglishName = "View UserLoginHistory",
+                            Name = "UserLoginHistory.View",
+                            ParentId = 380
+                        });
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.RolePermission", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermissions");
+                });
+
             modelBuilder.Entity("CoreLayer.Models.Tax", b =>
                 {
                     b.Property<int>("Id")
@@ -574,6 +1124,35 @@ namespace InfrastructureLayer.Migrations
                         .IsUnique();
 
                     b.ToTable("Transactions");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.UserLoginHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IPAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LoginTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LogoutTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("userLoginHistories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -913,6 +1492,34 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Operation");
                 });
 
+            modelBuilder.Entity("CoreLayer.Models.Permission", b =>
+                {
+                    b.HasOne("CoreLayer.Models.Permission", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.RolePermission", b =>
+                {
+                    b.HasOne("CoreLayer.Models.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("CoreLayer.Models.TaxReceiveOrder", b =>
                 {
                     b.HasOne("CoreLayer.Models.Operations.ReceiveOrder", "ReceiveOrder")
@@ -941,6 +1548,17 @@ namespace InfrastructureLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Operation");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.UserLoginHistory", b =>
+                {
+                    b.HasOne("CoreLayer.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1141,6 +1759,13 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("ReceiveOrders");
 
                     b.Navigation("SalesInvoices");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.Permission", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("RolePermissions");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Tax", b =>

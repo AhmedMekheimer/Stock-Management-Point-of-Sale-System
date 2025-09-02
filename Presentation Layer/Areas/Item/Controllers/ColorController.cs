@@ -10,7 +10,7 @@ using PresentationLayer.Utility;
 namespace PresentationLayer.Areas.Item.Controllers
 {
     [Area("Item")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class ColorController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
@@ -19,6 +19,8 @@ namespace PresentationLayer.Areas.Item.Controllers
         {
             _UnitOfWork = UnitOfWork;
         }
+        [HttpGet]
+        [Authorize(Policy = "Color.View")]
         public async Task<IActionResult> Index()
         {
             var colorsList = await _UnitOfWork.Colors.GetAsync();
@@ -26,6 +28,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Color.Add|Color.Edit")]
         public async Task<IActionResult> Save(int id = 0)
         {
             var colorVM = new ItemVariantVM<Color>();
@@ -46,8 +49,8 @@ namespace PresentationLayer.Areas.Item.Controllers
             // Display Add Page
             return View(colorVM);
         }
-
         [HttpPost]
+        [Authorize(Policy = "Color.Add|Color.Edit")]
         public async Task<IActionResult> Save(ItemVariantVM<Color> colorVM)
         {
             if (!ModelState.IsValid)
@@ -139,7 +142,8 @@ namespace PresentationLayer.Areas.Item.Controllers
             TempData["Error"] = "Color Not Found";
             return View(colorVM);
         }
-
+        [HttpPost]
+        [Authorize(Policy = "Color.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = new Result();

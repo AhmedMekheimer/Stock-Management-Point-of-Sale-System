@@ -26,7 +26,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
             _UnitOfWork = unitOfWork;
             _UserManager = userManager;
         }
-
+        [Authorize(Policy = "Stock.View")]
         public async Task<IActionResult> Index()
         {
             var branches = await _UnitOfWork.Branches.GetAsync(include: [x => x.BranchManager]);
@@ -34,6 +34,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
             return View(branches);
         }
         [HttpGet]
+        [Authorize(Policy = "Stock.Add|Stock.Edit")]
         public async Task<IActionResult> Save(int? Id)
         {
             var branchVM = new BranchVM()
@@ -54,6 +55,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
             return View(branchVM);
         }
         [HttpPost]
+        [Authorize(Policy = "Stock.Add|Stock.Edit")]
         public async Task<IActionResult> Save(BranchVM branchVM)
         {
             var user = await _UserManager.FindByIdAsync(branchVM.BranchManagerId);
@@ -161,7 +163,8 @@ namespace PresentationLayer.Areas.Branch.Controllers
             }
             return View();
         }
-
+        [HttpPost]
+        [Authorize(Policy = "Stock.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var branch = await _UnitOfWork.Branches.GetOneAsync(b => b.Id == id);

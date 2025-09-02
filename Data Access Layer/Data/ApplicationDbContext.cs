@@ -1,18 +1,23 @@
 ﻿using CoreLayer.Models;
 using CoreLayer.Models.ItemVarients;
 using CoreLayer.Models.Operations;
+using InfrastructureLayer.Utility;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System.Security;
+using System.Xml;
 
 namespace InfrastructureLayer.Data
 {
     public class ApplicationDbContext: IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+             : base(options)
+        {
         }
+
 
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Color> Colors { get; set; }
@@ -35,6 +40,9 @@ namespace InfrastructureLayer.Data
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<TaxReceiveOrder> TaxReceiveOrders { get; set; }
         public DbSet<DiscountOperation> DiscountOperations { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<Permission> Permissions{ get; set; }
+        public DbSet<UserLoginHistory> userLoginHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,6 +74,23 @@ namespace InfrastructureLayer.Data
                 });
             });
 
+            modelBuilder.Entity<RolePermission>()
+           .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
+            modelBuilder.Entity<RolePermission>()
+                .HasOne(rp => rp.Role)
+                .WithMany()
+                .HasForeignKey(rp => rp.RoleId);
+
+
+            modelBuilder.Entity<RolePermission>()
+            .HasOne(rp => rp.Permission)
+            .WithMany(p => p.RolePermissions)   
+            .HasForeignKey(rp => rp.PermissionId);
+
+            modelBuilder.Entity<Permission>()
+                .Property(e => e.Id)
+                .ValueGeneratedNever();   
 
             // Uniqueness of Tax & Discount Names
             modelBuilder.Entity<Tax>(e =>
@@ -242,7 +267,10 @@ namespace InfrastructureLayer.Data
                 .HasOne(ro => ro.Supplier)
                 .WithMany(p => p.ReceiveOrders)
                 .HasForeignKey(ro => ro.SupplierId)
-                .OnDelete(DeleteBehavior.Restrict);                
+                .OnDelete(DeleteBehavior.Restrict);
+
+            PermissionSeeder.Seed(modelBuilder);
+
         }
     }
 }

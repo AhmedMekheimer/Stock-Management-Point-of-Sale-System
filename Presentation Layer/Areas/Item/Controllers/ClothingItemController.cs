@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace PresentationLayer.Areas.Stock.Controllers
 {
     [Area("Item")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class ClothingItemController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
@@ -26,14 +26,15 @@ namespace PresentationLayer.Areas.Stock.Controllers
             _UnitOfWork = UnitOfWork;
         }
 
+        [Authorize(Policy = "ClothingItem.View")]
         public async Task<IActionResult> Index()
         {
             var itemsList = await _UnitOfWork.Items.GetAsync(include: [i =>i.Color ,
                 i => i.TargetAudience , i => i.Brand , i => i.Size , i =>i.ItemType]);
             return View(itemsList);
         }
-
         [HttpGet]
+        [Authorize(Policy = "ClothingItem.Add|ClothingItem.Edit")]
         public async Task<IActionResult> Save(int? id = 0)
         {
             var itemVM = new ItemVM();
@@ -63,7 +64,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
 
 
         [HttpPost]
-
+        [Authorize(Policy = "ClothingItem.BranchItem")]
         public async Task<IActionResult> SaveBranchItem(BranchItemDTO branchItemDTO)
         {
             var branchItem = await _UnitOfWork.BranchItems.GetOneAsync(b => b.BranchId == branchItemDTO.BranchId && b.ItemId == branchItemDTO.ItemId);
@@ -87,6 +88,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
 
 
         [HttpPost]
+        [Authorize(Policy = "ClothingItem.Add|ClothingItem.Edit")]
         public async Task<IActionResult> Save(ItemVM itemVM)
         {
             if (!ModelState.IsValid)
@@ -211,6 +213,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
         }
 
 
+        [HttpPost]
+        [Authorize(Policy = "ClothingItem.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var resultImage = new Result();
@@ -240,6 +244,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        [NonAction]
         public async Task LoadData(ItemVM itemVM)
         {
 

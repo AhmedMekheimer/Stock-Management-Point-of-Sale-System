@@ -9,7 +9,7 @@ using PresentationLayer.Utility;
 namespace PresentationLayer.Areas.Item.Controllers
 {
     [Area("Item")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class TargetAudienceController : Controller
     {
 
@@ -19,6 +19,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         {
             _UnitOfWork = UnitOfWork;
         }
+        [Authorize(Policy = "TargetAudience.View")]
         public async Task<IActionResult> Index()
         {
             var TargetAudiencesList = await _UnitOfWork.TargetAudiences.GetAsync();
@@ -26,6 +27,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "TargetAudience.Add|TargetAudience.Edit")]
         public async Task<IActionResult> Save(int id = 0)
         {
             var TargetAudienceVM = new ItemVariantVM<TargetAudience>();
@@ -49,6 +51,7 @@ namespace PresentationLayer.Areas.Item.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "TargetAudience.Add|TargetAudience.Edit")]
         public async Task<IActionResult> Save(ItemVariantVM<TargetAudience> taVM)
         {
             if (!ModelState.IsValid)
@@ -143,6 +146,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "TargetAudience.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var ta = await _UnitOfWork.TargetAudiences.GetOneAsync(t => t.Id == id);

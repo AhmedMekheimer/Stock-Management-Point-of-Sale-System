@@ -12,7 +12,7 @@ using System.Drawing;
 namespace PresentationLayer.Areas.Item.Controllers
 {
     [Area("Item")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class ItemTypeController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -25,6 +25,8 @@ namespace PresentationLayer.Areas.Item.Controllers
         // -------------------- TREE --------------------
 
         // Loads only level 1 (roots). Children are fetched on demand.
+
+        [Authorize(Policy = "ItemType.View")]
         public async Task<IActionResult> Index()
         {
             var roots = await _db.ItemTypes
@@ -65,6 +67,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         // -------------------- CREATE --------------------
 
         [HttpGet]
+        [Authorize(Policy = "ItemType.Add")]
         public async Task<IActionResult> Create(int? parentId)
         {
             var vm = new ItemTypeInputVM { ParentId = parentId };
@@ -79,6 +82,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Policy = "ItemType.Add")]
         public async Task<IActionResult> Create(ItemTypeInputVM vm)
         {
             ModelState.Remove("ItemType.Name");
@@ -124,6 +128,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         // -------------------- EDIT --------------------
 
         [HttpGet]
+        [Authorize(Policy = "ItemType.Edit")]
         public async Task<IActionResult> Edit(int id)
         {
             var entity = await _db.ItemTypes.FindAsync(id);
@@ -148,6 +153,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Policy = "ItemType.Edit")]
         public async Task<IActionResult> Edit(int id, ItemTypeInputVM vm)
         {
             var entity = await _db.ItemTypes.FindAsync(id);
@@ -276,6 +282,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         // -------------------- DELETE (recursive) --------------------
 
         [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Policy = "ItemType.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = new Result();

@@ -58,9 +58,13 @@
 							<div id="newImagePreview" class="mt-2"></div>
 						</div>
 
-						<div class="form-actions mt-3">
-							<button type="submit" class="btn btn-primary btn-sm">Submit</button>
-						</div>
+						@if (User.HasClaim("Permission", "Size.Add"))
+						{
+							<div class="form-actions mt-3">
+								<button type="submit" class="btn btn-primary btn-sm">Submit</button>
+							</div>
+
+						}
 					</div>
 				</div>
 			</form>

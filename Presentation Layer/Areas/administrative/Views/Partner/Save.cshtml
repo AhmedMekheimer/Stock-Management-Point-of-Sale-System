@@ -43,10 +43,14 @@
 						<span asp-validation-for="partnerType" class="text-danger"></span>
 					</div>
 
-					<!-- Submit -->
-					<div class="d-grid col-2 ">
-						<button type="submit" class="btn btn-primary">Submit</button>
-					</div>
+					@if (User.HasClaim("Permission", "Partner.Add"))
+					{
+						<!-- Submit -->
+						<div class="d-grid col-2 ">
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</div>
+					}
+
 				</div>
 
 			</form>

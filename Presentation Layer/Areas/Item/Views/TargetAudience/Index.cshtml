@@ -1,76 +1,89 @@
 ﻿@model List<TargetAudience>
 
-<div class="p-3">
+@if (User.HasClaim("Permission", "TargetAudience.View"))
+{
+    <div class="p-3">
 
-	<div class="d-flex justify-content-between">
-		<h1>Target Audiences</h1>
+        <div class="d-flex justify-content-between">
+            <h1>Target Audiences</h1>
+            @if (User.HasClaim("Permission", "Size.Add"))
+            {
+                <p>
+                    <a asp-action="Save" class="btn btn-primary">Add</a>
+                </p>
 
-		<p>
-			<a asp-action="Save" class="btn btn-primary">Add</a>
-		</p>
+            }
 
-	</div>
+        </div>
 
-	<div class="table-responsive">
-		<table id="categoryTable" class="table table-striped  table-bordered">
-			<thead class="thead-dark">
-				<tr>
-					<th width="70%">
-						Name
-					</th>
-					<th width="30%">
-						Actions
-					</th>
+        <div class="table-responsive">
+            <table id="categoryTable" class="table table-striped  table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th width="70%">
+                            Name
+                        </th>
+                        <th width="30%">
+                            Actions
+                        </th>
 
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
-					<tr>
-						<td>
-							@item.Name
-						</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.Name
+                            </td>
 
-						<td>
-							<div class="d-flex gap-2">
-								<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
-									Edit
-								</a>
+                            <td>
 
-								<button type="button" class="btn btn-sm btn-danger"
-										data-bs-toggle="modal"
-										data-bs-target="#confirmDeleteModal"
-										data-id="@item.Id"
-										data-name="@item.Name">
-									Delete
-								</button>
-							</div>
-						</td>
+                                @if (User.HasClaim("Permission", "TargetAudience.Edit"))
+                                {
+                                    <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                        Edit
+                                    </a>
 
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
-</div>
+                                }
 
-<partial name="Delete" />
+                                @if (User.HasClaim("Permission", "TargetAudience.Delete"))
+                                {
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#confirmDeleteModal"
+                                            data-id="@item.Id"
+                                            data-name="@item.Name">
+                                        Delete
+                                    </button>
 
-@section Scripts {
-	<script>
-		$('#confirmDeleteModal').on('show.bs.modal', function (event) {
-			var button = $(event.relatedTarget);
+                                }
+                            </td>
 
-			var Id = button.data('id');
-			var Name = button.data('name');
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-			$(this).find('#Name').text(Name);
-			$(this).find('#IdToDelete').val(Id);
-		});
+    <partial name="Delete" />
 
-		$('#confirmDeleteButton').on('click', function () {
-			$('#deleteUser').submit();
-		});
-	</script>
+    @section Scripts {
+        <script>
+            $('#confirmDeleteModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+
+                var Id = button.data('id');
+                var Name = button.data('name');
+
+                $(this).find('#Name').text(Name);
+                $(this).find('#IdToDelete').val(Id);
+            });
+
+            $('#confirmDeleteButton').on('click', function () {
+                $('#deleteUser').submit();
+            });
+        </script>
+    }
 }

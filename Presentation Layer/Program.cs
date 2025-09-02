@@ -4,6 +4,8 @@ using InfrastructureLayer;
 using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
 using InfrastructureLayer.Services;
+using InfrastructureLayer.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +38,7 @@ namespace PresentationLayer
             builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
             // Authentication
             builder.Services.ConfigureApplicationCookie(
                 options =>
@@ -46,15 +48,25 @@ namespace PresentationLayer
                 }
                 );
 
-            // Authorization
+
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy($"{SD.Workers}", policy =>
-                      policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", $"{SD.Cashier}"));
-
-                options.AddPolicy($"{SD.Managers}", policy =>
-                      policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", $"{SD.SuperAdmin}"));
+                options.AddPolicy("ClothingItem.Add|ClothingItem.Edit", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim("Permission", "ClothingItem.Add") ||
+                        context.User.HasClaim("Permission", "ClothingItem.Edit")
+                    ));
             });
+
+            //// Authorization
+            //builder.Services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy($"{SD.Workers}", policy =>
+            //          policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", $"{SD.Cashier}"));
+
+            //    options.AddPolicy($"{SD.Managers}", policy =>
+            //          policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", $"{SD.SuperAdmin}"));
+            //});
 
             var app = builder.Build();
 

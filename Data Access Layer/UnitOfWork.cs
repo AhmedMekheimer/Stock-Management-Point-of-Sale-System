@@ -1,21 +1,21 @@
-﻿using CoreLayer.Models;
-using InfrastructureLayer.Data;
+﻿using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
 using InfrastructureLayer.Interfaces.IRepositories;
 using InfrastructureLayer.Interfaces.IRepositories.ItemVarients;
 using InfrastructureLayer.Interfaces.IRepositories.Operations;
 using InfrastructureLayer.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace InfrastructureLayer
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
+
+
+        // Permissions
+        public IPermissionRepository Permissions { get; }
+        public IRolePermissionRepository RolePermissions { get; }
 
         // Item Varients Repos
         public IBrandRepository Brands { get; }
@@ -41,6 +41,11 @@ namespace InfrastructureLayer
         public ITaxReceiveOrderRepository TaxReceiveOrders { get; }
         public IDiscountRepository Discounts { get; }
         public IDiscountOperationRepository DiscountOperations { get; }
+
+        //User logns
+        public IUserLoginHistoryRepository UserLoginHistories { get; }
+
+
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -71,6 +76,11 @@ namespace InfrastructureLayer
             TaxReceiveOrders = new TaxReceiveOrderRepository(_context);
             Discounts = new DiscountRepository(_context);
             DiscountOperations = new DiscountOperationRepository(_context);
+
+            // Initialize Permissions
+            Permissions = new PermissionRepository(_context);
+            RolePermissions = new RolePermissionRepository(_context);
+            UserLoginHistories = new UserLoginHistoryRepository(_context);
         }
 
         public void Dispose() => _context.Dispose();

@@ -7,32 +7,28 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.Operations;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using Newtonsoft.Json.Linq;
 using PresentationLayer.Areas.Administrative.ViewModels;
-using PresentationLayer.Areas.Identity.ViewModels;
-using System.Formats.Asn1;
-using System.Threading.Tasks;
+
 
 namespace PresentationLayer.Areas.DashBoard.Controllers
 {
     [Area("Administrative")]
-    [Authorize(Roles = SD.SuperAdmin)]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _UserManager;
         private readonly RoleManager<IdentityRole> _RoleManager;
         private readonly IUnitOfWork _UnitOfWork;
 
-        public UserController(UserManager<ApplicationUser> userManager,
-    RoleManager<IdentityRole> roleManager, IUnitOfWork UnitOfWork)
+        public UserController(UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager, IUnitOfWork UnitOfWork)
         {
             _UserManager = userManager;
             _RoleManager = roleManager;
             _UnitOfWork = UnitOfWork;
 
         }
+
+        [Authorize(Policy = "User.View")]
         public IActionResult Index()
         {
             var user = _UserManager.Users.ToList();
@@ -40,6 +36,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "User.Add|User.Edit")]
         public async Task<IActionResult> Save(string? id)
         {
             var createUser = new CreateUser();
@@ -84,6 +81,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
 
         [HttpPost]
+        [Authorize(Policy = "User.Add|User.Edit")]
         public async Task<IActionResult> Save(CreateUser createUser)
         {
             var branches = await _UnitOfWork.Branches.GetAsync();
@@ -191,6 +189,8 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize(Policy = "User.Delete")]
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _UserManager.FindByIdAsync(id);

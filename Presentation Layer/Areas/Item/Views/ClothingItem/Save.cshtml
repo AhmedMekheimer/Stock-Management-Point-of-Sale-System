@@ -99,17 +99,22 @@
 						<!-- Preview new image -->
 						<div id="newImagePreview" class="mt-2"></div>
 					</div>
-
-					<div class="form-actions mt-3">
-						<button type="submit" class="btn btn-primary btn-sm">Submit</button>
-					</div>
+                    @if (User.HasClaim("Permission", "ClothingItem.Add"))
+                    {
+                        <div class="form-actions mt-3">
+                            <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                        </div>
+                    }
+				
 				</div>
 			</form>
 		</div>
 	</div>
 
     <div>
-        @if (ViewBag.ShowBranchItems)
+
+
+        @if (ViewBag.ShowBranchItems && User.HasClaim("Permission", "ClothingItem.BranchItem") )
         {
 
             <div class="table-responsive my-5">
@@ -151,6 +156,7 @@
             </div>
 
         }
+   
     </div>
 
 </div>

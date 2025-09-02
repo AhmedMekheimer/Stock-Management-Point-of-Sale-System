@@ -9,7 +9,7 @@ using PresentationLayer.Utility;
 namespace PresentationLayer.Areas.Item.Controllers
 {
     [Area("Item")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class BrandController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
@@ -18,6 +18,8 @@ namespace PresentationLayer.Areas.Item.Controllers
         {
             _UnitOfWork = UnitOfWork;
         }
+        [HttpGet]
+        [Authorize(Policy = "Brand.View")]
         public async Task<IActionResult> Index()
         {
             var brandsList = await _UnitOfWork.Brands.GetAsync();
@@ -25,6 +27,8 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpGet]
+
+        [Authorize(Policy = "Brand.Add|Brand.Edit")]
         public async Task<IActionResult> Save(int id = 0)
         {
             var brandVM = new ItemVariantVM<Brand>();
@@ -47,6 +51,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Brand.Add|Brand.Edit")]
         public async Task<IActionResult> Save(ItemVariantVM<Brand> brandVM)
         {
             if (!ModelState.IsValid)
@@ -139,6 +144,8 @@ namespace PresentationLayer.Areas.Item.Controllers
             return View(brandVM);
         }
 
+        [HttpPost]
+        [Authorize(Policy = "Brand.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = new Result();

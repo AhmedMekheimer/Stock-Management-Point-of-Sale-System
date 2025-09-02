@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace PresentationLayer.Areas.administrative.Controllers
 {
     [Area("administrative")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class PartnerController : Controller
     {
 
@@ -26,6 +26,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Partner.View")]
         public async Task<IActionResult> Index()
         {
             var partners = await _UnitOfWork.Partners.GetAsync();
@@ -34,6 +35,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Partner.Add|Partner.Edit")]
         public async Task<IActionResult> Save(int Id = 0)
         {
             PartnerVM partnerVM = new PartnerVM();
@@ -61,6 +63,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Partner.Add|Partner.Edit")]
         public async Task<IActionResult> Save(PartnerVM partnerVM)
         {
             if (!ModelState.IsValid)
@@ -115,6 +118,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Partner.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var partner = await _UnitOfWork.Partners.GetOneAsync(x => x.Id == id);

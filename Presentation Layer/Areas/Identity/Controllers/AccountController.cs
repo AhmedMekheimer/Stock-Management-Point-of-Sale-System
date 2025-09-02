@@ -1,12 +1,18 @@
 ﻿using CoreLayer.Models;
+using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
 using InfrastructureLayer.Interfaces.IRepositories;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using PresentationLayer.Areas.Identity.ViewModels;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading.Tasks;
 
 namespace PresentationLayer.Areas.Identity.controller
 {
@@ -17,12 +23,14 @@ namespace PresentationLayer.Areas.Identity.controller
         private readonly IEmailSender _emailSender;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUnitOfWork _UnitOfWork;
-        public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, IUnitOfWork UnitOfWork)
+        private readonly RoleManager<IdentityRole> _RoleManager;
+        public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, IUnitOfWork UnitOfWork, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
             _UnitOfWork = UnitOfWork;
+            _RoleManager = roleManager;
         }
 
         public IActionResult Login()
@@ -48,10 +56,14 @@ namespace PresentationLayer.Areas.Identity.controller
                 if (user != null)
                 {
                     var result = await _userManager.CheckPasswordAsync(user, LoginVM.Password);
-
-                    if (result)
+                if (result)
                     {
-                        await _signInManager.SignInAsync(user, LoginVM.RememberMe);
+
+                    var claims = await GetClaims(user);
+                    await RegisterUserLogins(user);
+
+                    await _signInManager.SignInWithClaimsAsync(user, LoginVM.RememberMe, claims);
+
                         TempData["Success"] = "Logged In Successfully";
                         return RedirectToAction("Index", "Home", new { area = "DashBoard" });
                     }
@@ -69,6 +81,71 @@ namespace PresentationLayer.Areas.Identity.controller
         public IActionResult ForgetPassword()
         {
             return View();
+        }
+
+        [NonAction]
+        public async Task RegisterUserLogins(ApplicationUser user)
+        {
+
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            var log = new UserLoginHistory
+            {
+                UserId = user.Id,
+                LoginTime = DateTime.UtcNow,
+                IPAddress = ip
+            };
+
+            await _UnitOfWork.UserLoginHistories.CreateAsync(log);
+
+        }
+
+        [NonAction]
+        public async Task RegisterUserLogins()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            var lastLogin = (await _UnitOfWork.UserLoginHistories.GetAsync(l => l.UserId == userId && l.LogoutTime == null))
+                .OrderByDescending(l => l.LoginTime).FirstOrDefault();
+
+            if (lastLogin != null)
+            {
+                lastLogin.LogoutTime = DateTime.UtcNow;
+                await _UnitOfWork.UserLoginHistories.UpdateAsync(lastLogin);
+            }
+        }
+
+        [NonAction]
+        public async Task<List<Claim>> GetClaims(ApplicationUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var role = await _RoleManager.FindByNameAsync(roles.FirstOrDefault() ?? "");
+
+            var rolePermissions = (await _UnitOfWork.RolePermissions.GetAsync(r => r.RoleId == role!.Id)).Select(r => r.PermissionId);
+
+            var permissions = (await _UnitOfWork.Permissions.GetAsync(p => rolePermissions.Contains(p.Id))).Select(x => x.Name);
+
+            // Build claims 
+            var claims = new List<Claim>
+                      {
+                       new Claim(ClaimTypes.NameIdentifier, user.Id),
+                       new Claim(ClaimTypes.Name, user.UserName!)
+                     };
+
+            // Add role claims
+            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+            // Add permission claims
+            claims.AddRange(permissions.Distinct().Select(p => new Claim("Permission", p)));
+
+
+            // Create identity and sign in with claims 
+            var identity = new ClaimsIdentity(claims, "ApplicationCookie");
+            var principal = new ClaimsPrincipal(identity);
+
+            return claims;
+
         }
 
         [HttpPost]
@@ -156,6 +233,9 @@ namespace PresentationLayer.Areas.Identity.controller
 
         public async Task<IActionResult> Logout()
         {
+
+            await RegisterUserLogins();
+
             await _signInManager.SignOutAsync();
             TempData["Success"] = $"Signed Out Successfully";
             return RedirectToAction("Login", "Account", new { area = "Identity" });

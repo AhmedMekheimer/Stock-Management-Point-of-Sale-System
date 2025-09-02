@@ -9,7 +9,7 @@ using PresentationLayer.Utility;
 namespace PresentationLayer.Areas.Item.Controllers
 {
     [Area("Item")]
-    [Authorize(Policy = SD.Managers)]
+    [Authorize]
     public class SizeController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
@@ -18,6 +18,8 @@ namespace PresentationLayer.Areas.Item.Controllers
         {
             _UnitOfWork = UnitOfWork;
         }
+
+        [Authorize(Policy = "Size.View")]
         public async Task<IActionResult> Index()
         {
             var sizesList = await _UnitOfWork.Sizes.GetAsync();
@@ -25,6 +27,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "Size.Add|Size.Edit")]
         public async Task<IActionResult> Save(int id = 0)
         {
             var sizeVM = new ItemVariantVM<Size>();
@@ -47,6 +50,7 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Size.Add|Size.Edit")]
         public async Task<IActionResult> Save(ItemVariantVM<Size> sizeVM)
         {
             if (!ModelState.IsValid)
@@ -133,7 +137,8 @@ namespace PresentationLayer.Areas.Item.Controllers
             TempData["Error"] = "Size Not Found";
             return View(sizeVM);
         }
-
+        [HttpPost]
+        [Authorize(Policy = "Size.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = new Result();

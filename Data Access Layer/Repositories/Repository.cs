@@ -85,6 +85,22 @@ namespace InfrastructureLayer.Repositories
                 return false;
             }
         }
+
+        public async Task<bool> DeleteRangeAsync(IEnumerable<T> entity)
+        {
+            try
+            {
+                _db.RemoveRange(entity);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ex: {ex}");
+                return false;
+            }
+        }
         public async Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = false )
         {
 

@@ -3,6 +3,8 @@ using CoreLayer.Models;
 using InfrastructureLayer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PresentationLayer.Areas.administrative.ViewModels;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace PresentationLayer.Utility
@@ -53,6 +55,17 @@ namespace PresentationLayer.Utility
                     if (superAdmin is not null)
                     {
                         _UserManager.AddToRoleAsync(superAdmin, SD.SuperAdmin).GetAwaiter().GetResult();
+                         var role =  _RoleManager.FindByNameAsync("Super Admin").GetAwaiter().GetResult();
+                         var permissionIds = _Context.Permissions.ToList().Select(p => p.Id);
+
+                        var rolePermissions = permissionIds.Select(pid => new RolePermission
+                        {
+                            RoleId = role.Id,
+                            PermissionId = pid
+                        });
+
+                         _Context.RolePermissions.AddRange(rolePermissions);
+
                     }
                 }
 

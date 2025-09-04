@@ -121,6 +121,11 @@ namespace InfrastructureLayer.Utility
              new Permission { Id = 381, Name = "UserLoginHistory.View", EnglishName = "View UserLoginHistory", ParentId = 380 }
 
              #endregion
+
+
+
+
+
             );
         }
     }

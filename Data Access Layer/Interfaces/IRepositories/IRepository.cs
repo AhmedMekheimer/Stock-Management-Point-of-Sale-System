@@ -16,6 +16,7 @@ namespace InfrastructureLayer.Interfaces.IRepositories
         Task<bool> UpdateAsync(T entity);
 
         Task<bool> DeleteAsync(T entity);
+        Task<bool> DeleteRangeAsync(IEnumerable<T> entity);
 
         Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null,
     Expression<Func<T, object>>[]? include = null,

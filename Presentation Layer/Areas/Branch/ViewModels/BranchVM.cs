@@ -5,17 +5,11 @@ namespace PresentationLayer.Areas.Branch.ViewModels
 {
     public class BranchVM
     {
-
         public int? BranchId { get; set; }
-
 
         [Required]
         [Display(Name = "Branch name")]
         public string Name { get; set; } = null!;
-        [Required]
-        [Display(Name = "Branch Manager")]
-        public string BranchManagerId{ get; set; } = null!;
 
-        public IEnumerable<SelectListItem> UsersList { get; set; } = new List<SelectListItem>();
     }
 }

@@ -207,13 +207,6 @@ namespace InfrastructureLayer.Data
                 .HasForeignKey(u => u.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);  // Prevent cascade issues
 
-            // Configure Branch Manager (One-to-One)
-            modelBuilder.Entity<Branch>()
-                .HasOne(b => b.BranchManager)
-                .WithOne(u => u.ManagedBranch)
-                .HasForeignKey<Branch>(b => b.BranchManagerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Configure TPT inheritance
             modelBuilder.Entity<Operation>().ToTable("Operations");
             modelBuilder.Entity<Transfer>().ToTable("Transfers");

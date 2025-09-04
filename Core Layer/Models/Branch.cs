@@ -23,11 +23,6 @@ namespace CoreLayer.Models
         // One-to-Many: Branch has many cashiers
         public ICollection<ApplicationUser> Cashiers { get; set; } = new List<ApplicationUser>();
 
-        // One-to-One: Branch has one manager
-        [Required]
-        public string BranchManagerId { get; set; } = null!;  // Foreign key for manager
-        public ApplicationUser BranchManager { get; set; } = null!;
-
         // One-to-Many: Branch has many Operations
         public ICollection<SalesInvoice>? SalesInvoices { get; set; } = new List<SalesInvoice>();
         public ICollection<ReceiveOrder>? ReceiveOrders { get; set; } = new List<ReceiveOrder>();

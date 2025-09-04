@@ -197,13 +197,6 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
             if (user is not null)
             {
-                var isUserBranchManager = await _UnitOfWork.Branches.AnyAsync(b => b.BranchManagerId == id);
-
-                if (isUserBranchManager)
-                {
-                    TempData["error"] = "Change branch manager to delete user.";
-                    return RedirectToAction(nameof(Index));
-                }
 
                 var userResult = await _UserManager.DeleteAsync(user);
 

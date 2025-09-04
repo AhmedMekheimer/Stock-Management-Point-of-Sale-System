@@ -4,6 +4,7 @@ using InfrastructureLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250904224537_RemoveBranchManager")]
+    partial class RemoveBranchManager
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,7 +120,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("ApplicationUserOTP", (string)null);
+                    b.ToTable("ApplicationUserOTP");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Branch", b =>
@@ -135,7 +138,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Branches", (string)null);
+                    b.ToTable("Branches");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.BranchItem", b =>
@@ -162,7 +165,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("BranchItems", (string)null);
+                    b.ToTable("BranchItems");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Discount", b =>
@@ -201,7 +204,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Discounts", null, t =>
+                    b.ToTable("Discounts", t =>
                         {
                             t.HasCheckConstraint("CK_Discounts_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
                         });
@@ -219,7 +222,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("DiscountOperations", (string)null);
+                    b.ToTable("DiscountOperations");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -281,7 +284,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Barcode", "Name")
                         .IsUnique();
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Brand", b =>
@@ -301,7 +304,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands", (string)null);
+                    b.ToTable("Brands");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Color", b =>
@@ -321,7 +324,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Colors", (string)null);
+                    b.ToTable("Colors");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.ItemType", b =>
@@ -352,7 +355,7 @@ namespace InfrastructureLayer.Migrations
                         .IsUnique()
                         .HasFilter("[ItemTypeId] IS NOT NULL");
 
-                    b.ToTable("ItemTypes", (string)null);
+                    b.ToTable("ItemTypes");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Size", b =>
@@ -372,7 +375,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sizes", (string)null);
+                    b.ToTable("Sizes");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.TargetAudience", b =>
@@ -392,7 +395,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TargetAudiences", (string)null);
+                    b.ToTable("TargetAudiences");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Operation", b =>
@@ -475,7 +478,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("OperationItems", (string)null);
+                    b.ToTable("OperationItems");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Partner", b =>
@@ -502,7 +505,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Partners", (string)null);
+                    b.ToTable("Partners");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Permission", b =>
@@ -525,7 +528,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
 
                     b.HasData(
                         new
@@ -1052,7 +1055,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Tax", b =>
@@ -1079,7 +1082,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Taxes", null, t =>
+                    b.ToTable("Taxes", t =>
                         {
                             t.HasCheckConstraint("CK_Taxes_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
                         });
@@ -1097,7 +1100,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("TaxReceiveOrders", (string)null);
+                    b.ToTable("TaxReceiveOrders");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Transaction", b =>
@@ -1116,7 +1119,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("OperationId")
                         .IsUnique();
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.UserLoginHistory", b =>
@@ -1145,7 +1148,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("userLoginHistories", (string)null);
+                    b.ToTable("userLoginHistories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

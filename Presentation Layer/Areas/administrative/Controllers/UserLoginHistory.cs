@@ -24,7 +24,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
         [Authorize(Policy = "UserLoginHistory.View")]
         public async Task<IActionResult> Index()
         {
-            var UserLoginHistories = await _UnitOfWork.UserLoginHistories.GetAsync(include: [l => l.User]);
+            var UserLoginHistories = (await _UnitOfWork.UserLoginHistories.GetAsync(include: [l => l.User])).OrderByDescending(u=>u.Id);
             return View(UserLoginHistories);
         }
 

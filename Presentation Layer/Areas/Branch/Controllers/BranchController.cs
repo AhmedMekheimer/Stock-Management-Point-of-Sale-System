@@ -74,13 +74,6 @@ namespace PresentationLayer.Areas.Branch.Controllers
             }
             else
             {
-
-                    if (oldUserWithBranch is not null)
-                    {
-                        TempData["error"] = "User already on a branch";
-                        return View(branchVM);
-                    }
-
                 // Checking Name Uniqueness
                 if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name && e.Id != branchVM.BranchId) is CoreLayer.Models.Branch))
                 {
@@ -126,15 +119,8 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     TempData["success"] = "Branch added";
                     return RedirectToAction(nameof(Index));
                 }
-
-            }
-
-                        TempData["success"] = "Branch added";
-                        return RedirectToAction(nameof(Index));
-                    }
-                    TempData["Error"] = "A Db Error Adding Branch";
-                    return RedirectToAction(nameof(Index));
-                }
+                TempData["Error"] = "A Db Error Adding Branch";
+                return RedirectToAction(nameof(Index));
             }
             return View();
         }

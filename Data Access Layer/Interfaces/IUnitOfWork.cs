@@ -37,9 +37,9 @@ namespace InfrastructureLayer.Interfaces
         ITaxRepository Taxes { get; }
         ITaxReceiveOrderRepository TaxReceiveOrders { get; }
         IDiscountRepository Discounts { get; }
-        IDiscountOperationRepository DiscountOperations { get; }
         IPermissionRepository Permissions{ get; }
         IRolePermissionRepository RolePermissions { get; }
         IUserLoginHistoryRepository UserLoginHistories { get; }
+        IDiscountSalesInvoiceRepository DiscountSalesInvoices { get; }
     }
 }

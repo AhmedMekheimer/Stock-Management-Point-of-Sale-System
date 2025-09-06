@@ -1,4 +1,6 @@
-﻿namespace PresentationLayer.Areas.Branch.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PresentationLayer.Areas.Branch.ViewModels
 {
     public class BranchItemDTO
     {
@@ -8,6 +10,9 @@
         public double BuyingPriceAvg { get; set; }
         public double LastBuyingPrice { get; set; }
         public double SellingPrice { get; set; }
-
+        [Range(0, 100, ErrorMessage = "Discount is written in percentage values from 0 to 100")]
+        public int? DiscountRate { get; set; }
+        [Range(0, int.MaxValue)]
+        public int? RestockThreshold { get; set; }
     }
 }

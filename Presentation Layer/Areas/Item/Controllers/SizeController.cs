@@ -1,4 +1,5 @@
 ﻿using CoreLayer;
+using CoreLayer.Models;
 using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -58,8 +59,15 @@ namespace PresentationLayer.Areas.Item.Controllers
 
             Result result = new Result();
 
-            if (sizeVM.ItemVariant.Id == 0) // Create
+            // Saving a New Size
+            if (sizeVM.ItemVariant.Id == 0) 
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Sizes.GetOneAsync(e => e.Name == sizeVM.ItemVariant.Name) is Size))
+                {
+                    ModelState.AddModelError("ItemVariant.Name", "Name already exists");
+                    return View(sizeVM);
+                }
                 if (sizeVM.formFile != null)
                 {
                     result = ImageService.UploadNewImage(sizeVM.formFile);
@@ -78,13 +86,20 @@ namespace PresentationLayer.Areas.Item.Controllers
                     TempData["Success"] = "Size Added Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Adding Size";
+                TempData["Error"] = "A Db Error Updating Size";
                 return RedirectToAction(nameof(Index));
             }
 
-            // Update existing
+            // Update existing Size
             if ((await _UnitOfWork.Sizes.GetOneAsync(s => s.Id == sizeVM.ItemVariant.Id)) is Size size)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Sizes.GetOneAsync(e => e.Name == sizeVM.ItemVariant.Name && e.Id != sizeVM.ItemVariant.Id) is Size))
+                {
+                    ModelState.AddModelError("ItemVariant.Name", "Name already exists");
+                    sizeVM.ItemVariant.Image = size.Image;
+                    return View(sizeVM);
+                }
                 if (sizeVM.formFile != null) // Replace
                 {
                     if (size.Image != null)
@@ -130,7 +145,7 @@ namespace PresentationLayer.Areas.Item.Controllers
                     TempData["Success"] = "Size Updated Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Updating Size";
+                TempData["Error"] = "A Db Error Updating Size";
                 return RedirectToAction(nameof(Index));
             }
 

@@ -149,10 +149,16 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("BuyingPriceAvg")
                         .HasColumnType("float");
 
+                    b.Property<int?>("DiscountRate")
+                        .HasColumnType("int");
+
                     b.Property<double>("LastBuyingPrice")
                         .HasColumnType("float");
 
                     b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RestockThreshold")
                         .HasColumnType("int");
 
                     b.Property<double?>("SellingPrice")
@@ -190,10 +196,7 @@ namespace InfrastructureLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("Rate")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RawValue")
+                    b.Property<int>("Rate")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -201,13 +204,10 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Discounts", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Discounts_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
-                        });
+                    b.ToTable("Discounts");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.DiscountOperation", b =>
+            modelBuilder.Entity("CoreLayer.Models.DiscountSalesInvoice", b =>
                 {
                     b.Property<int>("DiscountId")
                         .HasColumnType("int");
@@ -219,7 +219,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("DiscountOperations", (string)null);
+                    b.ToTable("DiscountSalesInvoices");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -240,9 +240,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int>("ColorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DiscountPercentage")
-                        .HasColumnType("int");
-
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
@@ -254,19 +251,16 @@ namespace InfrastructureLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("RestockThreshold")
-                        .HasColumnType("int");
-
                     b.Property<int>("SizeId")
                         .HasColumnType("int");
 
                     b.Property<int>("TargetAudienceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TaxPercentage")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("Barcode")
+                        .IsUnique();
 
                     b.HasIndex("BrandId");
 
@@ -274,14 +268,14 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("ItemTypeId");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.HasIndex("SizeId");
 
                     b.HasIndex("TargetAudienceId");
 
-                    b.HasIndex("Barcode", "Name")
-                        .IsUnique();
-
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Brand", b =>
@@ -422,20 +416,20 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("TotalAmount")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalDiscountAmount")
+                    b.Property<double?>("TotalDiscountAmount")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalDiscountRate")
-                        .HasColumnType("float");
+                    b.Property<int?>("TotalDiscountRate")
+                        .HasColumnType("int");
 
                     b.Property<int>("TotalQuantity")
                         .HasColumnType("int");
 
-                    b.Property<double>("TotalTaxesAmount")
+                    b.Property<double?>("TotalTaxesAmount")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalTaxesRate")
-                        .HasColumnType("float");
+                    b.Property<int?>("TotalTaxesRate")
+                        .HasColumnType("int");
 
                     b.Property<int>("status")
                         .HasColumnType("int");
@@ -457,14 +451,24 @@ namespace InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("DiscountRate")
+                        .HasColumnType("int");
+
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ItemNameSnapshot")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OperationId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<double>("SellingPrice")
+                        .HasColumnType("float");
 
                     b.Property<double>("TotalPrice")
                         .HasColumnType("float");
@@ -487,7 +491,7 @@ namespace InfrastructureLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1053,6 +1057,14 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("RolePermissions", (string)null);
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Partners");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Tax", b =>
@@ -1068,10 +1080,7 @@ namespace InfrastructureLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("Rate")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RawValue")
+                    b.Property<int>("Rate")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1079,10 +1088,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Taxes", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Taxes_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
-                        });
+                    b.ToTable("Taxes");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.TaxReceiveOrder", b =>
@@ -1372,23 +1378,23 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.DiscountOperation", b =>
+            modelBuilder.Entity("CoreLayer.Models.DiscountSalesInvoice", b =>
                 {
                     b.HasOne("CoreLayer.Models.Discount", "Discount")
-                        .WithMany("DiscountOperations")
+                        .WithMany("DiscountSalesInvoices")
                         .HasForeignKey("DiscountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoreLayer.Models.Operation", "Operation")
-                        .WithMany("DiscountOperations")
+                    b.HasOne("CoreLayer.Models.Operations.SalesInvoice", "SalesInvoice")
+                        .WithMany("DiscountSalesInvoices")
                         .HasForeignKey("OperationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Discount");
 
-                    b.Navigation("Operation");
+                    b.Navigation("SalesInvoice");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -1690,7 +1696,7 @@ namespace InfrastructureLayer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.Discount", b =>
                 {
-                    b.Navigation("DiscountOperations");
+                    b.Navigation("DiscountSalesInvoices");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -1729,8 +1735,6 @@ namespace InfrastructureLayer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.Operation", b =>
                 {
-                    b.Navigation("DiscountOperations");
-
                     b.Navigation("OperationItems");
                 });
 
@@ -1756,6 +1760,11 @@ namespace InfrastructureLayer.Migrations
             modelBuilder.Entity("CoreLayer.Models.Operations.ReceiveOrder", b =>
                 {
                     b.Navigation("TaxReceiveOrders");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.Operations.SalesInvoice", b =>
+                {
+                    b.Navigation("DiscountSalesInvoices");
                 });
 #pragma warning restore 612, 618
         }

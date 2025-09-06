@@ -27,6 +27,10 @@ namespace InfrastructureLayer.Interfaces.IRepositories
     Expression<Func<T, object>>[]? include = null,
      bool tracked = false);
 
+        Task<List<T>> GetAsyncIncludes(Expression<Func<T, bool>>? condition = null, List<Func<IQueryable<T>, IQueryable<T>>>? includes = null, bool tracked = true);
+
+        Task<T?> GetOneAsyncIncludes(Expression<Func<T, bool>>? condition = null, List<Func<IQueryable<T>, IQueryable<T>>>? includes = null, bool tracked = true);
+
         Task<bool> AnyAsync(Expression<Func<T, bool>>? condition = null);
 
         Task<bool> CommitAsync();

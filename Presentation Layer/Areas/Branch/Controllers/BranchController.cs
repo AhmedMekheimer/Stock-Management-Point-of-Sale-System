@@ -1,4 +1,5 @@
 ﻿using CoreLayer.Models;
+using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -55,6 +56,12 @@ namespace PresentationLayer.Areas.Branch.Controllers
                 var oldBranch = await _UnitOfWork.Branches.GetOneAsync(b => b.Id == branchVM.BranchId);
                 if (oldBranch is not null)
                 {
+                    // Checking Name Uniqueness
+                    if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name && e.Id != branchVM.BranchId) is CoreLayer.Models.Branch))
+                    {
+                        ModelState.AddModelError(nameof(branchVM.Name), "Name already exists");
+                        return View(branchVM);
+                    }
                     oldBranch.Name = branchVM.Name;
                     var result = await _UnitOfWork.Branches.CommitAsync();
                     if (result)
@@ -67,6 +74,19 @@ namespace PresentationLayer.Areas.Branch.Controllers
             }
             else
             {
+
+                    if (oldUserWithBranch is not null)
+                    {
+                        TempData["error"] = "User already on a branch";
+                        return View(branchVM);
+                    }
+
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name && e.Id != branchVM.BranchId) is CoreLayer.Models.Branch))
+                {
+                    ModelState.AddModelError(nameof(branchVM.Name), "Name already exists");
+                    return View(branchVM);
+                }
 
                 var newBranch = branchVM.Adapt<CoreLayer.Models.Branch>();
 
@@ -107,6 +127,14 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
+            }
+
+                        TempData["success"] = "Branch added";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    TempData["Error"] = "A Db Error Adding Branch";
+                    return RedirectToAction(nameof(Index));
+                }
             }
             return View();
         }

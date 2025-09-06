@@ -28,19 +28,14 @@ namespace CoreLayer.Models
         [Range(1, double.MaxValue)]
         public double TotalAmount { get; set; }
 
-        [Required]
         [Range(0, 100)]
-        public double TotalTaxesRate { get; set; }
-        [Required]
+        public int? TotalTaxesRate { get; set; }
         [Range(0, double.MaxValue)]
-        public double TotalTaxesAmount { get; set; }
-
-        [Required]
+        public double? TotalTaxesAmount { get; set; }
         [Range(0, 100)]
-        public double TotalDiscountRate { get; set; }
-        [Required]
+        public int? TotalDiscountRate { get; set; }
         [Range(0, double.MaxValue)]
-        public double TotalDiscountAmount { get; set; }
+        public double? TotalDiscountAmount { get; set; }
 
         [Required]
         [Range(1, double.MaxValue)]
@@ -55,6 +50,5 @@ namespace CoreLayer.Models
         public ApplicationUser ApplicationUser { get; set; } = null!;
 
         public ICollection<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
-        public ICollection<DiscountOperation> DiscountOperations { get; set; } = new List<DiscountOperation>();
     }
 }

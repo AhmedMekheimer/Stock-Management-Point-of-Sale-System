@@ -1,8 +1,10 @@
 ﻿using CoreLayer;
 using CoreLayer.Models;
+using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Areas.Branch.ViewModels;
 
 namespace PresentationLayer.Areas.administrative.Controllers
 {
@@ -55,26 +57,38 @@ namespace PresentationLayer.Areas.administrative.Controllers
             // Saving a Newly-Added Tax
             if (discountVM.Id == 0)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Discounts.GetOneAsync(e => e.Name == discountVM.Name) is Discount))
+                {
+                    ModelState.AddModelError(nameof(discountVM.Name), "Name already exists");
+                    return View(discountVM);
+                }
                 var createResult = await _UnitOfWork.Discounts.CreateAsync(discountVM);
                 if (createResult)
                 {
                     TempData["Success"] = "Discount Added Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Adding Discount";
+                TempData["Error"] = "A Db Error Adding Discount";
                 return RedirectToAction(nameof(Index));
             }
 
             // Saving an Existing Tax
-            if ((await _UnitOfWork.Discounts.GetOneAsync(b => b.Id == discountVM.Id, null, tracked: true)) is Discount)
+            if ((await _UnitOfWork.Discounts.GetOneAsync(b => b.Id == discountVM.Id, null, tracked: false)) is Discount)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Discounts.GetOneAsync(e => e.Name == discountVM.Name && e.Id != discountVM.Id) is Discount))
+                {
+                    ModelState.AddModelError(nameof(discountVM.Name), "Name already exists");
+                    return View(discountVM);
+                }
                 var updateResult = await _UnitOfWork.Discounts.UpdateAsync(discountVM);
                 if (updateResult)
                 {
                     TempData["Success"] = "Discount Updated Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Updating Discount";
+                TempData["Error"] = "A Db Error Updating Discount";
                 return RedirectToAction(nameof(Index));
             }
             TempData["Error"] = "Discount Not Found";

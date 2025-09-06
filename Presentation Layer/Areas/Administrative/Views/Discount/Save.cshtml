@@ -32,13 +32,6 @@
 						<span asp-validation-for="Rate" class="text-danger"></span>
 					</div>
 
-					<!-- Discount Raw Value -->
-					<div class="mb-3 col-4">
-						<label asp-for="RawValue" class="form-label">Discount Raw Value(EGP)</label>
-						<input asp-for="RawValue" class="form-control" />
-						<span asp-validation-for="RawValue" class="text-danger"></span>
-					</div>
-
 					<!-- Discount Status -->
 					<div class="form-group mb-3">
 						<label asp-for="IsActive" class="form-label">Status</label>
@@ -61,7 +54,8 @@
 					<!-- Discount Expiration Date -->
 					<div class="mb-3 col-4">
 						<label asp-for="ExpirationDate" class="form-label">Expiration Date</label>
-						<input asp-for="ExpirationDate" type="date" class="form-control" />
+						<input asp-for="ExpirationDate" type="date" class="form-control" id="expirationDate"
+							   min="@DateOnly.FromDateTime(DateTime.Now).ToString("yyyy-MM-dd")" />
 						<span asp-validation-for="ExpirationDate" class="text-danger"></span>
 					</div>
 

@@ -1,9 +1,12 @@
 ﻿using CoreLayer;
+using CoreLayer.Models;
 using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using PresentationLayer.Areas.Item.ViewModels;
+using PresentationLayer.Areas.Stock.ViewModels;
 using PresentationLayer.Utility;
 
 namespace PresentationLayer.Areas.Item.Controllers
@@ -61,6 +64,13 @@ namespace PresentationLayer.Areas.Item.Controllers
             // Saving a Newly-Added Brand
             if (brandVM.ItemVariant.Id == 0)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Brands.GetOneAsync(e => e.Name == brandVM.ItemVariant.Name) is Brand))
+                {
+                    ModelState.AddModelError("ItemVariant.Name", "Name already exists");
+                    return View(brandVM);
+                }
+
                 if (brandVM.formFile != null)
                 {
                     // Saving Physically
@@ -81,13 +91,21 @@ namespace PresentationLayer.Areas.Item.Controllers
                     TempData["Success"] = "Brand Added Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Adding Brand";
+                TempData["Error"] = "A Db Error Updating Brand";
                 return RedirectToAction(nameof(Index));
             }
 
             // Saving an Existing Brand
-            if((await _UnitOfWork.Brands.GetOneAsync(b => b.Id == brandVM.ItemVariant.Id)) is Brand brand)
+            if ((await _UnitOfWork.Brands.GetOneAsync(b => b.Id == brandVM.ItemVariant.Id)) is Brand brand)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Brands.GetOneAsync(e => e.Name == brandVM.ItemVariant.Name && e.Id != brandVM.ItemVariant.Id) is Brand))
+                {
+                    ModelState.AddModelError("ItemVariant.Name", "Name already exists");
+                    brandVM.ItemVariant.Image = brand.Image;
+                    return View(brandVM);
+                }
+
                 // Replacing with a New Image
                 if (brandVM.formFile != null)
                 {
@@ -95,7 +113,7 @@ namespace PresentationLayer.Areas.Item.Controllers
                     {
                         // Deleting Old Image Physically
                         result = ImageService.DeleteImage(brand.Image);
-                        if(!result.Success)
+                        if (!result.Success)
                         {
                             TempData["Error"] = result.ErrorMessage;
                             return View(brandVM);
@@ -104,8 +122,8 @@ namespace PresentationLayer.Areas.Item.Controllers
 
                     // Add new Image Physically
                     result = ImageService.UploadNewImage(brandVM.formFile);
-                    if(result.Success)
-                        brandVM.ItemVariant.Image=result.Image;
+                    if (result.Success)
+                        brandVM.ItemVariant.Image = result.Image;
                     else
                     {
                         TempData["Error"] = result.ErrorMessage;
@@ -115,7 +133,7 @@ namespace PresentationLayer.Areas.Item.Controllers
                 else
                 {
                     // Old Image deleted
-                    if(brandVM.deleteImage)
+                    if (brandVM.deleteImage)
                     {
                         // Deleting Old Image Physically
                         result = ImageService.DeleteImage(brand.Image!);
@@ -137,7 +155,7 @@ namespace PresentationLayer.Areas.Item.Controllers
                     TempData["Success"] = "Brand Updated Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Updating Brand";
+                TempData["Error"] = "A Db Error Updating Brand";
                 return RedirectToAction(nameof(Index));
             }
             TempData["Error"] = "Brand Not Found";
@@ -151,7 +169,7 @@ namespace PresentationLayer.Areas.Item.Controllers
             var result = new Result();
             if ((await _UnitOfWork.Brands.GetOneAsync(b => b.Id == id)) is Brand brand)
             {
-                if(brand.Image != null)
+                if (brand.Image != null)
                 {
                     // Deleting Image Physically
                     result = ImageService.DeleteImage(brand.Image);

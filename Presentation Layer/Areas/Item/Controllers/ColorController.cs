@@ -60,6 +60,12 @@ namespace PresentationLayer.Areas.Item.Controllers
             // Saving a Newly-Added Color
             if (colorVM.ItemVariant.Id == 0)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Colors.GetOneAsync(e => e.Name == colorVM.ItemVariant.Name) is Color))
+                {
+                    ModelState.AddModelError("ItemVariant.Name", "Name already exists");
+                    return View(colorVM);
+                }
                 if (colorVM.formFile != null)
                 {
                     // Saving Physically
@@ -80,13 +86,20 @@ namespace PresentationLayer.Areas.Item.Controllers
                     TempData["Success"] = "Color Added Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Adding Color";
+                TempData["Error"] = "A Db Error Updating Color";
                 return RedirectToAction(nameof(Index));
             }
 
             // Saving an Existing Color
             if ((await _UnitOfWork.Colors.GetOneAsync(b => b.Id == colorVM.ItemVariant.Id)) is Color color)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Colors.GetOneAsync(e => e.Name == colorVM.ItemVariant.Name && e.Id != colorVM.ItemVariant.Id) is Color))
+                {
+                    ModelState.AddModelError("ItemVariant.Name", "Name already exists");
+                    colorVM.ItemVariant.Image = color.Image;
+                    return View(colorVM);
+                }
                 // Replacing with a New Image
                 if (colorVM.formFile != null)
                 {
@@ -136,7 +149,7 @@ namespace PresentationLayer.Areas.Item.Controllers
                     TempData["Success"] = "Color Updated Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Updating Color";
+                TempData["Error"] = "A Db Error Updating Color";
                 return RedirectToAction(nameof(Index));
             }
             TempData["Error"] = "Color Not Found";

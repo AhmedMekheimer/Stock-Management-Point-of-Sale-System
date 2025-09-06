@@ -60,26 +60,38 @@ namespace PresentationLayer.Areas.administrative.Controllers
             // Saving a Newly-Added Tax
             if (taxVM.Id == 0)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Taxes.GetOneAsync(e => e.Name == taxVM.Name) is Tax))
+                {
+                    ModelState.AddModelError(nameof(taxVM.Name), "Name already exists");
+                    return View(taxVM);
+                }
                 var createResult = await _UnitOfWork.Taxes.CreateAsync(taxVM);
                 if (createResult)
                 {
                     TempData["Success"] = "Tax Added Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Adding Tax";
+                TempData["Error"] = "A Db Error Adding Tax";
                 return RedirectToAction(nameof(Index));
             }
 
             // Saving an Existing Tax
-            if ((await _UnitOfWork.Taxes.GetOneAsync(b => b.Id == taxVM.Id, null, tracked: true)) is Tax)
+            if ((await _UnitOfWork.Taxes.GetOneAsync(b => b.Id == taxVM.Id, null, tracked: false)) is Tax)
             {
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Taxes.GetOneAsync(e => e.Name == taxVM.Name && e.Id != taxVM.Id) is Tax))
+                {
+                    ModelState.AddModelError(nameof(taxVM.Name), "Name already exists");
+                    return View(taxVM);
+                }
                 var updateResult = await _UnitOfWork.Taxes.UpdateAsync(taxVM);
                 if (updateResult)
                 {
                     TempData["Success"] = "Tax Updated Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "Error Updating Tax";
+                TempData["Error"] = "A Db Error Updating Tax";
                 return RedirectToAction(nameof(Index));
             }
             TempData["Error"] = "Tax Not Found";

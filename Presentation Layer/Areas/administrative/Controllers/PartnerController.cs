@@ -69,9 +69,21 @@ namespace PresentationLayer.Areas.administrative.Controllers
             if (!ModelState.IsValid)
                 return View(partnerVM);
 
+            // Adding New Partner
             if (partnerVM.Id is null)
             {
-
+                // Checking Name Uniqueness
+                if ((await _UnitOfWork.Partners.GetOneAsync(e => e.Name == partnerVM.Name) is Partner))
+                {
+                    ModelState.AddModelError(nameof(partnerVM.Name), "Name already exists");
+                    return View(partnerVM);
+                }
+                // Checking Email Uniqueness
+                if ((await _UnitOfWork.Partners.GetOneAsync(e => e.Email == partnerVM.Email) is Partner))
+                {
+                    ModelState.AddModelError(nameof(partnerVM.Email), "Email already exists");
+                    return View(partnerVM);
+                }
                 var partner = partnerVM.Adapt<Partner>();
 
                 var result = await _UnitOfWork.Partners.CreateAsync(partner);
@@ -83,17 +95,27 @@ namespace PresentationLayer.Areas.administrative.Controllers
                 }
                 else
                 {
-                    TempData["error"] = "Error Adding Partner";
+                    TempData["Error"] = "A Db Error Adding Partner";
                     return RedirectToAction(nameof(Index));
                 }
             }
             else
             {
-                var oldPartner = await _UnitOfWork.Partners.GetOneAsync(x => x.Id == partnerVM.Id, tracked: true);
-
+                var oldPartner = await _UnitOfWork.Partners.GetOneAsync(x => x.Id == partnerVM.Id, tracked: false);
                 if (oldPartner is not null)
                 {
-
+                    // Checking Name Uniqueness
+                    if ((await _UnitOfWork.Partners.GetOneAsync(e => (e.Name == partnerVM.Name) && e.Id != partnerVM.Id) is Partner))
+                    {
+                        ModelState.AddModelError(nameof(partnerVM.Name), "Name already exists");
+                        return View(partnerVM);
+                    }
+                    // Checking Email Uniqueness
+                    if ((await _UnitOfWork.Partners.GetOneAsync(e => (e.Email == partnerVM.Email) && e.Id != partnerVM.Id) is Partner))
+                    {
+                        ModelState.AddModelError(nameof(partnerVM.Email), "Email already exists");
+                        return View(partnerVM);
+                    }
                     oldPartner = partnerVM.Adapt<Partner>();
 
                     var result = await _UnitOfWork.Partners.UpdateAsync(oldPartner);
@@ -105,7 +127,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
                     }
                     else
                     {
-                        TempData["error"] = "Error Updating Partner";
+                        TempData["Error"] = "A Db Error Updating Partner";
                         return RedirectToAction(nameof(Index));
                     }
                 }

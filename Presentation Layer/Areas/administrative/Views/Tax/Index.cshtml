@@ -15,38 +15,32 @@
 
         </div>
 
-        <div class="table-responsive">
-            <table id="categoryTable" class="table table-striped  table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th width="50%">
-                            Name
-                        </th>
-                        <th width="15%">
-                            Rate (%)
-                        </th>
-                        <th width="15%">
-                            Raw Value (EGP)
-                        </th>
-                        <th width="20%">
-                            Actions
-                        </th>
+	<div class="table-responsive">
+		<table id="categoryTable" class="table table-striped  table-bordered">
+			<thead class="thead-dark">
+				<tr>
+					<th width="50%">
+						Name
+					</th>
+					<th width="15%">
+						Rate (%)
+					</th>
+					<th width="20%">
+						Actions
+					</th>
 
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                @item.Name
-                            </td>
-                            <td>
-                                @item.Rate
-                            </td>
-                            <td>
-                                @item.RawValue
-                            </td>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>
+							@item.Name
+						</td>
+						<td>
+							@item.Rate
+						</td>
 
                             <td>
                                 <div class="d-flex gap-2">

@@ -40,7 +40,7 @@ namespace InfrastructureLayer
         public ITaxRepository Taxes { get; set; }
         public ITaxReceiveOrderRepository TaxReceiveOrders { get; }
         public IDiscountRepository Discounts { get; }
-        public IDiscountOperationRepository DiscountOperations { get; }
+        public IDiscountSalesInvoiceRepository DiscountSalesInvoices { get; }
 
         //User logns
         public IUserLoginHistoryRepository UserLoginHistories { get; }
@@ -75,12 +75,13 @@ namespace InfrastructureLayer
             Taxes = new TaxRepository(_context);
             TaxReceiveOrders = new TaxReceiveOrderRepository(_context);
             Discounts = new DiscountRepository(_context);
-            DiscountOperations = new DiscountOperationRepository(_context);
+            DiscountSalesInvoices = new DiscountSalesInvoiceRepository(_context);
 
             // Initialize Permissions
             Permissions = new PermissionRepository(_context);
             RolePermissions = new RolePermissionRepository(_context);
             UserLoginHistories = new UserLoginHistoryRepository(_context);
+
         }
 
         public void Dispose() => _context.Dispose();

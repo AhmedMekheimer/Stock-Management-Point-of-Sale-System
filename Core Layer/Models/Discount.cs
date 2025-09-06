@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace CoreLayer.Models
 {
-    [EitherOr("Rate", "RawValue")]
     public class Discount
     {
         public int Id { get; set; }
@@ -17,14 +16,17 @@ namespace CoreLayer.Models
         [MaxLength(50)]
         [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
-        [Range(0, 100)]
-        public int? Rate { get; set; } = 0;
-        public int? RawValue { get; set; } = 0;
+        [Required]
+        [Range(1, 100)]
+        public int Rate { get; set; }
         public bool IsActive { get; set; }
+        [DataType(DataType.Date)]
+        [Display(Name = "Expiration Date")]
+        [FutureDate(ErrorMessage = "Expiration date must be today or a future date")]
         public DateOnly? ExpirationDate { get; set; }
         [Required]
         public int CurrentUses { get; set; } = 0;
         public int? MaximumUses { get; set; } = 0;
-        public ICollection<DiscountOperation> DiscountOperations { get; set; } = new List<DiscountOperation>();
+        public ICollection<DiscountSalesInvoice> DiscountSalesInvoices { get; set; } = new List<DiscountSalesInvoice>();
     }
 }

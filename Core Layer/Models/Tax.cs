@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace CoreLayer.Models
 {
-    [EitherOr("Rate", "RawValue")]
     public class Tax
     {
         public int Id { get; set; }
@@ -16,9 +15,9 @@ namespace CoreLayer.Models
         [MaxLength(50)]
         [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
-        [Range(0, 100)]
-        public int? Rate { get; set; } = 0;
-        public int? RawValue { get; set; } = 0;
+        [Required]
+        [Range(0, 100, ErrorMessage = "Discount is written in percentage values from 0 to 100")]
+        public int Rate { get; set; }
         public ICollection<TaxReceiveOrder> TaxReceiveOrders { get; set; } = new List<TaxReceiveOrder>();
     }
 }

@@ -20,7 +20,7 @@ namespace InfrastructureLayer.Repositories
             _context = context;
         }
 
-        public async Task<List<ItemType>> GetLeafNodesAsync(Expression<Func<ItemType, bool>>? expression = null, Expression<Func<ItemType, object>>[]? include = null, bool tracked = false)
+        public async Task<List<ItemType>> GetLeafNodesAsync(Expression<Func<ItemType, bool>>? expression = null, Expression<Func<ItemType, object>>[]? include = null, bool tracked = true)
         {
             var itemTypes = await GetAsync(expression, include, tracked);
             List<ItemType> leafItemTypes = new List<ItemType>();

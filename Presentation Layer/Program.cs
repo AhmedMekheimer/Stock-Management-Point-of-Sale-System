@@ -56,6 +56,17 @@ namespace PresentationLayer
                       policy.RequireRole($"{SD.StockManager}", $"{SD.BranchManager}", $"{SD.SuperAdmin}"));
             });
 
+            // In Startup.cs or Program.cs
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    builder => builder
+                        .WithOrigins("https://yourfrontenddomain.com")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -72,7 +83,7 @@ namespace PresentationLayer
             app.UseAuthentication();
             app.UseAuthorization();
 
-    
+            app.UseCors("AllowFrontend");
 
             app.MapStaticAssets();
             app.MapControllerRoute(

@@ -16,8 +16,8 @@ namespace CoreLayer.Models
         [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
         [Required]
-        [Range(0, 100)]
-        public int Rate { get; set; } = 0;
+        [Range(0, 100, ErrorMessage = "Discount is written in percentage values from 0 to 100")]
+        public int Rate { get; set; }
         public ICollection<TaxReceiveOrder> TaxReceiveOrders { get; set; } = new List<TaxReceiveOrder>();
     }
 }

@@ -17,9 +17,12 @@ namespace CoreLayer.Models
         [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
         [Required]
-        [Range(0, 100)]
-        public int Rate { get; set; } = 0;
+        [Range(1, 100)]
+        public int Rate { get; set; }
         public bool IsActive { get; set; }
+        [DataType(DataType.Date)]
+        [Display(Name = "Expiration Date")]
+        [FutureDate(ErrorMessage = "Expiration date must be today or a future date")]
         public DateOnly? ExpirationDate { get; set; }
         [Required]
         public int CurrentUses { get; set; } = 0;

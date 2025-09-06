@@ -11,6 +11,7 @@ namespace CoreLayer.Models
     {
         public int DiscountId { get; set; }
         public Discount Discount { get; set; } = null!;
+
         public int OperationId { get; set; }
         public SalesInvoice SalesInvoice { get; set; } = null!;
     }

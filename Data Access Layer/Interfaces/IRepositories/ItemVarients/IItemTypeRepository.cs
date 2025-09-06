@@ -11,6 +11,6 @@ namespace InfrastructureLayer.Interfaces.IRepositories.ItemVarients
 {
     public interface IItemTypeRepository : IRepository<ItemType>
     {
-        Task<List<ItemType>> GetLeafNodesAsync(Expression<Func<ItemType, bool>>? expression = null, Expression<Func<ItemType, object>>[]? include = null, bool tracked = false);
+        Task<List<ItemType>> GetLeafNodesAsync(Expression<Func<ItemType, bool>>? expression = null, Expression<Func<ItemType, object>>[]? include = null, bool tracked = true);
     }
 }

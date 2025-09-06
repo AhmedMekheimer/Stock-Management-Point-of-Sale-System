@@ -135,10 +135,10 @@
 									<input type="number" name="name" value="@branchItem.Quantity" class="Quantity" />
 								</td>
 								<td>
-									<input type="number" name="name" value="@branchItem.BuyingPriceAvg" class="BuyingPriceAvg" />
+									<input type="number" name="name" value="@branchItem.BuyingPriceAvg.ToString("N2")" class="BuyingPriceAvg" />
 								</td>
 								<td>
-									<input type="number" name="name" value="@branchItem.LastBuyingPrice" class="lastBuyingPrice" />
+									<input type="number" name="name" value="@branchItem.LastBuyingPrice.ToString("N2")" class="lastBuyingPrice" />
 								</td>
 								<td>
 									<input type="number" name="name" value="@branchItem.SellingPrice?.ToString("N2")" class="SellingPrice" />

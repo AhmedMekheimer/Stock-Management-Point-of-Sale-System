@@ -4,6 +4,7 @@ using InfrastructureLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250906142033_NewProp_OperationItemTable")]
+    partial class NewProp_OperationItemTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -426,8 +429,8 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double?>("TotalDiscountAmount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("TotalDiscountRate")
-                        .HasColumnType("int");
+                    b.Property<double?>("TotalDiscountRate")
+                        .HasColumnType("float");
 
                     b.Property<int>("TotalQuantity")
                         .HasColumnType("int");
@@ -435,8 +438,8 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double?>("TotalTaxesAmount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("TotalTaxesRate")
-                        .HasColumnType("int");
+                    b.Property<double?>("TotalTaxesRate")
+                        .HasColumnType("float");
 
                     b.Property<int>("status")
                         .HasColumnType("int");

@@ -29,11 +29,11 @@ namespace CoreLayer.Models
         public double TotalAmount { get; set; }
 
         [Range(0, 100)]
-        public double? TotalTaxesRate { get; set; }
+        public int? TotalTaxesRate { get; set; }
         [Range(0, double.MaxValue)]
         public double? TotalTaxesAmount { get; set; }
-
-        public double? TotalDiscountRateOrRawValue { get; set; }
+        [Range(0, 100)]
+        public int? TotalDiscountRate { get; set; }
         [Range(0, double.MaxValue)]
         public double? TotalDiscountAmount { get; set; }
 

@@ -32,12 +32,6 @@
                         <span asp-validation-for="Rate" class="text-danger"></span>
                     </div>
 
-                    <!-- Tax Raw Value -->
-                    <div class="mb-3 col-4">
-                        <label asp-for="RawValue" class="form-label">Tax Raw Value(EGP)</label>
-                        <input asp-for="RawValue" class="form-control" />
-                        <span asp-validation-for="RawValue" class="text-danger"></span>
-                    </div>
 
                     @if (User.HasClaim("Permission", "Tax.Add"))
                     {

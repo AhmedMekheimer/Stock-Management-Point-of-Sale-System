@@ -1,90 +1,90 @@
 ﻿@model List<Brand>
 @if (User.HasClaim("Permission", "Brand.View"))
 {
-<div class="p-3">
+	<div class="p-3">
 
-	<div class="d-flex justify-content-between">
-		<h1>Brands</h1>
+		<div class="d-flex justify-content-between">
+			<h1>Brands</h1>
 
 
-		@if (User.HasClaim("Permission", "Brand.Add"))
-		{
-			<p>
-				<a asp-action="Save" class="btn btn-primary">Add</a>
-			</p>
-		}
+			@if (User.HasClaim("Permission", "Brand.Add"))
+			{
+				<p>
+					<a asp-action="Save" class="btn btn-primary">Add</a>
+				</p>
+			}
 
-	</div>
+		</div>
 
-	<div class="table-responsive">
-		<table id="categoryTable" class="table table-striped  table-bordered">
-			<thead class="thead-dark">
-				<tr>
-					<th width="70%">
-						Name
-					</th>
-					<th width="30%">
-						Actions
-					</th>
-
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var item in Model)
-				{
+		<div class="table-responsive">
+			<table id="categoryTable" class="table table-striped  table-bordered">
+				<thead class="thead-dark">
 					<tr>
-						<td>
-							@item.Name
-						</td>
-
-						<td>
-
-							@if (User.HasClaim("Permission", "Brand.Edit"))
-							{
-								<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
-									Edit
-								</a>
-							}
-		
-							
-							@if (User.HasClaim("Permission", "Brand.Delete"))
-							{
-									<button type="button" class="btn btn-sm btn-danger"
-											data-bs-toggle="modal"
-											data-bs-target="#confirmDeleteModal"
-											data-id="@item.Id"
-											data-name="@item.Name">
-										Delete
-									</button>
-							}
-					
-						</td>
+						<th width="70%">
+							Name
+						</th>
+						<th width="30%">
+							Actions
+						</th>
 
 					</tr>
-				}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr>
+							<td>
+								@item.Name
+							</td>
+
+							<td>
+
+								@if (User.HasClaim("Permission", "Brand.Edit"))
+								{
+									<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+										Edit
+									</a>
+								}
+		
+							
+								@if (User.HasClaim("Permission", "Brand.Delete"))
+								{
+										<button type="button" class="btn btn-sm btn-danger"
+												data-bs-toggle="modal"
+												data-bs-target="#confirmDeleteModal"
+												data-id="@item.Id"
+												data-name="@item.Name">
+											Delete
+										</button>
+								}
+					
+							</td>
+
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
-</div>
 
-<partial name="Delete" />
+	<partial name="Delete" />
 
-@section Scripts {
-	<script>
-		$('#confirmDeleteModal').on('show.bs.modal', function (event) {
-			var button = $(event.relatedTarget);
+	@section Scripts {
+		<script>
+			$('#confirmDeleteModal').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget);
 
-			var Id = button.data('id');
-			var Name = button.data('name');
+				var Id = button.data('id');
+				var Name = button.data('name');
 
-			$(this).find('#Name').text(Name);
-			$(this).find('#IdToDelete').val(Id);
-		});
+				$(this).find('#Name').text(Name);
+				$(this).find('#IdToDelete').val(Id);
+			});
 
-		$('#confirmDeleteButton').on('click', function () {
-			$('#deleteUser').submit();
-		});
-	</script>
-}
+			$('#confirmDeleteButton').on('click', function () {
+				$('#deleteUser').submit();
+			});
+		</script>
+	}
 
 }

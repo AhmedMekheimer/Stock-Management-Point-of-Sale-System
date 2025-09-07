@@ -13,7 +13,9 @@ namespace CoreLayer.Models.ItemVarients
         [Required]
         [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
-        public string? Image { get; set; } = string.Empty;
+
+        [RegularExpression(@"^(?!\s)(?!\s+$).+", ErrorMessage = "File name cannot start with spaces or be only whitespace.")]
+        public string? Image { get; set; } = null!;
         public ICollection<Item> Items { get; set; } = new List<Item>();
 
         // Self-referencing FK (nullable for root categories)

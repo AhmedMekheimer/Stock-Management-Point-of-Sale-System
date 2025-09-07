@@ -91,7 +91,7 @@ namespace PresentationLayer.Areas.Item.Controllers
                     TempData["Success"] = "Brand Added Successfully";
                     return RedirectToAction(nameof(Index));
                 }
-                TempData["Error"] = "A Db Error Updating Brand";
+                TempData["Error"] = "A Db Error Adding Brand";
                 return RedirectToAction(nameof(Index));
             }
 

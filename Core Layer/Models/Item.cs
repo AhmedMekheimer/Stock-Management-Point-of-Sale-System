@@ -20,7 +20,8 @@ namespace CoreLayer.Models
         [Required]
         public string Barcode { get; set; } = null!;
 
-        public string? Image { get; set; } = string.Empty;
+        [RegularExpression(@"^(?!\s)(?!\s+$).+", ErrorMessage = "File name cannot start with spaces or be only whitespace.")]
+        public string? Image { get; set; } = null!;
 
         // Many-to-Many: Item is in many Branches (Bridge Table Needed)
         public ICollection<BranchItem> BranchItems { get; set; } = new List<BranchItem>();

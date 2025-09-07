@@ -43,18 +43,17 @@ namespace PresentationLayer.Areas.Branch.Controllers
                 branchVM.BranchId = branch.Id;
                 return View(branchVM);
             }
-
             return View(branchVM);
         }
+
         [HttpPost]
         [Authorize(Policy = "Stock.Add|Stock.Edit")]
         public async Task<IActionResult> Save(BranchVM branchVM)
         {
-
             if (branchVM.BranchId is not null)
             {
-                var oldBranch = await _UnitOfWork.Branches.GetOneAsync(b => b.Id == branchVM.BranchId);
-                if (oldBranch is not null)
+                // Editing a Branch
+                if ((await _UnitOfWork.Branches.GetOneAsync(b => b.Id == branchVM.BranchId, null, tracked: false)) is CoreLayer.Models.Branch oldBranch)
                 {
                     // Checking Name Uniqueness
                     if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name && e.Id != branchVM.BranchId) is CoreLayer.Models.Branch))
@@ -63,17 +62,21 @@ namespace PresentationLayer.Areas.Branch.Controllers
                         return View(branchVM);
                     }
                     oldBranch.Name = branchVM.Name;
-                    var result = await _UnitOfWork.Branches.CommitAsync();
+                    var result = await _UnitOfWork.Branches.UpdateAsync(oldBranch);
                     if (result)
                     {
                         TempData["success"] = "Branch updated";
                         return RedirectToAction(nameof(Index));
                     }
-
+                    TempData["Error"] = "A Db Error Updating Branch";
+                    return RedirectToAction(nameof(Index));
                 }
+                TempData["Error"] = "Branch Not Found";
+                return RedirectToAction(nameof(Index));
             }
             else
             {
+                // Adding a New Branch
                 // Checking Name Uniqueness
                 if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name && e.Id != branchVM.BranchId) is CoreLayer.Models.Branch))
                 {
@@ -87,7 +90,6 @@ namespace PresentationLayer.Areas.Branch.Controllers
 
                 if (result)
                 {
-
                     var items = await _UnitOfWork.Items.GetAsync();
                     var branchItems = new List<BranchItem>();
                     if (items.Count() > 0)
@@ -106,23 +108,20 @@ namespace PresentationLayer.Areas.Branch.Controllers
                             branchItems.Add(branchItem);
                         }
 
-
                         var resultAddItemBranch = await _UnitOfWork.BranchItems.CreateRangeAsync(branchItems);
-
                         if (!resultAddItemBranch)
                         {
-                            TempData["success"] = "Couldn't add item branch";
+                            TempData["success"] = "Branch Added";
+                            TempData["error"] = "Couldn't add items in the branch";
                             return RedirectToAction(nameof(Index));
                         }
                     }
-
-                    TempData["success"] = "Branch added";
+                    TempData["success"] = "Branch Added with its Items";
                     return RedirectToAction(nameof(Index));
                 }
                 TempData["Error"] = "A Db Error Adding Branch";
                 return RedirectToAction(nameof(Index));
             }
-            return View();
         }
 
         [HttpPost]
@@ -138,11 +137,13 @@ namespace PresentationLayer.Areas.Branch.Controllers
 
                 if (branchResult)
                 {
-                    TempData["success"] = "user delete.";
+                    TempData["success"] = "Branch Deleted Successfully";
                     return RedirectToAction(nameof(Index));
                 }
+                TempData["Error"] = "A Db Error Deleting Branch";
+                return RedirectToAction(nameof(Index));
             }
-
+            TempData["Error"] = "Branch Not Found";
             return RedirectToAction(nameof(Index));
         }
     }

@@ -47,7 +47,7 @@
                                 }
                                 @if (User.Identity.Name != item.UserName && User.HasClaim("Permission", "User.Delete"))
                                 {
-                                    <button type="button" class="col-4 btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@item.UserName">Delete </button>
+                                    <button type="button" class="col-4 btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@item.UserName"> Delete </button>
 
                                 }
                             </td>

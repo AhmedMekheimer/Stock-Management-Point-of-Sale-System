@@ -68,12 +68,6 @@ namespace PresentationLayer.Utility
 
                     }
                 }
-
-                _Context.Partners.Add(new Partner
-                {
-                    Name = "Retail",
-                    partnerType = Partner.PartnerType.RetailCustomer
-                });
                _Context.SaveChanges();
             }
         }

@@ -156,7 +156,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
                 }
                 else
                 {
-                    TempData["error"] = "Error Deleting Partner";
+                    TempData["error"] = "Db Error Deleting Partner";
                     return RedirectToAction(nameof(Index));
                 }
             }

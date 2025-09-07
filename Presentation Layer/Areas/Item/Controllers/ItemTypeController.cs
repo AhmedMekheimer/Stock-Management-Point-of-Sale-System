@@ -1,7 +1,6 @@
 ﻿using CoreLayer;
 using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Data;
-using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +22,6 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
 
         // -------------------- TREE --------------------
-
-        // Loads only level 1 (roots). Children are fetched on demand.
 
         [Authorize(Policy = "ItemType.View")]
         public async Task<IActionResult> Index()
@@ -60,7 +57,6 @@ namespace PresentationLayer.Areas.Item.Controllers
                 ))
                 .ToListAsync();
 
-            // Partial renders <li>... for each child
             return PartialView("_ItemTypeChildren", children);
         }
 
@@ -93,7 +89,7 @@ namespace PresentationLayer.Areas.Item.Controllers
 
             // Enforce unique among siblings
             var nameTaken = await _db.ItemTypes
-                .AnyAsync(t => t.ItemTypeId == vm.ParentId && t.Name == vm.Name+" "+vm.ParentName);
+                .AnyAsync(t => t.ItemTypeId == vm.ParentId && t.Name == vm.Name + " " + vm.ParentName);
             if (nameTaken)
             {
                 ModelState.AddModelError(nameof(vm.Name), "A sibling with the same name already exists.");
@@ -113,7 +109,7 @@ namespace PresentationLayer.Areas.Item.Controllers
                     return View(vm);
                 }
             }
-            if(vm.ParentName is not null)
+            if (vm.ParentName is not null)
             {
                 vm.Name = vm.Name + " " + vm.ParentName;
             }
@@ -178,7 +174,7 @@ namespace PresentationLayer.Areas.Item.Controllers
             Result result = new Result();
 
             // 1. Prevent moving under itself
-            if (vm.ParentId == id || vm.ParentName==vm.Name)
+            if (vm.ParentId == id || vm.ParentName == vm.Name)
             {
                 ModelState.AddModelError(nameof(vm.Name), "Cannot set the parent to itself.");
                 vm.ItemType.Image = entity.Image;
@@ -362,7 +358,5 @@ namespace PresentationLayer.Areas.Item.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
     }
-
 }

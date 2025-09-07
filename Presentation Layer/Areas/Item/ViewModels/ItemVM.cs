@@ -16,7 +16,8 @@ namespace PresentationLayer.Areas.Stock.ViewModels
         public string Barcode { get; set; } = null!;
         public IFormFile? formFile { get; set; }
 
-        public string? Image { get; set; } = string.Empty;
+        [RegularExpression(@"^(?!\s)(?!\s+$).+", ErrorMessage = "File name cannot start with spaces or be only whitespace.")]
+        public string? Image { get; set; } = null!;
         public bool deleteImage { get; set; }
         [Required]
         public int SizeId { get; set; }

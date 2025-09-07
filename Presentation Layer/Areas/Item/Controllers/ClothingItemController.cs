@@ -33,6 +33,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 i => i.TargetAudience , i => i.Brand , i => i.Size , i =>i.ItemType]);
             return View(itemsList);
         }
+
         [HttpGet]
         [Authorize(Policy = "ClothingItem.Add|ClothingItem.Edit")]
         public async Task<IActionResult> Save(int? id = 0)
@@ -131,7 +132,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
                     var newItem = new CoreLayer.Models.Item();
                     newItem = itemVM.Adapt<CoreLayer.Models.Item>();
 
-                    // Replacing with a New Image
+                    // Putting New Image
                     if (itemVM.formFile != null)
                     {
                         if (item.Image != null)
@@ -168,6 +169,9 @@ namespace PresentationLayer.Areas.Stock.Controllers
                                 return View(itemVM);
                             }
                         }
+                        else
+                            // Keeping Old Image
+                            newItem.Image = item.Image;
                     }
                     _UnitOfWork.Items.DetachEntity(item);
 

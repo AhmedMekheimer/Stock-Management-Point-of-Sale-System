@@ -20,10 +20,16 @@ namespace CoreLayer.Models
         [Range(0.0, double.MaxValue)]
         public double SellingPrice { get; set; }
 
+        // Buying Price per unit at the moment of Receive Order Operation
+        [Required]
+        [Range(0.0, double.MaxValue)]
+        public double BuyingPrice { get; set; }
+
         [Range(0, 100, ErrorMessage = "Discount is written in percentage values from 0 to 100")]
         public int? DiscountRate { get; set; }
 
-        // Quantity * SellingPrice * (1 - DiscountRate/100)
+        // Sales Invoice: Quantity * Selling Price * (1 - DiscountRate/100)
+        // Receive Order: Quantity * Last Buying Price * (1 + Tax/100)
         [Required]
         [Range(0.0, double.MaxValue)]
         public double TotalPrice { get; set; }

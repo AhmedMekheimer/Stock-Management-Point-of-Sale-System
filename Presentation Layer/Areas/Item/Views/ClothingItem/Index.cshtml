@@ -8,7 +8,9 @@
 
 			@if (User.HasClaim("Permission", "ClothingItem.Add"))
 			{
-				<a asp-action="Save" class="btn btn-primary">Add</a>
+				<p>
+					<a asp-action="Save" class="btn btn-primary">Add</a>
+				</p>
 			}
 
 		</div>

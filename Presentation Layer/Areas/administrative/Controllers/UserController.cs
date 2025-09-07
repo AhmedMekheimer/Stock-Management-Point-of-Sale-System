@@ -189,7 +189,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Authorize(Policy = "User.Delete")]
         public async Task<IActionResult> Delete(string id)
         {

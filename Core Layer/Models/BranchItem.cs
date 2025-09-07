@@ -21,6 +21,7 @@ namespace CoreLayer.Models
         public double BuyingPriceAvg { get; set; }
         public double LastBuyingPrice { get; set; }
         public double? SellingPrice { get; set; }
+
         [Range(0, int.MaxValue)]
         public int? RestockThreshold { get; set; }
 

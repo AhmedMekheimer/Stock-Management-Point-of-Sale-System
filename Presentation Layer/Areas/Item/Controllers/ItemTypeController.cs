@@ -111,6 +111,11 @@ namespace PresentationLayer.Areas.Item.Controllers
             }
             if (vm.ParentName is not null)
             {
+                if(vm.ParentName.Contains(vm.Name))
+                {
+                    ModelState.AddModelError(nameof(vm.Name), "Cannot set the parent to itself.");
+                    return View(vm);
+                }
                 vm.Name = vm.Name + " " + vm.ParentName;
             }
             _db.ItemTypes.Add(new ItemType

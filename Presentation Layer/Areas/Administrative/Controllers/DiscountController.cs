@@ -95,7 +95,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
             return View(discountVM);
         }
         [HttpPost]
-        [Authorize(Policy = "Discount.AddOrEdit")]
+        [Authorize(Policy = "Discount.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             if ((await _UnitOfWork.Discounts.GetOneAsync(b => b.Id == id)) is Discount discount)

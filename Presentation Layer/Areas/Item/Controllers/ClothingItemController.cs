@@ -76,7 +76,6 @@ namespace PresentationLayer.Areas.Stock.Controllers
             branchItem.LastBuyingPrice = branchItemDTO.LastBuyingPrice;
             branchItem.SellingPrice = branchItemDTO.SellingPrice;
             branchItem.Quantity = branchItemDTO.Quantity;
-            branchItem.RestockThreshold = branchItemDTO.RestockThreshold;
             branchItem.DiscountRate = branchItemDTO.DiscountRate;
 
             var result = await _UnitOfWork.BranchItems.UpdateAsync(branchItem);
@@ -246,7 +245,6 @@ namespace PresentationLayer.Areas.Stock.Controllers
                             ItemId = item.Id,
                             BranchId = itemBranch.Id,
                             DiscountRate = 0,
-                            RestockThreshold = 0
                         };
                         branchItems.Add(branchItem);
                     }

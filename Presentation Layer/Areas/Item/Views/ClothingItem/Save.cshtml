@@ -118,55 +118,46 @@
         {
 
 			<div class="table-responsive my-5">
-				<table class="table table-bordered table-striped">
-					<thead class="table-secondary">
+				<table class="table table-bordered table-striped w-100 align-middle" style="table-layout: fixed;">
+					<thead class="table-secondary text-center align-middle">
 						<tr>
-							<th>Branch</th>
-							<th>Quantity</th>
-							<th>Buying Price Avg</th>
-							<th>Last Buying Price</th>
-							<th>Selling Price</th>
-							<th>Discount Rate (%)</th>
-							<th>Restock Threshold</th>
-							<th>Save</th>
+							<th style="width:16%;">Branch</th>
+							<th style="width:12%;">Quantity</th>
+							<th style="width:16%;">Buying Price Avg</th>
+							<th style="width:16%;">Last Buying Price</th>
+							<th style="width:16%;">Selling Price</th>
+							<th style="width:16%;">Discount Rate (%)</th>
+							<th style="width:8%;">Save</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody class="text-center align-middle">
 						@foreach (var branchItem in Model.BranchItem)
 						{
 							<tr class="saveData">
 								<td>@branchItem.Branch?.Name</td>
 								<td>
-									<input type="number" name="name" value="@branchItem.Quantity" class="Quantity" />
+									<input type="number" value="@branchItem.Quantity" class="form-control text-center Quantity" />
 								</td>
 								<td>
-									<input type="number" name="name" value="@branchItem.BuyingPriceAvg.ToString("N2")" class="BuyingPriceAvg" />
+									<input type="number" value="@branchItem.BuyingPriceAvg.ToString("N2")" class="form-control text-center BuyingPriceAvg" />
 								</td>
 								<td>
-									<input type="number" name="name" value="@branchItem.LastBuyingPrice.ToString("N2")" class="lastBuyingPrice" />
+									<input type="number" value="@branchItem.LastBuyingPrice.ToString("N2")" class="form-control text-center lastBuyingPrice" />
 								</td>
 								<td>
-									<input type="number" name="name" value="@branchItem.SellingPrice?.ToString("N2")" class="SellingPrice" />
+									<input type="number" value="@branchItem.SellingPrice?.ToString("N2")" class="form-control text-center SellingPrice" />
 								</td>
 								<td>
-									<input type="number" name="name" value="@branchItem.DiscountRate" class="DiscountRate" min="0" max="100" />
+									<input type="number" value="@branchItem.DiscountRate" class="form-control text-center DiscountRate" min="0" max="100" />
 								</td>
-								<td>
-									<input type="number" name="name" value="@branchItem.RestockThreshold" class="RestockThreshold" />
-								</td>
-								<td>
-									<button type="button" class="btnSaveItemBranch btn btn-secondary" data-branchId="@branchItem.BranchId" data-itemId="@branchItem.ItemId" name="name">Save</button>
-								</td>
+								<td> <button type="button" class="btnSaveItemBranch btn btn-secondary" data-branchId="@branchItem.BranchId" data-itemId="@branchItem.ItemId" name="name">Save</button> </td>
 							</tr>
 						}
 					</tbody>
 				</table>
 			</div>
-
         }
-   
     </div>
-
 </div>
 
 @section Scripts {
@@ -248,7 +239,6 @@
 			let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
 			let sellingPrice    = parent.find(".SellingPrice").val();
 			let discountRate	= parent.find(".DiscountRate").val();
-			let restockThreshold= parent.find(".RestockThreshold").val();
 
 			var data = {
 				Quantity: quantity,
@@ -258,7 +248,6 @@
 				BranchId: branchId,
 				ItemId: itemId,
 				DiscountRate:discountRate,
-				RestockThreshold:restockThreshold
 			};
 
 			$.ajax({
@@ -281,6 +270,5 @@
 				}
 			});
 		});
-
 	</script>
 }

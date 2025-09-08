@@ -1,6 +1,6 @@
 ﻿using CoreLayer.Models.Operations;
 
-namespace PresentationLayer.Areas.Operation.DTOs
+namespace PresentationLayer.Areas.Sales.DTOs
 {
     public class CreateSalesInvoiceDTO
     {
@@ -23,7 +23,6 @@ namespace PresentationLayer.Areas.Operation.DTOs
     public class CreateOperationItemDTO
     {
         public int ItemId { get; set; }
-        public string ItemNameSnapshot { get; set; } = null!;
         public int Quantity { get; set; }
         public double SellingPrice { get; set; }
         public double DiscountPrice { get; set; }

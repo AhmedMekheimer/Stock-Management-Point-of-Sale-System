@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Areas.administrative.ViewModels;
 using PresentationLayer.Areas.Branch.ViewModels;
-using PresentationLayer.Areas.Operation.DTOs;
+using PresentationLayer.Areas.Sales.DTOs;
 using System.Threading.Tasks;
 
-namespace PresentationLayer.Areas.Operation.Controllers
+namespace PresentationLayer.Areas.Sales.Controllers
 {
-    [Area("Operation")]
+    [Area("Sales")]
     [Route("api/[area]/[controller]")]
     [ApiController]
     [Authorize]
@@ -34,7 +34,7 @@ namespace PresentationLayer.Areas.Operation.Controllers
             return View();
         }
 
-        // GET: /api/Operation/PosApi/user
+        // GET: /api/Sales/PosApi/user
         [HttpGet("user")]
         public async Task<IActionResult> GetUser()
         {
@@ -54,7 +54,7 @@ namespace PresentationLayer.Areas.Operation.Controllers
         }
 
 
-        // GET: /api/Operation/PosApi/branches
+        // GET: /api/Sales/PosApi/branches
         [HttpGet("branches")]
         public async Task<IActionResult> GetBranches()
         {
@@ -96,7 +96,7 @@ namespace PresentationLayer.Areas.Operation.Controllers
         }
 
 
-        // GET: /api/Operation/PosApi/itemtypes
+        // GET: /api/Sales/PosApi/itemtypes
         [HttpGet("itemtypes")]
         public async Task<IActionResult> GetItemTypes()
         {
@@ -126,7 +126,7 @@ namespace PresentationLayer.Areas.Operation.Controllers
         }
 
 
-        // GET: /api/operation/PosApi/items?typeId?branchId
+        // GET: /api/Sales/PosApi/items?typeId?branchId
         [HttpGet("items")]
         public async Task<IActionResult> GetItems([FromQuery] int typeId, [FromQuery] int branchId)
         {
@@ -178,7 +178,7 @@ namespace PresentationLayer.Areas.Operation.Controllers
         }
 
 
-        // GET: /api/operation/PosApi/customers
+        // GET: /api/Sales/PosApi/customers
         [HttpGet("customers")]
         public async Task<IActionResult> GetCustomers()
         {
@@ -202,13 +202,13 @@ namespace PresentationLayer.Areas.Operation.Controllers
         }
 
 
-        // GET: /api/operation/PosApi/discounts
+        // GET: /api/Sales/PosApi/discounts
         [HttpGet("discounts")]
         public async Task<IActionResult> GetDiscounts()
         {
             try
             {
-                var activeDiscounts = await _UnitOfWork.Discounts.GetActiveDiscountsAsync();
+                var activeDiscounts = (await _UnitOfWork.Discounts.GetActiveDiscountsAsync()).OrderByDescending(d=>d.Rate).Take(1);
                 if (activeDiscounts is null)
                 {
                     TempData["Error"] = "Error fetching Discounts from Db";
@@ -234,7 +234,7 @@ namespace PresentationLayer.Areas.Operation.Controllers
         }
 
 
-        // POST: /api/operation/PosApi/createSalesInvoice
+        // POST: /api/Sales/PosApi/createSalesInvoice
         [HttpPost("createSalesInvoice")]
         public async Task<IActionResult> CreateSalesInvoice([FromBody] CreateSalesInvoiceDTO dto)
         {
@@ -258,7 +258,6 @@ namespace PresentationLayer.Areas.Operation.Controllers
                 OperationItems = dto.OperationItems.Select(o => new OperationItem
                 {
                     ItemId = o.ItemId,
-                    ItemNameSnapshot=o.ItemNameSnapshot,
                     Quantity = o.Quantity,
 
                     // Original selling price

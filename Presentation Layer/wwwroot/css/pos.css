@@ -69,9 +69,9 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    flex: 1; /* Changed from flex: 0 0 auto to allow growth */
+    flex: 0 0 auto; /* size to content — do not grow */
     margin-bottom: 10px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .section-header {
@@ -307,8 +307,8 @@ body {
 }
 
 .discounts-section {
-    flex: 1; /* Takes less vertical space than cart */
-    min-height: 250px; /* Increased minimum height */
+    flex: 0 0 auto; /* size to content */
+    min-height: 0; /* do not force extra height */
 }
 
 .totals-section {

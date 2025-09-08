@@ -35,10 +35,6 @@ namespace CoreLayer.Models
         public double TotalPrice { get; set; }
 
         [Required]
-        // Item's Name at the moment of sale
-        public string ItemNameSnapshot { get; set; } = null!;
-
-        [Required]
         public int OperationId { get; set; }
         public Operation Operation { get; set; } = null!;
 

@@ -36,7 +36,7 @@
     // Fetch current user
     function fetchCurrentUser() {
         return $.ajax({
-            url: '/api/operation/PosApi/user',
+            url: '/api/Sales/PosApi/user',
             method: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -73,7 +73,7 @@
     // Fetch Customers from API
     function fetchCustomers() {
         return $.ajax({
-            url: '/api/operation/PosApi/customers',
+            url: '/api/Sales/PosApi/customers',
             method: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -131,7 +131,7 @@
     // Fetch branches from API on page load
     function fetchBranches() {
         return $.ajax({
-            url: '/api/operation/PosApi/branches',
+            url: '/api/Sales/PosApi/branches',
             method: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -191,7 +191,7 @@
     // Fetch item types from API on page load
     function fetchItemTypes() {
         return $.ajax({
-            url: '/api/operation/PosApi/itemtypes',
+            url: '/api/Sales/PosApi/itemtypes',
             method: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -232,7 +232,7 @@
     // Fetch items based on type (you need to implement this API endpoint)
     function fetchItems(typeFilter, currentBranchId) {
         return $.ajax({
-            url: `/api/operation/posapi/items?typeId=${typeFilter}&branchId=${currentBranchId}`,
+            url: `/api/Sales/posapi/items?typeId=${typeFilter}&branchId=${currentBranchId}`,
             method: 'GET',
             success: function (data) {
                 console.log("Items received:", data);
@@ -554,7 +554,7 @@
     // Fetch Array of Active Discounts from Db
     function fetchActiveDiscounts() {
         return $.ajax({
-            url: '/api/operation/PosApi/discounts',
+            url: '/api/Sales/PosApi/discounts',
             method: 'GET',
             dataType: 'json',
             success: function (data) {
@@ -736,7 +736,6 @@
 
             operationItems: cart.map(c => ({
                 itemId: c.id,
-                itemNameSnapshot: c.name,     
                 quantity: c.quantity,
                 sellingPrice: c.price,
                 discountPrice: c.discountPrice,
@@ -751,7 +750,7 @@
         if (!payload) return;
 
         $.ajax({
-            url: '/api/operation/posapi/createSalesInvoice',
+            url: '/api/Sales/posapi/createSalesInvoice',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(payload),
@@ -760,7 +759,7 @@
                 cart = []; updateCartDisplay();
                 $('#checkoutModal').modal('hide');
                 // Open PDF of Invoice, having an API generating PDF invoice later on
-                //window.open(`api/operation/posapi/generatePdf`, '_blank');
+                //window.open(`api/Sales/posapi/generatePdf`, '_blank');
             },
             error: function (xhr) {
                 toastr.error('Error creating invoice: ' + (xhr.responseJSON?.message || xhr.responseText));

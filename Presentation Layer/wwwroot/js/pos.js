@@ -744,7 +744,6 @@
         };
     }
 
-
     $(document).on('click', '#confirmCheckoutBtn', function () {
         const payload = buildInvoicePayload();
         if (!payload) return;
@@ -755,16 +754,30 @@
             contentType: 'application/json',
             data: JSON.stringify(payload),
             success: function (resp) {
+                // resp should include invoiceId
+                if (resp && resp.invoiceId) {
+                    const pdfUrl = `/api/Sales/PosApi/receipt?operationId=${resp.invoiceId}`;
+                    // Open PDF in a new tab, inline
+                    window.open(pdfUrl, '_blank');
+                } else {
+                    toastr.warning('Invoice created but PDF could not be opened automatically.');
+                }
+
+                // UI updates
                 toastr.success('Sales Invoice Created');
-                cart = []; updateCartDisplay();
+                cart = [];
+                updateCartDisplay();
                 $('#checkoutModal').modal('hide');
-                // Open PDF of Invoice, having an API generating PDF invoice later on
-                //window.open(`api/Sales/posapi/generatePdf`, '_blank');
             },
             error: function (xhr) {
-                toastr.error('Error creating invoice: ' + (xhr.responseJSON?.message || xhr.responseText));
-                console.log('Error creating invoice: ' + (xhr.responseJSON?.message || xhr.responseText));
+                const msg = xhr.responseJSON?.message || xhr.responseText || 'Unknown error';
+                toastr.error(msg);
+                console.error(msg);
             }
         });
+    });
+
+    $(document).on('click', '#pdf', function () {
+        window.open('/api/Sales/PosApi/receipt', '_blank');
     });
 });

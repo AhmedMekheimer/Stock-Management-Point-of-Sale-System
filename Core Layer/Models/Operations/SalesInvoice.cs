@@ -13,8 +13,11 @@ namespace CoreLayer.Models.Operations
         public int BranchId { get; set; }
         public Branch Branch { get; set; } = null!;
 
-        public int? RetailCustomerId { get; set; }  // FK to Partner
+        [Required]
+        public int RetailCustomerId { get; set; }  // FK to Partner
         public Partner RetailCustomer { get; set; } = null!;
+        [Required]
+        public string InvoiceNumber { get; set; } = null!;
         public ICollection<DiscountSalesInvoice> DiscountSalesInvoices { get; set; } = new List<DiscountSalesInvoice>();
     }
 }

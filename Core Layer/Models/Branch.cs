@@ -17,6 +17,15 @@ namespace CoreLayer.Models
         [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
 
+        [Required]
+        [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Address cannot be only whitespace.")]
+        public string Address { get; set; } = null!;
+
+        [Required]
+        [RegularExpression(@"^\+?[1-9]\d{1,14}$", ErrorMessage = "Invalid phone number.")]
+        public string PhoneNumber { get; set; } = null!;
+
+
         // Many-to-Many: Branch has many Items (Bridge Table Needed)
         public ICollection<BranchItem> BranchItems { get; set; } = new List<BranchItem>();
 

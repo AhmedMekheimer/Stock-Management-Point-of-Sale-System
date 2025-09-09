@@ -18,12 +18,12 @@ namespace PresentationLayer.Areas.administrative.ViewModels
         public string? Email { get; set; } = string.Empty;
         [Required]
         public PartnerType partnerType { get; set; }
-        [EgyptianPhone]
+        [RegularExpression(@"^\+?[1-9]\d{1,14}$", ErrorMessage = "Invalid phone number.")]
         public string? PhoneNumber { get; set; }
 
         public List<SelectListItem> PartnerList = new List<SelectListItem>() {
         {new SelectListItem{Text = "Supplier" , Value = "1"}},
-             {new SelectListItem{Text = "Customer"  , Value = "2"}}
+             {new SelectListItem{Text = "Retail Customer"  , Value = "2"}}
         };
 
     }

@@ -27,7 +27,8 @@ namespace CoreLayer.Models
         public string? Email { get; set; } = string.Empty;
         [Required]
         public PartnerType partnerType { get; set; }
-        [EgyptianPhone]
+
+        [RegularExpression(@"^\+?[1-9]\d{1,14}$", ErrorMessage = "Invalid phone number.")]
         public string? PhoneNumber { get; set; } = string.Empty;
 
         public ICollection<SalesInvoice>? SalesInvoices { get; set; } = new List<SalesInvoice>();

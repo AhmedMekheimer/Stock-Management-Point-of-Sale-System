@@ -7,11 +7,18 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Areas.administrative.ViewModels;
 using PresentationLayer.Areas.Branch.ViewModels;
 using PresentationLayer.Areas.Sales.DTOs;
+using PresentationLayer.Utility;
+using QuestPDF.Companion;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using System.Threading.Tasks;
+
 
 namespace PresentationLayer.Areas.Sales.Controllers
 {
@@ -87,7 +94,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                     return Ok(result);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 // Error Log
                 TempData["Error"] = "Error fetching branch data";
@@ -117,7 +124,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
 
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch
             {
                 // Error Log
                 TempData["Error"] = "Error fetching Item types";
@@ -158,7 +165,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                     quantity = i.Quantity,
                     price = i.SellingPrice,
                     discountPrice = (i.DiscountRate is null) ? i.SellingPrice : i.SellingPrice - i.SellingPrice * i.DiscountRate / 100.0,
-                    discountRate=i.DiscountRate
+                    discountRate = i.DiscountRate
                 });
 
                 // All Items Button
@@ -170,7 +177,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                     return Ok(result.ToArray());
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 TempData["Error"] = "Error fetching items";
                 return StatusCode(500, new { message = "An error occurred while fetching items" });
@@ -193,7 +200,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 }).ToArray();
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch
             {
                 // Error Log
                 TempData["Error"] = "Error fetching customers";
@@ -208,7 +215,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
         {
             try
             {
-                var activeDiscounts = (await _UnitOfWork.Discounts.GetActiveDiscountsAsync()).OrderByDescending(d=>d.Rate).Take(1);
+                var activeDiscounts = (await _UnitOfWork.Discounts.GetActiveDiscountsAsync()).OrderByDescending(d => d.Rate).Take(1);
                 if (activeDiscounts is null)
                 {
                     TempData["Error"] = "Error fetching Discounts from Db";
@@ -225,7 +232,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 return Ok(result);
 
             }
-            catch (Exception ex)
+            catch
             {
                 // Error Log
                 TempData["Error"] = "Error fetching Discounts";
@@ -255,60 +262,90 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 TotalDiscountAmount = dto.TotalDiscountAmount,
                 GrandTotal = dto.GrandTotal,
                 RoundedGrandTotal = dto.RoundedGrandTotal,
+                InvoiceNumber="1",
                 OperationItems = dto.OperationItems.Select(o => new OperationItem
                 {
                     ItemId = o.ItemId,
                     Quantity = o.Quantity,
-
-                    // Original selling price
                     SellingPrice = o.SellingPrice,
-
-                    // Calculate
                     DiscountRate = o.DiscountRate,
-
-                    // final total
-                    TotalPrice = o.DiscountPrice * o.Quantity
+                    TotalPrice = o.DiscountPrice * o.Quantity,
                 }).ToList()
             };
 
-            var createResult = await _UnitOfWork.SalesInvoices.CreateAsync(invoice);
-            if(createResult)
-            {
-                foreach (var item in invoice.OperationItems)
-                {
-                    item.OperationId = invoice.Id;
-                }
-                List<DiscountSalesInvoice> discountSalesInvoices = new List<DiscountSalesInvoice>();
-                foreach (var discount in dto.GeneralDiscounts)
-                {
-                    discountSalesInvoices.Add(new DiscountSalesInvoice
-                    {
-                        DiscountId = discount,
-                        OperationId = invoice.Id
-                    });
-                }
-                invoice.DiscountSalesInvoices = discountSalesInvoices;
+            var created = await _UnitOfWork.SalesInvoices.CreateAsync(invoice);
+            if (!created)
+                return BadRequest("Error creating Invoice");
 
-                var updateResult = await _UnitOfWork.SalesInvoices.UpdateAsync(invoice);
-                if(updateResult)
-                {
-                    // Subtracting from the Stock/Quantity of each item in the branch
-                    foreach(var item in invoice.OperationItems)
-                    {
-                        var branchItem=await _UnitOfWork.BranchItems.GetOneAsync(bi=>bi.BranchId==invoice.BranchId && bi.ItemId==item.ItemId,null,false);
-                        if(branchItem is not null)
-                        {
-                            branchItem.Quantity -= item.Quantity;
-                            var lastResult = await _UnitOfWork.BranchItems.UpdateAsync(branchItem);
-                            if (lastResult)
-                                return Ok();
-                        }
-                        return BadRequest("Error Subtracting Quantity from Branch");
-                    }
-                }
+            // Ensure OperationId set on newly created OperationItems (EF usually fixes this after SaveChanges, but safe to set)
+            foreach (var item in invoice.OperationItems)
+                item.OperationId = invoice.Id;
+
+            // Apply general discounts relation
+            var discountSalesInvoices = dto.GeneralDiscounts
+                .Select(d => new DiscountSalesInvoice { DiscountId = d, OperationId = invoice.Id })
+                .ToList();
+
+            invoice.DiscountSalesInvoices = discountSalesInvoices;
+
+            // Compose invoice number
+            invoice.InvoiceNumber = $"{invoice.BranchId}_{invoice.Id}_S";
+
+            var updated = await _UnitOfWork.SalesInvoices.UpdateAsync(invoice);
+            if (!updated)
                 return BadRequest("Error updating Invoice");
+
+            // Subtract stock quantities - do all and fail if any fail
+            foreach (var item in invoice.OperationItems)
+            {
+                var branchItem = await _UnitOfWork.BranchItems
+                    .GetOneAsync(bi => bi.BranchId == invoice.BranchId && bi.ItemId == item.ItemId, null, false);
+
+                if (branchItem == null)
+                    return BadRequest($"BranchItem not found for ItemId={item.ItemId}");
+
+                branchItem.Quantity -= item.Quantity;
+                var branchUpdateOk = await _UnitOfWork.BranchItems.UpdateAsync(branchItem);
+                if (!branchUpdateOk)
+                    return BadRequest("Error subtracting quantity from branch");
             }
-            return BadRequest("Error creating Invoice");
+
+            var pdfUrl = $"/api/Sales/PosApi/receipt?operationId={invoice.Id}";
+
+            // Return invoice id and pdf url to client
+            return Ok(new { invoiceId = invoice.Id });
+        }
+
+
+        // GET: /api/Sales/PosApi/receipt?operationId
+        [HttpGet("receipt")]
+        public async Task<IActionResult> GetReceipt([FromQuery] int operationId)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            var invoice = await _UnitOfWork.SalesInvoices.GetOneAsyncIncludes(
+                s => s.Id == operationId,
+                new List<Func<IQueryable<SalesInvoice>, IQueryable<SalesInvoice>>>
+                {
+                    s => s.Include(s => s.Branch),
+                    s => s.Include(s => s.RetailCustomer),
+                    s => s.Include(s => s.ApplicationUser),
+                    s => s.Include(s => s.DiscountSalesInvoices).ThenInclude(s => s.Discount),
+                    s => s.Include(s => s.OperationItems).ThenInclude(s => s.Item)
+                },
+                false
+            );
+
+            if (invoice == null)
+                return NotFound("Invoice not found");
+
+            var document = new InvoiceDocument(invoice);
+            var pdfBytes = document.GeneratePdf();
+
+            // Add inline disposition so browser tries to open instead of download
+            Response.Headers.Add("Content-Disposition", $"inline; filename={invoice.InvoiceNumber}.pdf");
+
+            return File(pdfBytes, "application/pdf");
         }
     }
 }

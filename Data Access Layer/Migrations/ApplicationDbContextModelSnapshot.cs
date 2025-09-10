@@ -117,7 +117,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("ApplicationUserOTP");
+                    b.ToTable("ApplicationUserOTP", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Branch", b =>
@@ -143,7 +143,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.BranchItem", b =>
@@ -173,7 +173,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("BranchItems");
+                    b.ToTable("BranchItems", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Discount", b =>
@@ -209,7 +209,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discounts", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.DiscountSalesInvoice", b =>
@@ -224,7 +224,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("DiscountSalesInvoices");
+                    b.ToTable("DiscountSalesInvoices", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -280,7 +280,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("TargetAudienceId");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Brand", b =>
@@ -300,7 +300,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Color", b =>
@@ -320,7 +320,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Colors");
+                    b.ToTable("Colors", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.ItemType", b =>
@@ -351,7 +351,7 @@ namespace InfrastructureLayer.Migrations
                         .IsUnique()
                         .HasFilter("[ItemTypeId] IS NOT NULL");
 
-                    b.ToTable("ItemTypes");
+                    b.ToTable("ItemTypes", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Size", b =>
@@ -371,7 +371,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sizes");
+                    b.ToTable("Sizes", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.TargetAudience", b =>
@@ -391,7 +391,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TargetAudiences");
+                    b.ToTable("TargetAudiences", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Operation", b =>
@@ -483,7 +483,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("OperationItems");
+                    b.ToTable("OperationItems", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Partner", b =>
@@ -517,7 +517,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Partners");
+                    b.ToTable("Partners", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Permission", b =>
@@ -540,7 +540,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
 
                     b.HasData(
                         new
@@ -1067,7 +1067,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("RolePermissions");
+                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Tax", b =>
@@ -1091,7 +1091,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Taxes");
+                    b.ToTable("Taxes", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.TaxReceiveOrder", b =>
@@ -1106,7 +1106,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("TaxReceiveOrders");
+                    b.ToTable("TaxReceiveOrders", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Transaction", b =>
@@ -1125,7 +1125,7 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("OperationId")
                         .IsUnique();
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("CoreLayer.Models.UserLoginHistory", b =>
@@ -1154,7 +1154,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("userLoginHistories");
+                    b.ToTable("userLoginHistories", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

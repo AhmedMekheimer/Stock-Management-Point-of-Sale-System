@@ -24,7 +24,7 @@ namespace CoreLayer.Models
         public string Name { get; set; } = null!;
 
         [EmailAddress]
-        public string? Email { get; set; } = string.Empty;
+        public string? Email { get; set; } = null!;
         [Required]
         public PartnerType partnerType { get; set; }
 

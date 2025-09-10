@@ -140,6 +140,16 @@
                             </a>
                         </li>
                     }
+
+                    @if (User.HasClaim("Permission", "ReceiveOrder"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Branch" asp-controller="ReceiveOrder" asp-action="Index">
+                                <i class="material-symbols-rounded opacity-5">notifications</i>
+                                <span class="nav-link-text ms-1">Receive Order</span>
+                            </a>
+                        </li>
+                    }
                 }
 
                 <!-- #endregion -->

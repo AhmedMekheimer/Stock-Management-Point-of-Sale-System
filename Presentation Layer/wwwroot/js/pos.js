@@ -776,8 +776,4 @@
             }
         });
     });
-
-    $(document).on('click', '#pdf', function () {
-        window.open('/api/Sales/PosApi/receipt', '_blank');
-    });
 });

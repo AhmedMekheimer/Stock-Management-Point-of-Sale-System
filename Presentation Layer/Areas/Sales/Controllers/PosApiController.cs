@@ -262,7 +262,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 TotalDiscountAmount = dto.TotalDiscountAmount,
                 GrandTotal = dto.GrandTotal,
                 RoundedGrandTotal = dto.RoundedGrandTotal,
-                InvoiceNumber="1",
+                Code="1",
                 OperationItems = dto.OperationItems.Select(o => new OperationItem
                 {
                     ItemId = o.ItemId,
@@ -288,8 +288,8 @@ namespace PresentationLayer.Areas.Sales.Controllers
 
             invoice.DiscountSalesInvoices = discountSalesInvoices;
 
-            // Compose invoice number
-            invoice.InvoiceNumber = $"{invoice.BranchId}_{invoice.Id}_S";
+            // Compose invoice code
+            invoice.Code = $"{invoice.BranchId.ToString().PadLeft(5, '0')}_{invoice.Id.ToString().PadLeft(5, '0')}S";
 
             var updated = await _UnitOfWork.SalesInvoices.UpdateAsync(invoice);
             if (!updated)
@@ -343,7 +343,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
             var pdfBytes = document.GeneratePdf();
 
             // Add inline disposition so browser tries to open instead of download
-            Response.Headers.Add("Content-Disposition", $"inline; filename={invoice.InvoiceNumber}.pdf");
+            Response.Headers.Add("Content-Disposition", $"inline; filename={invoice.Code}.pdf");
 
             return File(pdfBytes, "application/pdf");
         }

@@ -1,4 +1,6 @@
-﻿using CoreLayer.Models.Operations;
+﻿using CoreLayer.Models;
+using CoreLayer.Models.Operations;
+using Humanizer;
 using InfrastructureLayer;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +53,29 @@ namespace PresentationLayer.Areas.Sales.Controllers
 
             // Optionally return a simple JSON confirmation
             return Ok(new { message = $"Invoice {id} sent to QuestPDF Companion." });
+        }
+
+        // GET: /api/pdfpreview/CreateReceiveOrder
+        [HttpGet("CreateReceiveOrder")]
+        public async Task<IActionResult> CreateReceiveOrder()
+        {
+            var order = new ReceiveOrder() {
+            BranchId=1,
+            SupplierId=1,
+            ApplicationUserId = "4032579c-7f7b-4914-acea-aa37a6a8aaed",
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            Time = TimeOnly.FromDateTime(DateTime.UtcNow),
+            status = Status.Approved,
+            TotalQuantity = 1,
+            TotalAmount = 1,
+            TotalDiscountRate = 1,
+            TotalDiscountAmount = 1,
+            GrandTotal = 1,
+            RoundedGrandTotal = 1
+            };
+            var result = await _UnitOfWork.ReceiveOrders.CreateAsync(order);
+
+            return Ok(new { message = $"Order {order.Id}" });
         }
     }
 }

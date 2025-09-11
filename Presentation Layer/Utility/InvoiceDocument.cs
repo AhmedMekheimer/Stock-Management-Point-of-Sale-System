@@ -44,7 +44,7 @@ namespace PresentationLayer.Utility
                     col.Spacing(5);
 
                     // Invoice info
-                    col.Item().Text($"Invoice #: {_invoice.InvoiceNumber}");
+                    col.Item().Text($"Invoice #: {_invoice.Code}");
                     col.Item().Text($"Date: {_invoice.Date} {_invoice.Time}");
                     if (_invoice.RetailCustomer != null)
                         col.Item().Text($"Customer: {_invoice.RetailCustomer.Name}");

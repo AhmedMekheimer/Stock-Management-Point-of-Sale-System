@@ -9,12 +9,10 @@
 		<h1>Discounts</h1>
 		@if (User.HasClaim("Permission", "Discount.Add"))
 		{
-			<p>
+			<div class="col-md-2 d-flex justify-content-end align-items-center">
 				<a asp-action="Save" class="btn btn-primary">Add</a>
-			</p>
+			</div>
 		}
-
-
 	</div>
 
 	<div class="table-responsive">

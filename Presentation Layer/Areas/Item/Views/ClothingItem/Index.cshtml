@@ -8,9 +8,9 @@
 
 			@if (User.HasClaim("Permission", "ClothingItem.Add"))
 			{
-				<p>
+				<div class="col-md-2 d-flex justify-content-end align-items-center">
 					<a asp-action="Save" class="btn btn-primary">Add</a>
-				</p>
+				</div>
 			}
 
 		</div>
@@ -37,7 +37,7 @@
 						<th width="10%">
 							For
 						</th>
-						<th width="20%">
+						<th width="10%">
 							Actions
 						</th>
 
@@ -67,23 +67,24 @@
 							</td>
 
 
-							<td class="row gap-1">
+							<td>
+								<div class="d-flex gap-2">
 
 
 								@if (User.HasClaim("Permission", "ClothingItem.Edit"))
 								{
-									<a asp-action="Save" asp-route-id="@item.Id" class="col-3 btn btn-sm btn-info">
+										<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
 										Edit
 									</a>
 								}
 
 								@if (User.HasClaim("Permission", "ClothingItem.Delete"))
 								{
-									<button type="button" class="col-4 btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@item.Name">
+										<button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@item.Name">
 										Delete
 									</button>
 								}
-
+								</div>
 							</td>
 						</tr>
 					}

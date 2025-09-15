@@ -18,6 +18,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System.Threading.Tasks;
+using static CoreLayer.Models.Global;
 
 
 namespace PresentationLayer.Areas.Sales.Controllers

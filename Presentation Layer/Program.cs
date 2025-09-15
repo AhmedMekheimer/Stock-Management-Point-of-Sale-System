@@ -49,15 +49,6 @@ namespace PresentationLayer
                 );
 
 
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("ClothingItem.Add|ClothingItem.Edit", policy =>
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim("Permission", "ClothingItem.Add") ||
-                        context.User.HasClaim("Permission", "ClothingItem.Edit")
-                    ));
-            });
-
             //// Authorization
             //builder.Services.AddAuthorization(options =>
             //{

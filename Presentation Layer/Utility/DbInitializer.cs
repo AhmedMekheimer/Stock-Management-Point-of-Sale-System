@@ -26,6 +26,7 @@ namespace PresentationLayer.Utility
 
         public void Init()
         {
+
             _Context.Database.EnsureCreated();
 
             if (_Context.Database.GetPendingMigrations().Any())

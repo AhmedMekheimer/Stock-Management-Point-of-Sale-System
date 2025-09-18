@@ -8,7 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PresentationLayer.Areas.administrative.ViewModels;
+using PresentationLayer.Areas.Administrative.ViewModels;
+using System.Data;
 using System.Threading.Tasks;
+using static CoreLayer.Models.Partner;
 
 namespace PresentationLayer.Areas.administrative.Controllers
 {
@@ -27,11 +30,36 @@ namespace PresentationLayer.Areas.administrative.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Partner.View")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(PartnersWithFiltersVM vm)
         {
-            var partners = await _UnitOfWork.Partners.GetAsync();
+            if (vm.PageId < 1)
+                return NotFound();
 
-            return View(partners);
+            List<Partner> partners = await _UnitOfWork.Partners.GetAsync(p =>
+                (string.IsNullOrEmpty(vm.Search)
+                || p.Name.Contains(vm.Search)
+                || (!string.IsNullOrEmpty(p.PhoneNumber) && p.PhoneNumber.Contains(vm.Search))
+                || (!string.IsNullOrEmpty(p.Email) && p.Email.Contains(vm.Search)))
+                && (string.IsNullOrEmpty(vm.partnerType) || p.partnerType.ToString() == vm.partnerType)
+            );
+
+            int totalPages = 0;
+            if (partners.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(partners.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.Partners = partners.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            vm.PartnerTypes = new List<SelectListItem>() {
+                new SelectListItem() { Value = PartnerType.RetailCustomer.ToString(), Text = "Customer" },
+                new SelectListItem() { Value = PartnerType.Supplier.ToString(), Text = "Supplier" }
+            };
+            return View(vm);
         }
 
         [HttpGet]

@@ -1,15 +1,15 @@
 ﻿using CoreLayer;
 using CoreLayer.Models;
-
 using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PresentationLayer.Areas.administrative.ViewModels;
-using static PresentationLayer.Areas.administrative.ViewModels.RoleVM;
+using PresentationLayer.Areas.Administrative.ViewModels;
 using System.Data;
 using System.Threading.Tasks;
+using static PresentationLayer.Areas.administrative.ViewModels.RoleVM;
 
 namespace PresentationLayer.Areas.DashBoard.Controllers
 {
@@ -25,12 +25,33 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             _RoleManager = roleManager;
             _UnitOfWork = UnitOfWork;
         }
+
         [Authorize(Policy = "Role.View")]
-        public IActionResult Index()
+        public IActionResult Index(RolesWithSearchVM vm)
         {
-            var roles = _RoleManager.Roles.ToList();
-            return View(roles);
+            if (vm.PageId < 1)
+                return NotFound();
+
+            List<IdentityRole> roles = _RoleManager.Roles.Where(u => (
+            (string.IsNullOrEmpty(vm.Search)) ||
+            (string.IsNullOrEmpty(u.Name) || u.Name.Contains(vm.Search))
+            )).ToList();
+
+            int totalPages = 0;
+            if (roles.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(roles.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.Roles = roles.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
+
         [HttpGet]
         [Authorize(Policy = "Role.Add|Role.Edit")]
         public async Task<IActionResult> Save(string id = "")
@@ -50,7 +71,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             roleVM.PermissionsTree = BuildPermissionTree(allPermissions, permissionsIds);
             roleVM.Name = role?.Name ?? "";
             roleVM.RoleId = id;
-           
+
             return View(roleVM);
         }
 
@@ -67,7 +88,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             }
 
 
-            if(RoleVM.RoleId is null)
+            if (RoleVM.RoleId is null)
             {
                 // 1. Create the role
                 var role = new IdentityRole(RoleVM.Name);
@@ -100,16 +121,17 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                 TempData["success"] = "Role Created Successfuly";
                 return RedirectToAction(nameof(Index));
 
-            } else
+            }
+            else
             {
-        
 
-                  var oldRolePermissions = _UnitOfWork.RolePermissions.GetAsync(r => r.RoleId == RoleVM.RoleId).GetAwaiter().GetResult();
-                  var result = await _UnitOfWork.RolePermissions.DeleteRangeAsync(oldRolePermissions);
 
-                  if(result)
-                  {
-                    if(RoleVM.PermissionsIds is not null) 
+                var oldRolePermissions = _UnitOfWork.RolePermissions.GetAsync(r => r.RoleId == RoleVM.RoleId).GetAwaiter().GetResult();
+                var result = await _UnitOfWork.RolePermissions.DeleteRangeAsync(oldRolePermissions);
+
+                if (result)
+                {
+                    if (RoleVM.PermissionsIds is not null)
                     {
                         var rolePermissions = RoleVM.PermissionsIds.Select(pid => new RolePermission
                         {
@@ -121,11 +143,11 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
                     }
 
                     TempData["success"] = "Role Created Successfuly";
-                      return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
 
-                  }
+                }
 
-           
+
 
             }
             TempData["success"] = "Somthing is wrong";

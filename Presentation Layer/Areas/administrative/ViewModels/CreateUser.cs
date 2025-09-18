@@ -9,7 +9,6 @@ namespace PresentationLayer.Areas.Administrative.ViewModels
         public string? Id { get; set; }
         [Required]
         [MinLength(5)]
-
         public string UserName { get; set; } = null!;
 
         [Required]

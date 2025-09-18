@@ -262,7 +262,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 TotalDiscountAmount = dto.TotalDiscountAmount,
                 GrandTotal = dto.GrandTotal,
                 RoundedGrandTotal = dto.RoundedGrandTotal,
-                Code="1",
+                Code = "1",
                 OperationItems = dto.OperationItems.Select(o => new OperationItem
                 {
                     ItemId = o.ItemId,
@@ -277,15 +277,18 @@ namespace PresentationLayer.Areas.Sales.Controllers
             if (!created)
                 return BadRequest("Error creating Invoice");
 
-            // Ensure OperationId set on newly created OperationItems (EF usually fixes this after SaveChanges, but safe to set)
             foreach (var item in invoice.OperationItems)
                 item.OperationId = invoice.Id;
 
-            // Apply general discounts relation
+            // Apply general discounts
             var discountSalesInvoices = dto.GeneralDiscounts
                 .Select(d => new DiscountSalesInvoice { DiscountId = d, OperationId = invoice.Id })
                 .ToList();
-
+            foreach (var discount in discountSalesInvoices)
+            {
+                if(!(await _UnitOfWork.Discounts.IncrementDiscountsUses(discount.DiscountId)))
+                    return BadRequest($"Error Incrementing Uses of Discount No.{discount.DiscountId}");
+            }
             invoice.DiscountSalesInvoices = discountSalesInvoices;
 
             // Compose invoice code
@@ -309,6 +312,8 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 if (!branchUpdateOk)
                     return BadRequest("Error subtracting quantity from branch");
             }
+
+
 
             var pdfUrl = $"/api/Sales/PosApi/receipt?operationId={invoice.Id}";
 

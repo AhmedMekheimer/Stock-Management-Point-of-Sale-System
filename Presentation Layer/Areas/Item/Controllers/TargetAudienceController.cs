@@ -21,10 +21,28 @@ namespace PresentationLayer.Areas.Item.Controllers
             _UnitOfWork = UnitOfWork;
         }
         [Authorize(Policy = "TargetAudience.View")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ItemVariantListWithSearchVM<TargetAudience> vm)
         {
-            var TargetAudiencesList = await _UnitOfWork.TargetAudiences.GetAsync();
-            return View(TargetAudiencesList);
+            if (vm.PageId < 1)
+                return NotFound();
+
+            List<TargetAudience> targetAudiences = await _UnitOfWork.TargetAudiences.GetAsync(b =>
+                string.IsNullOrEmpty(vm.Search) || b.Name.Contains(vm.Search)
+                );
+
+            int totalPages = 0;
+            if (targetAudiences.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(targetAudiences.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.ItemVariantList = targetAudiences.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
 
         [HttpGet]

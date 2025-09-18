@@ -23,10 +23,28 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
         [HttpGet]
         [Authorize(Policy = "Brand.View")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ItemVariantListWithSearchVM<Brand> vm)
         {
-            var brandsList = await _UnitOfWork.Brands.GetAsync();
-            return View(brandsList);
+            if (vm.PageId < 1)
+                return NotFound();
+
+            List<Brand> brands = await _UnitOfWork.Brands.GetAsync(b=>
+                string.IsNullOrEmpty(vm.Search) || b.Name.Contains(vm.Search)
+                );
+
+            int totalPages = 0;
+            if (brands.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(brands.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.ItemVariantList = brands.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
 
         [HttpGet]

@@ -12,7 +12,7 @@ namespace PresentationLayer.Areas.Sales.ViewModels
         public DateOnly? DateFilter { get; set; }
         public int? TotalQtyFilter { get; set; }
         public int? GrandTotalFilter { get; set; }
-        public IEnumerable<SalesInvoice> SalesInvoices { get; set; }=new List<SalesInvoice>();
+        public List<SalesInvoice> SalesInvoices { get; set; } = new List<SalesInvoice>();
         public int PageId { get; set; } = 1;
         public double NoPages { get; set; }
     }

@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Areas.Administrative.ViewModels;
 using PresentationLayer.Areas.Branch.ViewModels;
+using PresentationLayer.Areas.Item.ViewModels;
 using PresentationLayer.Areas.Stock.ViewModels;
 using PresentationLayer.Utility;
 using System.Threading.Tasks;
@@ -27,11 +29,42 @@ namespace PresentationLayer.Areas.Stock.Controllers
         }
 
         [Authorize(Policy = "ClothingItem.View")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ItemsWithFiltersVM vm)
         {
-            var itemsList = await _UnitOfWork.Items.GetAsync(include: [i =>i.Color ,
-                i => i.TargetAudience , i => i.Brand , i => i.Size , i =>i.ItemType]);
-            return View(itemsList);
+            if (vm.PageId < 1)
+                return NotFound();
+
+            // Fetching with Search & Filters
+            var items = await _UnitOfWork.Items.GetAsync(s =>
+                (string.IsNullOrEmpty(vm.Search)
+                || s.Name.Contains(vm.Search))
+                && (vm.BrandId == 0 || s.BrandId == vm.BrandId)
+                && (vm.ColorId == 0 || s.ColorId == vm.ColorId)
+                && (vm.SizeId == 0 || s.SizeId == vm.SizeId)
+                && (vm.TargetAudienceId == 0 || s.TargetAudienceId == vm.TargetAudienceId)
+                && (vm.ItemTypeId == 0 || s.ItemTypeId == vm.ItemTypeId),
+                include: 
+                [i =>i.Color, i => i.TargetAudience, i => i.Brand, i => i.Size, i =>i.ItemType], false);
+
+            vm.Brands = (await _UnitOfWork.Brands.GetAsync()).Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name });
+            vm.Colors = (await _UnitOfWork.Colors.GetAsync()).Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name });
+            vm.Sizes = (await _UnitOfWork.Sizes.GetAsync()).Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name });
+            vm.TargetAudiences = (await _UnitOfWork.TargetAudiences.GetAsync()).Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name });
+            vm.ItemTypes = (await _UnitOfWork.ItemTypes.GetLeafNodesAsync()).Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name });
+
+            int totalPages = 0;
+            if (items.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(items.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.Items = items.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
 
         [HttpGet]

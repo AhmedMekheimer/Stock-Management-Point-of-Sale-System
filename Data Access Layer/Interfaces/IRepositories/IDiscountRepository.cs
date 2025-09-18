@@ -12,5 +12,6 @@ namespace InfrastructureLayer.Interfaces.IRepositories
     public interface IDiscountRepository : IRepository<Discount>
     {
         Task<List<Discount>> GetActiveDiscountsAsync(Expression<Func<Discount, bool>>? expression = null, Expression<Func<Discount, object>>[]? include = null, bool tracked = true);
+        Task<bool> IncrementDiscountsUses(int id);
     }
 }

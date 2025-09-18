@@ -42,3 +42,13 @@
         border-color: #2a3060;
         color: #fff;
     }
+
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.sort-icon-container {
+    margin-left: 5px;
+}

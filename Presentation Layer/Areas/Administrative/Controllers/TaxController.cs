@@ -4,6 +4,8 @@ using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Areas.administrative.ViewModels;
+using PresentationLayer.Areas.Administrative.ViewModels;
 using PresentationLayer.Areas.Item.ViewModels;
 using PresentationLayer.Utility;
 
@@ -22,10 +24,28 @@ namespace PresentationLayer.Areas.administrative.Controllers
 
         [HttpGet]
         [Authorize(Policy = "Tax.View")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(TaxesWithSearchVM vm)
         {
-            var taxesList = await _UnitOfWork.Taxes.GetAsync();
-            return View(taxesList);
+            if (vm.PageId < 1)
+                return NotFound();
+
+            List<Tax> taxes = await _UnitOfWork.Taxes.GetAsync(t =>
+            string.IsNullOrEmpty(vm.Search) || t.Name.Contains(vm.Search)
+            );
+
+            int totalPages = 0;
+            if (taxes.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(taxes.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.Taxes = taxes.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
 
         [HttpGet]

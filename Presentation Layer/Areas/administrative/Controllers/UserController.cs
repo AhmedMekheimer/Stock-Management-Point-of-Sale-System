@@ -20,7 +20,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
         private readonly RoleManager<IdentityRole> _RoleManager;
         private readonly IUnitOfWork _UnitOfWork;
 
-        public UserController(UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager, IUnitOfWork UnitOfWork)
+        public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IUnitOfWork UnitOfWork)
         {
             _UserManager = userManager;
             _RoleManager = roleManager;
@@ -29,10 +29,30 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
         }
 
         [Authorize(Policy = "User.View")]
-        public IActionResult Index()
+        public IActionResult Index(UsersWithSearchVM vm)
         {
-            var user = _UserManager.Users.ToList();
-            return View(user);
+            if (vm.PageId < 1)
+                return NotFound();
+
+            List<ApplicationUser> applicationUsers = _UserManager.Users.Where(u => (
+            (string.IsNullOrEmpty(vm.Search)) ||
+            (string.IsNullOrEmpty(u.UserName) || u.UserName.Contains(vm.Search)) ||
+            (string.IsNullOrEmpty(u.Email) || u.Email.Contains(vm.Search))
+            )).ToList();
+
+            int totalPages = 0;
+            if (applicationUsers.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(applicationUsers.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.ApplicationUsers = applicationUsers.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
 
         [HttpGet]

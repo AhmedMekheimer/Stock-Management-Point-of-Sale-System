@@ -21,10 +21,28 @@ namespace PresentationLayer.Areas.Item.Controllers
         }
         [HttpGet]
         [Authorize(Policy = "Color.View")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ItemVariantListWithSearchVM<Color> vm)
         {
-            var colorsList = await _UnitOfWork.Colors.GetAsync();
-            return View(colorsList);
+            if (vm.PageId < 1)
+                return NotFound();
+
+            List<Color> colors = await _UnitOfWork.Colors.GetAsync(b =>
+                string.IsNullOrEmpty(vm.Search) || b.Name.Contains(vm.Search)
+                );
+
+            int totalPages = 0;
+            if (colors.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(colors.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.ItemVariantList = colors.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
 
         [HttpGet]

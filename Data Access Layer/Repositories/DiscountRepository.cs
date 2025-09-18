@@ -1,5 +1,6 @@
 ﻿using CoreLayer.Models;
 using InfrastructureLayer.Data;
+using InfrastructureLayer.Interfaces;
 using InfrastructureLayer.Interfaces.IRepositories;
 using InfrastructureLayer.Interfaces.IRepositories.ItemVarients;
 using System;
@@ -28,7 +29,7 @@ namespace InfrastructureLayer.Repositories
                 if (discount.IsActive)
                 {
                     // Both Conditions Exist, Both Must satisfy
-                    if(discount.ExpirationDate is not null && discount.MaximumUses != 0)
+                    if (discount.ExpirationDate is not null && discount.MaximumUses != 0)
                     {
                         if (discount.ExpirationDate.Value >= DateOnly.FromDateTime(DateTime.Now) && discount.CurrentUses < discount.MaximumUses)
                             activeDiscounts.Add(discount);
@@ -61,6 +62,24 @@ namespace InfrastructureLayer.Repositories
                 }
             }
             return activeDiscounts;
+        }
+
+        public async Task<bool> IncrementDiscountsUses(int id)
+        {
+            try
+            {
+                if ((await _context.Discounts.FindAsync(id)) is Discount discount)
+                {
+                    discount.CurrentUses++;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

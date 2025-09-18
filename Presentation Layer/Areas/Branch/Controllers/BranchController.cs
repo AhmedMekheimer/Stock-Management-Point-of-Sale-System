@@ -24,11 +24,28 @@ namespace PresentationLayer.Areas.Branch.Controllers
             _UserManager = userManager;
         }
         [Authorize(Policy = "Stock.View")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(BranchesWithSearch vm)
         {
-            var branches = await _UnitOfWork.Branches.GetAsync();
+            if (vm.PageId < 1)
+                return NotFound();
 
-            return View(branches);
+            List<CoreLayer.Models.Branch> branches = await _UnitOfWork.Branches.GetAsync(t =>
+            string.IsNullOrEmpty(vm.Search) || t.Name.Contains(vm.Search)
+            );
+
+            int totalPages = 0;
+            if (branches.Count != 0)
+            {
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(branches.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.Branches = branches.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
         [HttpGet]
         [Authorize(Policy = "Stock.Add|Stock.Edit")]

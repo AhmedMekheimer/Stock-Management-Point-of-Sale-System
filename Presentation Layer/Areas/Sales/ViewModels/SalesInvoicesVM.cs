@@ -15,5 +15,6 @@ namespace PresentationLayer.Areas.Sales.ViewModels
         public List<SalesInvoice> SalesInvoices { get; set; } = new List<SalesInvoice>();
         public int PageId { get; set; } = 1;
         public double NoPages { get; set; }
+        public string SortBy { get; set; } = null!;
     }
 }

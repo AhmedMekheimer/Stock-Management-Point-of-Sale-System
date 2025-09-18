@@ -16,6 +16,7 @@
                         </button>
                     </div>
                 </div>
+                <input type="hidden" asp-for="SortBy" value="@Model.SortBy" />
             </form>
 
             @if (User.HasClaim("Permission", "Tax.Add"))
@@ -41,7 +42,21 @@
 						Name
 					</th>
 					<th width="15%">
-						Rate (%)
+                                Rate (%)
+                                <a asp-action="Index"
+                                   asp-route-SortBy="rate_asc"
+                                   asp-route-PageId="1"
+                                   asp-route-Search="@Model.Search"
+                                   style="color: white;">
+                                    <i class="fas fa-sort-down"></i>
+                                </a>
+                                <a asp-action="Index"
+                                   asp-route-SortBy="rate_desc"
+                                   asp-route-PageId="1"
+                                   asp-route-Search="@Model.Search"
+                                   style="color: white;">
+                                    <i class="fas fa-sort-up"></i>
+                                </a>
 					</th>
 					<th width="10%">
 						Actions
@@ -103,7 +118,8 @@
                     {
                         <li class="page-item">
                             <a class="page-link" asp-controller="Tax" asp-action="Index"
-                               asp-route-PageId="@(Model.PageId - 1)" asp-route-Search="@Model.Search">
+                               asp-route-PageId="@(Model.PageId - 1)" asp-route-Search="@Model.Search"
+                               asp-route-SortBy="@Model.SortBy">
                                 Previous
                             </a>
                         </li>
@@ -112,7 +128,8 @@
                     {
                         <li class="page-item @(i == Model.PageId ? "active" : "")">
                             <a class="page-link"
-                               asp-controller="Tax" asp-action="Index" asp-route-PageId="@i" asp-route-Search="@Model.Search">
+                               asp-controller="Tax" asp-action="Index" asp-route-PageId="@i" asp-route-Search="@Model.Search"
+                               asp-route-SortBy="@Model.SortBy">
                                 @i
                             </a>
                         </li>
@@ -121,7 +138,8 @@
                     {
                         <li class="page-item">
                             <a class="page-link" asp-controller="Tax" asp-action="Index"
-                               asp-route-PageId="@(Model.PageId + 1)" asp-route-Search="@Model.Search">
+                               asp-route-PageId="@(Model.PageId + 1)" asp-route-Search="@Model.Search"
+                               asp-route-SortBy="@Model.SortBy">
                                 Next
                             </a>
                         </li>

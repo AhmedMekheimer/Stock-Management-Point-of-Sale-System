@@ -19,6 +19,7 @@
 					</div>
 				</div>
 				<input type="hidden" asp-for="PageId" value="1" />
+				<input type="hidden" asp-for="SortBy" value="@Model.SortBy" />
 
 				<!-- Branch Filter -->
 				<div class="col-md-2">
@@ -62,9 +63,81 @@
 				<thead class="thead-dark">
 					<tr>
 						<th width="10%">Invoice Code</th>
-						<th width="10%">Date</th>
-						<th width="5%">Total Qty (Items)</th>
-						<th width="10%">Grand Total (EGP)</th>
+						<th width="10%">
+							Date
+							<a asp-action="Index"
+							   asp-route-SortBy="date_asc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-BranchId="@Model.BranchId"
+							   asp-route-DateFilter="@Model.DateFilter"
+							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   style="color: white;">
+								<i class="fas fa-sort-down"></i>
+							</a>
+							<a asp-action="Index"
+							   asp-route-SortBy="date_desc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-BranchId="@Model.BranchId"
+							   asp-route-DateFilter="@Model.DateFilter"
+							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   style="color: white;">
+								<i class="fas fa-sort-up"></i>
+							</a>
+							</th>
+						<th width="5%">
+							Total Qty (Items)
+							<a asp-action="Index"
+							   asp-route-SortBy="qty_asc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-BranchId="@Model.BranchId"
+							   asp-route-DateFilter="@Model.DateFilter"
+							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   style="color: white;">
+								<i class="fas fa-sort-down"></i>
+							</a>
+							<a asp-action="Index"
+							   asp-route-SortBy="qty_desc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-BranchId="@Model.BranchId"
+							   asp-route-DateFilter="@Model.DateFilter"
+							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   style="color: white;">
+								<i class="fas fa-sort-up"></i>
+							</a>
+							</th>
+						<th width="10%">
+							Grand Total (EGP)
+							<a asp-action="Index"
+							   asp-route-SortBy="grand_asc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-BranchId="@Model.BranchId"
+							   asp-route-DateFilter="@Model.DateFilter"
+							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   style="color: white;">
+								<i class="fas fa-sort-down"></i>
+							</a>
+							<a asp-action="Index"
+							   asp-route-SortBy="grand_desc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-BranchId="@Model.BranchId"
+							   asp-route-DateFilter="@Model.DateFilter"
+							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   style="color: white;">
+								<i class="fas fa-sort-up"></i>
+							</a>
+							</th>
 						<th width="20%">Branch</th>
 						<th width="20%">Issued By</th>
 						<th width="10%">Customer Served</th>
@@ -107,11 +180,13 @@
 					{
 						<li class="page-item">
 							<a class="page-link" asp-controller="SalesInvoices" asp-action="Index"
-							   asp-route-PageId="@(Model.PageId - 1)" asp-route-Search="@Model.Search"
+							   asp-route-PageId="@(Model.PageId - 1)"
+							   asp-route-Search="@Model.Search"
 							   asp-route-BranchId="@Model.BranchId"
 							   asp-route-DateFilter="@Model.DateFilter"
 							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
-							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter">
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   asp-route-SortBy="@Model.SortBy">
 								Previous
 							</a>
 						</li>
@@ -124,7 +199,8 @@
 							   asp-route-BranchId="@Model.BranchId"
 							   asp-route-DateFilter="@Model.DateFilter"
 							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
-							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter">
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   asp-route-SortBy="@Model.SortBy">
 								@i
 							</a>
 						</li>
@@ -137,7 +213,8 @@
 							   asp-route-BranchId="@Model.BranchId"
 							   asp-route-DateFilter="@Model.DateFilter"
 							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
-							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter">
+							   asp-route-GrandTotalFilter="@Model.GrandTotalFilter"
+							   asp-route-SortBy="@Model.SortBy">
 								Next
 							</a>
 						</li>

@@ -36,6 +36,21 @@ namespace PresentationLayer.Areas.administrative.Controllers
             int totalPages = 0;
             if (taxes.Count != 0)
             {
+                // Sorting By...
+                switch (vm.SortBy)
+                {
+                    case "rate_asc":
+                        taxes = taxes.OrderBy(d => d.Rate).ToList();
+                        break;
+                    case "rate_desc":
+                        taxes = taxes.OrderByDescending(d => d.Rate).ToList();
+                        break;
+                    default:
+                        //If no 'SortBy' is provided
+                        taxes = taxes.OrderBy(d => d.Id).ToList();
+                        break;
+                }
+
                 // Pagination
                 const int itemsInPage = 6;
                 totalPages = (int)Math.Ceiling(taxes.Count / (double)itemsInPage);

@@ -4,7 +4,12 @@ using CoreLayer.Models.ItemVarients;
 using InfrastructureLayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using PresentationLayer.Areas.administrative.ViewModels;
+using PresentationLayer.Areas.Administrative.ViewModels;
 using PresentationLayer.Areas.Branch.ViewModels;
+using System.Globalization;
+using System.Linq;
 
 namespace PresentationLayer.Areas.administrative.Controllers
 {
@@ -18,12 +23,69 @@ namespace PresentationLayer.Areas.administrative.Controllers
         {
             _UnitOfWork = unitOfWork;
         }
+
         [HttpGet]
         [Authorize(Policy = "Discount.View")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DiscountsWithFiltersVM vm)
         {
-            var discountsList = await _UnitOfWork.Discounts.GetAsync();
-            return View(discountsList);
+            if (vm.PageId < 1)
+                return NotFound();
+
+            List<Discount> discounts = await _UnitOfWork.Discounts.GetAsync(d =>
+            (string.IsNullOrEmpty(vm.Search)
+            || d.Name.Contains(vm.Search))
+            && (vm.MinRate == null || d.Rate >= vm.MinRate)
+            && (vm.IsActiveFilter == null || d.IsActive == vm.IsActiveFilter)
+            && (vm.ExpDateFilter == null || d.ExpirationDate == vm.ExpDateFilter)
+            && (vm.MinRate == null || d.CurrentUses >= vm.MinRate)
+            );
+
+            int totalPages = 0;
+            if (discounts.Count != 0)
+            {
+                // Sorting By...
+                switch (vm.SortBy)
+                {
+                    case "rate_asc":
+                        discounts = discounts.OrderBy(d => d.Rate).ToList();
+                        break;
+                    case "rate_desc":
+                        discounts = discounts.OrderByDescending(d => d.Rate).ToList();
+                        break;
+                    case "exp_date_asc":
+                        discounts = discounts.OrderBy(d => d.ExpirationDate).ToList();
+                        break;
+                    case "exp_date_desc":
+                        discounts = discounts.OrderByDescending(d => d.ExpirationDate).ToList();
+                        break;
+                    case "uses_asc":
+                        discounts = discounts.OrderBy(d => d.CurrentUses).ToList();
+                        break;
+                    case "uses_desc":
+                        discounts = discounts.OrderByDescending(d => d.CurrentUses).ToList();
+                        break;
+                    case "max_uses_asc":
+                        discounts = discounts.OrderBy(d => d.MaximumUses).ToList();
+                        break;
+                    case "max_uses_desc":
+                        discounts = discounts.OrderByDescending(d => d.MaximumUses).ToList();
+                        break;
+                    default:
+                        //If no 'SortBy' is provided
+                        discounts = discounts.OrderBy(d => d.Id).ToList();
+                        break;
+                }
+
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(discounts.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.Discounts = discounts.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            return View(vm);
         }
 
         [HttpGet]

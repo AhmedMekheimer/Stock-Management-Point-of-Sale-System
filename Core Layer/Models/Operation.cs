@@ -5,21 +5,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static CoreLayer.Models.Global;
+
 
 namespace CoreLayer.Models
 {
-    public enum Status
-    {
-        Draft,
-        Approved
-    }
+
     public abstract class Operation
     {
         public int Id { get; set; }
         [Required]
         public DateOnly Date { get; set; }
         [Required]
-        public TimeOnly Time { get; set; }
+        public TimeOnly Time { get; set; } = new TimeOnly();
         public Status status { get; set; }
         [Required]
         [Range(1, int.MaxValue)]

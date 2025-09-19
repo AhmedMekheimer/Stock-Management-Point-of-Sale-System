@@ -20,7 +20,7 @@ namespace InfrastructureLayer.Interfaces.IRepositories
 
         Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null,
     Expression<Func<T, object>>[]? include = null,
-     bool tracked = false
+     bool tracked = false 
     );
 
         Task<T?> GetOneAsync(Expression<Func<T, bool>>? expression = null,

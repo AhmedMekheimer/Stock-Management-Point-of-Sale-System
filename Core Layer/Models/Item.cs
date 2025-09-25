@@ -22,6 +22,7 @@ namespace CoreLayer.Models
 
         [RegularExpression(@"^(?!\s)(?!\s+$).+", ErrorMessage = "File name cannot start with spaces or be only whitespace.")]
         public string? Image { get; set; } = null!;
+        public DateTime CreatedDate { get; set; }
 
         // Many-to-Many: Item is in many Branches (Bridge Table Needed)
         public ICollection<BranchItem> BranchItems { get; set; } = new List<BranchItem>();

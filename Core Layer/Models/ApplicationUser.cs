@@ -18,6 +18,7 @@ namespace CoreLayer.Models
         // Cashier relationship (many-to-one)
         public int? BranchId { get; set; }  // Nullable for anything but cashiers
         public Branch? Branch { get; set; } = null!;  // Navigation to branch for cashiers
+        public DateTime CreatedDate { get; set; }
 
         public ICollection<ApplicationUserOTP> ApplicationUserOTPs { get; set; } = new List<ApplicationUserOTP>();
     }

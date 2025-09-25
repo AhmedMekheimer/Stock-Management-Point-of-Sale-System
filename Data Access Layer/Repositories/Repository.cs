@@ -109,7 +109,6 @@ namespace InfrastructureLayer.Repositories
             if (expression is not null)
             {
                 entities =  entities.Where(expression);
-
             }
 
             if (include is not null)
@@ -192,6 +191,30 @@ namespace InfrastructureLayer.Repositories
         public void DetachEntity(T entity)
         {
             _db.Entry(entity).State = EntityState.Detached;
+        }
+
+        public async Task<int> CountAsync(Expression<Func<T, bool>>? expression = null)
+        {
+            IQueryable<T> entities = _db;
+
+            if (expression is not null)
+            {
+                entities = entities.Where(expression);
+            }
+
+            return await entities.CountAsync();
+        }
+
+        public async Task<decimal> SumAsync(Expression<Func<T, decimal>> selector, Expression<Func<T, bool>>? expression = null)
+        {
+            IQueryable<T> entities = _db;
+
+            if (expression is not null)
+            {
+                entities = entities.Where(expression);
+            }
+
+            return await entities.SumAsync(selector);
         }
     }
 }

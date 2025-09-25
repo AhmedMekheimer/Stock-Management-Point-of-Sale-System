@@ -35,5 +35,7 @@ namespace InfrastructureLayer.Interfaces.IRepositories
 
         Task<bool> CommitAsync();
         void DetachEntity(T entity);
+        Task<int> CountAsync(Expression<Func<T, bool>>? expression = null);
+        Task<decimal> SumAsync(Expression<Func<T, decimal>> selector, Expression<Func<T, bool>>? expression = null);
     }
 }

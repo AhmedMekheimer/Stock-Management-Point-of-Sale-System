@@ -37,23 +37,21 @@
 
         </div>
         <hr class="horizontal dark mt-0 mb-2">
-        <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+
+        <div class="collapse navbar-collapse w-auto " id="sidenav-collapse-main">
 
             <ul class="navbar-nav">
-
-                <!-- #region Branch -->
                 @if (User.HasClaim("Permission", "Administrative"))
                 {
-
                     <li class="nav-item mt-3">
-                        <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">administrative</h6>
+                        <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Administrative</h6>
                     </li>
 
                     @if (User.HasClaim("Permission", "User"))
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Administrative" asp-controller="User" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">table_view</i>
+                                <i class="material-symbols-rounded opacity-5">group</i>
                                 <span class="nav-link-text ms-1">Users</span>
                             </a>
                         </li>
@@ -62,7 +60,7 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Administrative" asp-controller="Role" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">receipt_long</i>
+                                <i class="material-symbols-rounded opacity-5">person_add</i>
                                 <span class="nav-link-text ms-1">Roles</span>
                             </a>
                         </li>
@@ -72,7 +70,7 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Administrative" asp-controller="Setting" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">view_in_ar</i>
+                                <i class="material-symbols-rounded opacity-5">settings</i>
                                 <span class="nav-link-text ms-1">Settings</span>
                             </a>
                         </li>
@@ -82,7 +80,7 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Administrative" asp-controller="Partner" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">view_in_ar</i>
+                                <i class="material-symbols-rounded opacity-5">handshake</i>
                                 <span class="nav-link-text ms-1">Partners</span>
                             </a>
                         </li>
@@ -92,18 +90,17 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Administrative" asp-controller="Tax" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">notifications</i>
+                                <i class="material-symbols-rounded opacity-5">paid</i>
                                 <span class="nav-link-text ms-1">Taxes</span>
                             </a>
                         </li>
                     }
 
-
                     @if (User.HasClaim("Permission", "Discount"))
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Administrative" asp-controller="Discount" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">notifications</i>
+                                <i class="material-symbols-rounded opacity-5">sell</i>
                                 <span class="nav-link-text ms-1">Discounts</span>
                             </a>
                         </li>
@@ -113,38 +110,28 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Administrative" asp-controller="UserLoginHistory" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">notifications</i>
+                                <i class="material-symbols-rounded opacity-5">history</i>
                                 <span class="nav-link-text ms-1">User Login History</span>
                             </a>
                         </li>
                     }
-
-
                 }
-
-                <!-- #endregion -->
-
-                <!-- #region Branch -->
                 @if (User.HasClaim("Permission", "Branch"))
                 {
-
                     <li class="nav-item mt-3">
-                        <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">BRANCH</h6>
+                        <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Branch</h6>
                     </li>
 
                     @if (User.HasClaim("Permission", "Stock"))
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Branch" asp-controller="Branch" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">notifications</i>
+                                <i class="material-symbols-rounded opacity-5">storefront</i>
                                 <span class="nav-link-text ms-1">Branches</span>
                             </a>
                         </li>
                     }
                 }
-
-                <!-- #endregion -->
-                <!-- #region Item -->
                 @if (User.HasClaim("Permission", "Item"))
                 {
                     <li class="nav-item mt-3">
@@ -153,10 +140,9 @@
 
                     @if (User.HasClaim("Permission", "ClothingItem"))
                     {
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Item" asp-controller="ClothingItem" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">table_view</i>
+                                <i class="material-symbols-rounded opacity-5">styler</i>
                                 <span class="nav-link-text ms-1">Clothing Items</span>
                             </a>
                         </li>
@@ -164,7 +150,6 @@
 
                     @if (User.HasClaim("Permission", "Brand"))
                     {
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Item" asp-controller="Brand" asp-action="Index">
                                 <i class="material-symbols-rounded opacity-5">label</i>
@@ -174,7 +159,6 @@
                     }
                     @if (User.HasClaim("Permission", "Color"))
                     {
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Item" asp-controller="Color" asp-action="Index">
                                 <i class="material-symbols-rounded opacity-5">palette</i>
@@ -187,17 +171,16 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Item" asp-controller="ItemType" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">palette</i>
+                                <i class="material-symbols-rounded opacity-5">category</i>
                                 <span class="nav-link-text ms-1">Item Types</span>
                             </a>
                         </li>
                     }
                     @if (User.HasClaim("Permission", "Size"))
                     {
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Item" asp-controller="Size" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">palette</i>
+                                <i class="material-symbols-rounded opacity-5">straighten</i>
                                 <span class="nav-link-text ms-1">Sizes</span>
                             </a>
                         </li>
@@ -207,31 +190,29 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Item" asp-controller="TargetAudience" asp-action="Index">
-                                <i class="material-symbols-rounded opacity-5">palette</i>
+                                <i class="material-symbols-rounded opacity-5">diversity_3</i>
                                 <span class="nav-link-text ms-1">Target Audiences</span>
                             </a>
                         </li>
                     }
-                    <!-- #endregion -->
-
-                    <li class="nav-item mt-3">
-                        <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Sales</h6>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="Sales" asp-controller="PosApi" asp-action="Index">
-                            <i class="material-symbols-rounded opacity-5">table_view</i>
-                            <span class="nav-link-text ms-1">Point of Sale</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="Sales" asp-controller="SalesInvoices" asp-action="Index">
-                            <i class="material-symbols-rounded opacity-5">table_view</i>
-                            <span class="nav-link-text ms-1">Sales Invoices</span>
-                        </a>
-                    </li>
                 }
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Sales</h6>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Sales" asp-controller="PosApi" asp-action="Index">
+                        <i class="material-symbols-rounded opacity-5">point_of_sale</i>
+                        <span class="nav-link-text ms-1">Point of Sale</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="Sales" asp-controller="SalesInvoices" asp-action="Index">
+                        <i class="material-symbols-rounded opacity-5">receipt_long</i>
+                        <span class="nav-link-text ms-1">Sales Invoices</span>
+                    </a>
+                </li>
             </ul>
         </div>
 

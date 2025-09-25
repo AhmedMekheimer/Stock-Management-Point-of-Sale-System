@@ -35,7 +35,6 @@ namespace InfrastructureLayer.Data
         public DbSet<ReceiveOrder> ReceiveOrders { get; set; }
 
         public DbSet<Partner> Partners { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Tax> Taxes { get; set; }
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<TaxReceiveOrder> TaxReceiveOrders { get; set; }
@@ -43,6 +42,38 @@ namespace InfrastructureLayer.Data
         public DbSet<Permission> Permissions{ get; set; }
         public DbSet<UserLoginHistory> userLoginHistories { get; set; }
         public DbSet<DiscountSalesInvoice> DiscountSalesInvoices { get; set; }
+
+        public override int SaveChanges()
+        {
+            // Call a method to set creation dates before saving
+            SetCreationDates();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            // Call a method to set creation dates before saving
+            SetCreationDates();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void SetCreationDates()
+        {
+            // Find all new entities that have a CreatedDate property
+            var newEntities = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added && e.Entity.GetType().GetProperty("CreatedDate") != null)
+                .Select(e => e.Entity);
+
+            foreach (var entity in newEntities)
+            {
+                // Set the CreatedDate to the current UTC time
+                var property = entity.GetType().GetProperty("CreatedDate");
+                if (property != null)
+                {
+                    property.SetValue(entity, DateTime.Now);
+                }
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -179,11 +210,6 @@ namespace InfrastructureLayer.Data
                  .IsUnique()
                  .HasFilter("[ItemTypeId] IS NULL");
             });
-
-            // Uniqueness of Operation's Reference in a Transaction
-            modelBuilder.Entity<Transaction>()
-                .HasIndex(u => u.OperationId)
-                .IsUnique();
 
             // Configure Cashiers (One-to-Many)
             modelBuilder.Entity<Branch>()

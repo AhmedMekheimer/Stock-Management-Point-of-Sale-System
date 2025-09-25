@@ -32,7 +32,6 @@ namespace InfrastructureLayer.Interfaces
         IItemRepository Items { get; }
         IOperationItemRepository OperationItems { get; }
         IPartnerRepository Partners { get; }
-        ITransactionRepository Transactions { get; }
         IApplicationUserOTPRepository ApplicationUserOTPs { get; }
         ITaxRepository Taxes { get; }
         ITaxReceiveOrderRepository TaxReceiveOrders { get; }

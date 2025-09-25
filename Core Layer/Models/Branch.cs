@@ -25,6 +25,7 @@ namespace CoreLayer.Models
         [RegularExpression(@"^\+?[1-9]\d{1,14}$", ErrorMessage = "Invalid phone number.")]
         public string PhoneNumber { get; set; } = null!;
 
+        public DateTime CreatedDate { get; set; }
 
         // Many-to-Many: Branch has many Items (Bridge Table Needed)
         public ICollection<BranchItem> BranchItems { get; set; } = new List<BranchItem>();

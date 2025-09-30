@@ -1,7 +1,8 @@
 ﻿using CoreLayer.Models.Operations;
 using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces.IRepositories.Operations;
-
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace InfrastructureLayer.Repositories
 {

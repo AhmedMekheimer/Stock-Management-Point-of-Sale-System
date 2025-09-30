@@ -10,6 +10,5 @@ namespace InfrastructureLayer.Interfaces.IRepositories
 {
     public interface IBranchItemRepository : IRepository<BranchItem>
     {
-
     }
 }

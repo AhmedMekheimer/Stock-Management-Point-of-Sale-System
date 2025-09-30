@@ -82,7 +82,7 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             }
 
             // Average Invoice Value This Month + Rate Compared to Last Month
-            int CurrNumOfInv = await _UnitOfWork.SalesInvoices.CountAsync(s => s.Date.Month == DateTime.Now.Month && s.Date.Year==DateTime.Now.Year);
+            int CurrNumOfInv = await _UnitOfWork.SalesInvoices.CountAsync(s => s.Date.Month == DateTime.Now.Month && s.Date.Year == DateTime.Now.Year);
             int LastNumOfInv;
             decimal AvgInvValLastMonth;
             if (CurrNumOfInv > 0)
@@ -135,8 +135,34 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             }
 
             // Total Stock Value (By Buying Prices)
-            vm.TotalStockVal = await _UnitOfWork.BranchItems.SumAsync(s=> (decimal)s.BuyingPriceAvg*s.Quantity);
+            vm.TotalStockVal = await _UnitOfWork.BranchItems.SumAsync(s => (decimal)s.BuyingPriceAvg * s.Quantity);
 
+            // Charts
+            DateTime currentDate = DateTime.Now.AddMonths(-11);
+            decimal monthSales;
+            decimal monthPurchases;
+            for (int i = 0; i < 12; i++)
+            {
+                // 1. Calculate sales and purchases data
+                monthSales = await _UnitOfWork.SalesInvoices.SumAsync(s => s.RoundedGrandTotal, s => s.Date.Month == currentDate.Month && s.Date.Year == currentDate.Year);
+                monthPurchases = await _UnitOfWork.ReceiveOrders.SumAsync(s => s.RoundedGrandTotal, s => s.Date.Month == currentDate.Month && s.Date.Year == currentDate.Year);
+
+                // 2. Populate the data lists
+                vm.Last12MonthsSales.Add((int)monthSales);
+                vm.Last12MonthsPurchases.Add((int)monthPurchases);
+
+                // 3. Populate the required label list
+                vm.Last12MonthsLabels.Add(currentDate.ToString("MMM yy"));
+
+                // 4. Move to the next month
+                currentDate = currentDate.AddMonths(1);
+            }
+
+            // Best Selling Branches
+            vm.TopSellingBranches = await _UnitOfWork.Branches.GetTopSellingBranchesAsync(count: 6);
+
+            // Best Selling Items
+            vm.TopSellingItems = await _UnitOfWork.OperationItems.GetTopSellingItemsAsync(count: 5);
 
             return View(vm);
         }

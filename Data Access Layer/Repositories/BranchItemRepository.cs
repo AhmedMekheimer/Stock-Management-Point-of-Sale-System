@@ -1,6 +1,7 @@
 ﻿using CoreLayer.Models;
 using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces.IRepositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;

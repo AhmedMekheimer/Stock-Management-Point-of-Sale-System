@@ -1,6 +1,7 @@
-﻿@model DashboardVM
+﻿@using Newtonsoft.Json
+@model DashboardVM
 
-<div class="container-fluid py-2">
+<div class="container-fluid py-2" style="margin-bottom:32px;">
 	<div class="row">
 		<div class="ms-3" style="padding:0 !important;">
 			<h2>Sales & Stock Performance</h2>
@@ -9,6 +10,7 @@
 			</p>
 		</div>
 
+		<!--Number of Branches-->
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
@@ -29,12 +31,13 @@
 			</div>
 		</div>
 
+		<!--Total Registered Stock Items-->
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
 					<div class="d-flex justify-content-between">
 						<div>
-							<p class="text-sm mb-0 text-capitalize">Total Registered Stock Items</p>
+							<p class="text-sm mb-0 text-capitalize" style="font-size:small !important;">Total Registered Stock Items</p>
 							<h4 class="mb-0">@Model.NumOfStockItems.ToString("N0")</h4>
 						</div>
 						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
@@ -49,6 +52,7 @@
 			</div>
 		</div>
 
+		<!--Sales of Month-->
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
@@ -93,6 +97,7 @@
 			</div>
 		</div>
 
+		<!--Sales of Today-->
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
@@ -137,6 +142,7 @@
 			</div>
 		</div>
 
+		<!--Average Invoice Value This Month-->
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
@@ -185,6 +191,7 @@
 			</div>
 		</div>
 
+		<!--Average Sales per Day This Month-->
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
@@ -233,12 +240,13 @@
 			</div>
 		</div>
 
+		<!--Total Stock Value-->
 		<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 mt-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
 					<div class="d-flex justify-content-between">
 						<div>
-							<p class="text-sm mb-0 text-capitalize" style="padding-bottom:16px;">Total Stock Value</p>
+							<p class="text-sm mb-0 text-capitalize" style="padding-bottom:21px; font-size:x-large !important;">Total Stock Value</p>
 							<h4 class="mb-0">E£ @Model.TotalStockVal.ToString("N0")</h4>
 						</div>
 						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
@@ -254,7 +262,8 @@
 		</div>
 
 
-		<!--Charts-->
+		<!-- Charts -->
+		<!-- Total Sales (Monthly) Chart -->
 		<div class="col-lg-6 col-md-12 mb-4" style="margin-top:24px !important;">
 			<div class="card">
 				<div class="card-body">
@@ -266,33 +275,27 @@
 						</div>
 					</div>
 					<hr class="dark horizontal">
-					<div class="d-flex">
-						<i class="material-symbols-rounded text-sm my-auto me-1">schedule</i>
-						<p class="mb-0 text-sm"> Data updated every hour</p>
-					</div>
 				</div>
 			</div>
 		</div>
 
+		<!-- Total Purchasing (Monthly) Chart -->
 		<div class="col-lg-6 col-md-12 mb-4" style="margin-top:24px !important;">
 			<div class="card">
 				<div class="card-body">
 					<h6 class="mb-0">Total Purchasing (Monthly)</h6>
-					<p class="text-sm">Total cost of new inventory received.</p>
+					<p class="text-sm">Receive Orders in all branches.</p>
 					<div class="pe-2">
 						<div class="chart">
 							<canvas id="total-purchasing-chart" class="chart-canvas" height="170"></canvas>
 						</div>
 					</div>
 					<hr class="dark horizontal">
-					<div class="d-flex">
-						<i class="material-symbols-rounded text-sm my-auto me-1">schedule</i>
-						<p class="mb-0 text-sm"> Data updated daily </p>
-					</div>
 				</div>
 			</div>
 		</div>
 
+		<!--Best Selling Branches-->
 		<div class="col-lg-6 col-md-6 mb-md-0 mb-4">
 			<div class="card">
 				<div class="card-header pb-0">
@@ -301,7 +304,7 @@
 							<h6>Best-Selling Branches</h6>
 							<p class="text-sm mb-0">
 								<i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
-								<span class="font-weight-bold ms-1">Top 5</span> by total sales
+								<span class="font-weight-bold ms-1">Top 6</span> by total sales
 							</p>
 						</div>
 					</div>
@@ -312,34 +315,25 @@
 							<thead>
 								<tr>
 									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Branch</th>
-									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 text-center">Total Sales</th>
+									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Total Sales</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<td>
-										<div class="d-flex px-2 py-1">
-											<div class="d-flex flex-column justify-content-center">
-												<h6 class="mb-0 text-sm">Tawheed & Nour - Cairo</h6>
+								@foreach (var branchDTO in Model.TopSellingBranches)
+								{
+									<tr>
+										<td>
+											<div class="d-flex px-2 py-1">
+												<div class="d-flex flex-column justify-content-center">
+													<h6 class="mb-0 text-sm">@branchDTO.BranchName</h6>
+												</div>
 											</div>
-										</div>
-									</td>
-									<td class="align-middle text-center text-sm">
-										<span class="text-xs font-weight-bold">$125,000</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div class="d-flex px-2 py-1">
-											<div class="d-flex flex-column justify-content-center">
-												<h6 class="mb-0 text-sm">Tawheed & Nour - Giza</h6>
-											</div>
-										</div>
-									</td>
-									<td class="align-middle text-center text-sm">
-										<span class="text-xs font-weight-bold">$98,000</span>
-									</td>
-								</tr>
+										</td>
+										<td class="align-middle text-center text-sm">
+											<span class="text-xs font-weight-bold">E£ @branchDTO.TotalSales.ToString("N0")</span>
+										</td>
+									</tr>
+								}
 							</tbody>
 						</table>
 					</div>
@@ -347,35 +341,30 @@
 			</div>
 		</div>
 
+		<!--Best Selling Items-->
 		<div class="col-lg-6 col-md-6">
 			<div class="card h-100">
 				<div class="card-header pb-0">
 					<h6>Best-Selling Items</h6>
 					<p class="text-sm">
-						<i class="fa fa-fire text-danger" aria-hidden="true"></i>
-						<span class="font-weight-bold">Top 10</span> by quantity sold
+						<i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
+						<span class="font-weight-bold">Top 5</span> by quantity sold
 					</p>
 				</div>
 				<div class="card-body p-3">
 					<div class="timeline timeline-one-side">
-						<div class="timeline-block mb-3">
-							<span class="timeline-step">
-								<i class="material-symbols-rounded text-info text-gradient">shopping_bag</i>
-							</span>
-							<div class="timeline-content">
-								<h6 class="text-dark text-sm font-weight-bold mb-0">Short Sleeve Shirt</h6>
-								<p class="text-secondary font-weight-bold text-xs mt-1 mb-0">Qty Sold: 4,500</p>
+						@foreach (var item in Model.TopSellingItems)
+						{
+							<div class="timeline-block mb-3">
+								<span class="timeline-step">
+									<i class="material-symbols-rounded text-info text-gradient">shopping_bag</i>
+								</span>
+								<div class="timeline-content">
+									<h6 class="text-dark text-sm font-weight-bold mb-0">@item.ItemName</h6>
+									<p class="text-secondary font-weight-bold text-xs mt-1 mb-0">Qty Sold: @item.TotalQuantity.ToString("N0")</p>
+								</div>
 							</div>
-						</div>
-						<div class="timeline-block mb-3">
-							<span class="timeline-step">
-								<i class="material-symbols-rounded text-info text-gradient">shopping_bag</i>
-							</span>
-							<div class="timeline-content">
-								<h6 class="text-dark text-sm font-weight-bold mb-0">Sporting Hat</h6>
-								<p class="text-secondary font-weight-bold text-xs mt-1 mb-0">Qty Sold: 3,200</p>
-							</div>
-						</div>
+						}
 					</div>
 				</div>
 			</div>
@@ -437,3 +426,138 @@
 		</div>
 	</div>
 </div>
+
+@section Scripts {
+	<!-- Chart.js CDN (Required for the charts) -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+	<script>
+		// ----------------------------------------------------------------------
+		// 1. Data Injection from C# ViewModel (Replace placeholders with your Model data)
+		// IMPORTANT: Ensure your C# lists/arrays contain only numbers/strings for valid JSON.
+		// ----------------------------------------------------------------------
+
+		// Example placeholder: Model.Last12MonthsLabels should be List<string> (e.g., ["Oct 24", "Nov 24", ...])
+		const monthLabels = @Html.Raw(JsonConvert.SerializeObject(Model.Last12MonthsLabels));
+
+		// Example placeholder: Model.Last12MonthsSales should be List<decimal> or List<int>
+		const salesData = @Html.Raw(JsonConvert.SerializeObject(Model.Last12MonthsSales));
+
+		// Example placeholder: Model.Last12MonthsPurchases should be List<decimal> or List<int>
+		const purchasingData = @Html.Raw(JsonConvert.SerializeObject(Model.Last12MonthsPurchases));
+
+		// Fallback data if no data is available (for local testing/setup)
+		if (!monthLabels || monthLabels.length === 0) {
+			monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+			salesData = [50, 70, 60, 80, 75, 90, 85, 100, 95, 110, 105, 120]; // Mock sales
+			purchasingData = [40, 60, 50, 70, 65, 80, 75, 90, 85, 100, 95, 110]; // Mock purchasing
+		}
+
+		// ----------------------------------------------------------------------
+		// 2. Chart Rendering Functions
+		// ----------------------------------------------------------------------
+
+		function renderSalesChart() {
+			const ctx = document.getElementById("total-sales-chart").getContext("2d");
+			new Chart(ctx, {
+				type: "bar", // Vertical Bar Chart
+				data: {
+					labels: monthLabels,
+					datasets: [{
+						label: "Revenue (E£)",
+						backgroundColor: '#007bff', // Bootstrap Blue
+						data: salesData,
+						borderRadius: 4,
+						maxBarThickness: 14
+					}],
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: { display: false },
+						tooltip: {
+							mode: 'index',
+							intersect: false,
+							callbacks: {
+								label: function(context) {
+									return ' E£ ' + context.formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+								}
+							}
+						}
+					},
+					scales: {
+						y: {
+							beginAtZero: true,
+							grid: { drawBorder: false, display: true },
+							ticks: { display: true, padding: 10 }
+						},
+						x: {
+							grid: { drawBorder: false, display: false },
+							ticks: { display: true }
+						},
+					},
+				},
+			});
+		}
+
+		function renderPurchasingChart() {
+			const ctx = document.getElementById("total-purchasing-chart").getContext("2d");
+			new Chart(ctx, {
+				type: "bar", // Vertical Bar Chart
+				data: {
+					labels: monthLabels,
+					datasets: [{
+						label: "Cost (E£)",
+						backgroundColor: '#dc3545', // Bootstrap Red
+						data: purchasingData,
+						borderRadius: 4,
+						maxBarThickness: 14
+					}],
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: { display: false },
+						tooltip: {
+							mode: 'index',
+							intersect: false,
+							callbacks: {
+								label: function(context) {
+									return ' E£ ' + context.formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+								}
+							}
+						}
+					},
+					scales: {
+						y: {
+							beginAtZero: true,
+							grid: { drawBorder: false, display: true },
+							ticks: { display: true, padding: 10 }
+						},
+						x: {
+							grid: { drawBorder: false, display: false },
+							ticks: { display: true }
+						},
+					},
+				},
+			});
+		}
+
+		// ----------------------------------------------------------------------
+		// 3. Initialization
+		// ----------------------------------------------------------------------
+
+		// Run the chart rendering functions when the page is fully loaded
+		window.onload = function() {
+			renderSalesChart();
+			renderPurchasingChart();
+		};
+
+	</script>
+}
+
+@section Styles {
+	<link href="~/css/chart.css" rel="stylesheet" />
+}

@@ -1,6 +1,7 @@
 ﻿using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces.IRepositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,7 @@ namespace InfrastructureLayer.Repositories
             }
         }
 
-        public  async Task<bool> UpdateAsync(T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
             try
             {
@@ -101,14 +102,15 @@ namespace InfrastructureLayer.Repositories
                 return false;
             }
         }
-        public async Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = true)
+        public async Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = true,
+            Expression<Func<T, IOrderedQueryable>>? orderByExpression = null, int take = -1)
         {
 
             IQueryable<T> entities = _db;
 
             if (expression is not null)
             {
-                entities =  entities.Where(expression);
+                entities = entities.Where(expression);
             }
 
             if (include is not null)
@@ -117,6 +119,16 @@ namespace InfrastructureLayer.Repositories
                 {
                     entities = entities.Include(item);
                 }
+            }
+
+            if (orderByExpression is not null)
+            {
+                entities = entities.OrderBy(orderByExpression);
+            }
+
+            if (take > -1)
+            {
+                entities = entities.Take(take);
             }
 
             if (!tracked)
@@ -165,7 +177,7 @@ namespace InfrastructureLayer.Repositories
         public async Task<bool> AnyAsync(Expression<Func<T, bool>>? condition = null)
         {
             IQueryable<T> entities = _db;
-            if(condition is not null)
+            if (condition is not null)
             {
                 return await entities.AnyAsync(condition);
             }

@@ -1,4 +1,6 @@
-﻿namespace PresentationLayer.Areas.DashBoard.ViewModels
+﻿using CoreLayer.Models;
+
+namespace PresentationLayer.Areas.DashBoard.ViewModels
 {
     public class DashboardVM
     {
@@ -19,5 +21,13 @@
         public decimal AvgSalesPerDayRate { get; set; }
 
         public decimal TotalStockVal { get; set; }
+
+        // List for Charts
+        public List<string> Last12MonthsLabels { get; set; } = new List<string>();
+        public List<int> Last12MonthsSales { get; set; } = new List<int>();
+        public List<int> Last12MonthsPurchases { get; set; } = new List<int>();
+
+        public List<BranchSalesSummary> TopSellingBranches { get; set; } = new List<BranchSalesSummary>();
+        public List<ItemQuantitySummary> TopSellingItems { get; set; } = new List<ItemQuantitySummary>();
     }
 }

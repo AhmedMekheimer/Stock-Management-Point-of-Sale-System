@@ -311,7 +311,12 @@
             if (quantityModal) {
                 // Use Bootstrap modal if available 
                 $('#modalItemName').text(`${item.name}${item.type ? " (" + item.type + ")" : ""}`);
-                $('#modalItemPrice').text(item.price.toFixed(2) + ' EGP');
+                if (item.price == item.discountPrice) {
+                    $('#modalItemPrice').text(item.price.toFixed(2) + ' EGP');
+                }
+                else {
+                    $('#modalItemPrice').text(item.discountPrice.toFixed(2) + ' EGP');
+                }
                 $('#quantityInput')
                     .val(1) // default value
                     .attr("max", item.quantity); // set max available quantity

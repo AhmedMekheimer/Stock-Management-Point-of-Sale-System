@@ -28,58 +28,114 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             vm.NumOfBranches = await _UnitOfWork.Branches.CountAsync();
             vm.NewBranchesYearly = await _UnitOfWork.Branches.CountAsync(b => b.CreatedDate.Year == DateTime.Now.Year);
 
-            vm.NumOfUsers = await _UserManager.Users.CountAsync();
-            vm.NewUsersMonthly = await _UserManager.Users.CountAsync(u => u.CreatedDate.Month == DateTime.Now.Month);
-
             vm.NumOfStockItems = await _UnitOfWork.Items.CountAsync();
             vm.NewItemsMonthly = await _UnitOfWork.Items.CountAsync(i => i.CreatedDate.Month == DateTime.Now.Month);
 
-            decimal lastMonthSales = await _UnitOfWork.SalesInvoices.SumAsync(s => (decimal)s.RoundedGrandTotal, s => s.Date.Month == DateTime.Now.Month - 1);
-            vm.SalesOfMonth = (int)await _UnitOfWork.SalesInvoices.SumAsync(s => (decimal)s.RoundedGrandTotal, s => s.Date.Month == DateTime.Now.Month);
-            if (lastMonthSales == 0)
-            {
-                vm.MonthlySalesRate = 0;
-            }
-            else
-            {
-                vm.MonthlySalesRate = (((decimal)vm.SalesOfMonth - lastMonthSales) / lastMonthSales) * 100;
-            }
+            DateTime lastMonthDate = DateTime.Now.AddMonths(-1);
+            DateTime yesterdayDate = DateTime.Now.AddDays(-1);
 
-            // Today's Sales + Compared to yesterday's Sales
-            decimal yesterdaySales = await _UnitOfWork.SalesInvoices.SumAsync(s => (decimal)s.RoundedGrandTotal, s => s.Date.Day == DateTime.Now.Day - 1);
-            vm.SalesOfToday = (int)await _UnitOfWork.SalesInvoices.SumAsync(s => (decimal)s.RoundedGrandTotal, s => s.Date.Day == DateTime.Now.Day);
-            if (yesterdaySales == 0)
-            {
-                vm.DailySalesRate = 0;
-            }
-            else
-            {
-                vm.DailySalesRate = (((decimal)vm.SalesOfToday - yesterdaySales) / (decimal)yesterdaySales) * 100;
-            }
+            // This Month's Sales + Rate compared to last month
+            vm.SalesOfMonth = (int)await _UnitOfWork.SalesInvoices.SumAsync(s => s.RoundedGrandTotal,
+                s => s.Date.Month == DateTime.Now.Month && s.Date.Year == DateTime.Now.Year);
 
-            // Average Invoice Value This Month + Rate Compared to Last Month
-            int CurrNumOfInv = await _UnitOfWork.SalesInvoices.CountAsync(s => s.Date.Month == DateTime.Now.Month);
-            int LastNumOfInv = await _UnitOfWork.SalesInvoices.CountAsync(s => s.Date.Month == DateTime.Now.Month - 1);
-            decimal AvgInvValLastMonth;
-            if (CurrNumOfInv > 0)
+            int lastMonthSales = (int)await _UnitOfWork.SalesInvoices.SumAsync(s => s.RoundedGrandTotal,
+                    s => s.Date.Month == lastMonthDate.Month && s.Date.Year == lastMonthDate.Year);
+
+            if (vm.SalesOfMonth > 0)
             {
-                vm.AvgInvValMonth = (await _UnitOfWork.SalesInvoices.SumAsync(s => s.RoundedGrandTotal, s => s.Date.Month == DateTime.Now.Month)) / CurrNumOfInv;
-                if (LastNumOfInv > 0)
+                if (lastMonthSales > 0)
                 {
-                    AvgInvValLastMonth = (await _UnitOfWork.SalesInvoices.SumAsync(s => s.RoundedGrandTotal, s => s.Date.Month == DateTime.Now.Month - 1)) / LastNumOfInv;
-                    vm.AvgInvValRate = (((decimal)vm.AvgInvValMonth - AvgInvValLastMonth) / (decimal)AvgInvValLastMonth) * 100;
+                    vm.MonthlySalesRate = ((decimal)(vm.SalesOfMonth - lastMonthSales) / lastMonthSales) * 100;
                 }
                 else
                 {
-                    vm.AvgInvValStatus = -2; // For No Invoices Last month
-                    vm.AvgInvValRate = 0;
+                    // For No Invoices Last month
+                    vm.MonthlySalesRate = -2;
                 }
             }
             else
             {
-                vm.AvgInvValStatus = -1; // For No Invoices This month yet
-                vm.AvgInvValRate = 0;
+                // For No Invoices This month yet
+                vm.MonthlySalesRate = -1;
             }
+
+            // Today's Sales + Compared to yesterday's Sales
+            vm.SalesOfToday = (int)await _UnitOfWork.SalesInvoices.SumAsync(s => s.RoundedGrandTotal, s => s.Date == DateOnly.FromDateTime(DateTime.Now));
+            int yesterdaySales;
+            if (vm.SalesOfToday > 0)
+            {
+                yesterdaySales = (int)(await _UnitOfWork.SalesInvoices.SumAsync(s => s.RoundedGrandTotal, s => s.Date == DateOnly.FromDateTime(yesterdayDate)));
+                if (yesterdaySales > 0)
+                {
+                    vm.DailySalesRate = ((decimal)(vm.SalesOfToday - yesterdaySales) / yesterdaySales) * 100;
+                }
+                else
+                {
+                    // For No Invoices yesterday
+                    vm.DailySalesRate = -2;
+                }
+            }
+            else
+            {
+                // For No Invoices today yet
+                vm.DailySalesRate = -1;
+            }
+
+            // Average Invoice Value This Month + Rate Compared to Last Month
+            int CurrNumOfInv = await _UnitOfWork.SalesInvoices.CountAsync(s => s.Date.Month == DateTime.Now.Month && s.Date.Year==DateTime.Now.Year);
+            int LastNumOfInv;
+            decimal AvgInvValLastMonth;
+            if (CurrNumOfInv > 0)
+            {
+                // Main
+                vm.AvgInvValMonth = (await _UnitOfWork.SalesInvoices.SumAsync(s => s.RoundedGrandTotal,
+                    s => s.Date.Month == DateTime.Now.Month && s.Date.Year == DateTime.Now.Year)) / CurrNumOfInv;
+
+                LastNumOfInv = await _UnitOfWork.SalesInvoices.CountAsync(s => s.Date.Month == lastMonthDate.Month && s.Date.Year == lastMonthDate.Year);
+                if (LastNumOfInv > 0)
+                {
+                    // Rate
+                    AvgInvValLastMonth = (decimal)lastMonthSales / LastNumOfInv;
+
+                    vm.AvgInvValRate = ((vm.AvgInvValMonth - AvgInvValLastMonth) / AvgInvValLastMonth) * 100;
+                }
+                else
+                {
+                    // For No Invoices Last month
+                    vm.AvgInvValRate = -2;
+                }
+            }
+            else
+            {
+                // For No Invoices This month yet
+                vm.AvgInvValRate = -1;
+            }
+
+            // Average Sales Per Day This Month
+            decimal lastAvgSalesPerDay;
+            if (vm.SalesOfMonth > 0)
+            {
+                // Main
+                vm.AvgSalesPerDay = (decimal)vm.SalesOfMonth / DateTime.Now.Day;
+
+                if (lastMonthSales > 0)
+                {
+                    // Rate
+                    lastAvgSalesPerDay = (decimal)lastMonthSales / DateTime.DaysInMonth(lastMonthDate.Year, lastMonthDate.Month);
+                    vm.AvgSalesPerDayRate = ((vm.AvgSalesPerDay - lastAvgSalesPerDay) / lastAvgSalesPerDay) * 100;
+                }
+                else
+                {
+                    vm.AvgSalesPerDayRate = -2;
+                }
+            }
+            else
+            {
+                vm.AvgSalesPerDayRate = -1;
+            }
+
+            // Total Stock Value (By Buying Prices)
+            vm.TotalStockVal = await _UnitOfWork.BranchItems.SumAsync(s=> (decimal)s.BuyingPriceAvg*s.Quantity);
 
 
             return View(vm);

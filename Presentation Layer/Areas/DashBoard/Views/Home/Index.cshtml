@@ -9,14 +9,13 @@
 			</p>
 		</div>
 
-		<!-- #region Top 4 Original KPIs -->
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
 					<div class="d-flex justify-content-between">
 						<div>
 							<p class="text-sm mb-0 text-capitalize">Number of Branches</p>
-							<h4 class="mb-0">@Model.NumOfBranches</h4>
+							<h4 class="mb-0">@Model.NumOfBranches.ToString("N0")</h4>
 						</div>
 						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
 							<i class="material-symbols-rounded opacity-10">store</i>
@@ -25,61 +24,132 @@
 				</div>
 				<hr class="dark horizontal my-0">
 				<div class="card-footer p-2 ps-3">
-					<p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+ @Model.NewBranchesYearly </span>New branches this year</p>
+					<p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+ @Model.NewBranchesYearly.ToString("N0") </span>New branches this year</p>
 				</div>
 			</div>
 		</div>
+
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
 					<div class="d-flex justify-content-between">
 						<div>
-							<p class="text-sm mb-0 text-capitalize">Number of Users</p>
-							<h4 class="mb-0">@Model.NumOfUsers</h4>
+							<p class="text-sm mb-0 text-capitalize">Total Registered Stock Items</p>
+							<h4 class="mb-0">@Model.NumOfStockItems.ToString("N0")</h4>
 						</div>
 						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-							<i class="material-symbols-rounded opacity-10">group</i>
+							<i class="material-symbols-rounded opacity-10">styler</i>
 						</div>
 					</div>
 				</div>
 				<hr class="dark horizontal my-0">
 				<div class="card-footer p-2 ps-3">
-					<p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+ @Model.NewUsersMonthly </span>New users this month</p>
+					<p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+ @Model.NewItemsMonthly.ToString("N0") </span>New items this month</p>
 				</div>
 			</div>
 		</div>
+
 		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
 			<div class="card">
 				<div class="card-header p-2 ps-3">
 					<div class="d-flex justify-content-between">
 						<div>
-							<p class="text-sm mb-0 text-capitalize">Total Stock Items</p>
-							<h4 class="mb-0">@Model.NumOfStockItems</h4>
-						</div>
-						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-							<i class="material-symbols-rounded opacity-10">inventory</i>
-						</div>
-					</div>
-				</div>
-				<hr class="dark horizontal my-0">
-				<div class="card-footer p-2 ps-3">
-					<p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+ @Model.NewItemsMonthly </span>New items this month</p>
-				</div>
-			</div>
-		</div>
-		<div class="col-xl-3 col-sm-6">
-			<div class="card">
-				<div class="card-header p-2 ps-3">
-					<div class="d-flex justify-content-between">
-						<div>
-							<p class="text-sm mb-0 text-capitalize">Average Invoice Value This Month</p>
-							@if (Model.AvgInvValStatus == -1)
+							@if (Model.MonthlySalesRate == -1)
 							{
-								<h4 class="mb-0">No Invoices This Month Yet</h4>
+								<p class="text-sm mb-0 text-capitalize">Sales of Month</p>
+								<h4 class="mb-0">E£ 0</h4>
 							}
 							else
 							{
-								<h4 class="mb-0">E£ @Model.AvgInvValMonth</h4>
+								<p class="text-sm mb-0 text-capitalize">Sales of Month</p>
+								<h4 class="mb-0">E£ @Model.SalesOfMonth.ToString("N0")</h4>
+							}
+						</div>
+						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+							<i class="material-symbols-rounded opacity-10">paid</i>
+						</div>
+					</div>
+				</div>
+				<hr class="dark horizontal my-0">
+				<div class="card-footer p-2 ps-3">
+					@if (Model.MonthlySalesRate == -2)
+					{
+						<p class="mb-0 text-sm">No invoices last month</p>
+					}
+					else if (Model.MonthlySalesRate == -1)
+					{
+						<p class="mb-0 text-sm"><span class="font-weight-bolder">0 % </span>than last month</p>
+					}
+					else
+					{
+						<p class="mb-0 text-sm">
+							<span class="@(Model.MonthlySalesRate >= 0 ? "text-success" : "text-danger") font-weight-bolder">
+								@(Model.MonthlySalesRate > 0 ? "+" : "")@Model.MonthlySalesRate.ToString("N1") %
+							</span>
+							than last month
+						</p>
+					}
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+			<div class="card">
+				<div class="card-header p-2 ps-3">
+					<div class="d-flex justify-content-between">
+						<div>
+							@if (Model.DailySalesRate == -1)
+							{
+								<p class="text-sm mb-0 text-capitalize">Sales of Today</p>
+								<h4 class="mb-0">E£ 0</h4>
+							}
+							else
+							{
+								<p class="text-sm mb-0 text-capitalize">Sales of Today</p>
+								<h4 class="mb-0">E£ @Model.SalesOfToday.ToString("N0")</h4>
+							}
+						</div>
+						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+							<i class="material-symbols-rounded opacity-10">paid</i>
+						</div>
+					</div>
+				</div>
+				<hr class="dark horizontal my-0">
+				<div class="card-footer p-2 ps-3">
+					@if (Model.DailySalesRate == -2)
+					{
+						<p class="mb-0 text-sm">No invoices yesterday</p>
+					}
+					else if (Model.DailySalesRate == -1)
+					{
+						<p class="mb-0 text-sm"><span class="font-weight-bolder">0 % </span>than yesterday</p>
+					}
+					else
+					{
+						<p class="mb-0 text-sm">
+							<span class="@(Model.DailySalesRate >= 0 ? "text-success" : "text-danger") font-weight-bolder">
+								@(Model.DailySalesRate > 0 ? "+" : "")@Model.DailySalesRate.ToString("N1") %
+							</span>
+							than yesterday
+						</p>
+					}
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
+			<div class="card">
+				<div class="card-header p-2 ps-3">
+					<div class="d-flex justify-content-between">
+						<div>
+							<p style="font-size:small;">Average Invoice Value This Month</p>
+							@if (Model.AvgInvValRate == -1)
+							{
+								<h6 class="mb-0">No Invoices This Month</h6>
+							}
+							else
+							{
+								<h4 class="mb-0">E£ @Model.AvgInvValMonth.ToString("N1")</h4>
 							}
 						</div>
 						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
@@ -89,15 +159,24 @@
 				</div>
 				<hr class="dark horizontal my-0">
 				<div class="card-footer p-2 ps-3">
-					@if (Model.AvgInvValStatus == -2)
+					@if (Model.AvgInvValRate == -2)
 					{
-						<p class="mb-0 text-sm"><span class="text-success font-weight-bolder">No invoices last month </span></p>
+						<p class="mb-0 text-sm">No invoices last month</p>
+					}
+					else if (Model.AvgInvValRate == -1)
+					{
+						<p class="mb-0 text-sm">
+							<span class="font-weight-bolder">
+								0 %
+							</span>
+							than last month
+						</p>
 					}
 					else
 					{
 						<p class="mb-0 text-sm">
-							<span class="text-success font-weight-bolder">
-								@(Model.AvgInvValRate > 0 ? "+" : "") @Model.AvgInvValRate %
+							<span class="@(Model.AvgInvValRate >= 0 ? "text-success" : "text-danger") font-weight-bolder">
+								@(Model.AvgInvValRate > 0 ? "+" : "")@Model.AvgInvValRate.ToString("N1") %
 							</span>
 							than last month
 						</p>
@@ -105,87 +184,77 @@
 				</div>
 			</div>
 		</div>
-		<!-- #endregion -->
-		<!-- #region New KPIs -->
-		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
-			<div class="card">
-				<div class="card-header p-2 ps-3">
-					<div class="d-flex justify-content-between">
-						<div>
-							<p class="text-sm mb-0 text-capitalize">Stock-to-Sales Ratio</p>
-							<h4 class="mb-0">2.5:1</h4>
-						</div>
-						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-							<i class="material-symbols-rounded opacity-10">balance</i>
-						</div>
-					</div>
-				</div>
-				<hr class="dark horizontal my-0">
-				<div class="card-footer p-2 ps-3">
-					<p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+10% </span>than last month</p>
-				</div>
-			</div>
-		</div>
-		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
-			<div class="card">
-				<div class="card-header p-2 ps-3">
-					<div class="d-flex justify-content-between">
-						<div>
-							<p class="text-sm mb-0 text-capitalize">Total Inventory Value</p>
-							<h4 class="mb-0">$250,000</h4>
-						</div>
-						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-							<i class="material-symbols-rounded opacity-10">attach_money</i>
-						</div>
-					</div>
-				</div>
-				<hr class="dark horizontal my-0">
-				<div class="card-footer p-2 ps-3">
-					<p class="mb-0 text-sm"><span class="text-danger font-weight-bolder">-5% </span>than last month</p>
-				</div>
-			</div>
-		</div>
-		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
-			<div class="card">
-				<div class="card-header p-2 ps-3">
-					<div class="d-flex justify-content-between">
-						<div>
-							<p class="text-sm mb-0 text-capitalize">Average Sales per Day</p>
-							<h4 class="mb-0">$1,500</h4>
-						</div>
-						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-							<i class="material-symbols-rounded opacity-10">calendar_month</i>
-						</div>
-					</div>
-				</div>
-				<hr class="dark horizontal my-0">
-				<div class="card-footer p-2 ps-3">
-					<p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+8% </span>than last month</p>
-				</div>
-			</div>
-		</div>
-		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
-			<div class="card">
-				<div class="card-header p-2 ps-3">
-					<div class="d-flex justify-content-between">
-						<div>
-							<p class="text-sm mb-0 text-capitalize">Purchasing vs. Sales (by Quantity)</p>
-							<h4 class="mb-0">95%</h4>
-						</div>
-						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-							<i class="material-symbols-rounded opacity-10">sync_alt</i>
-						</div>
-					</div>
-				</div>
-				<hr class="dark horizontal my-0">
-				<div class="card-footer p-2 ps-3">
-					<p class="mb-0 text-sm"><span class="text-danger font-weight-bolder">-2% </span>than last month</p>
-				</div>
-			</div>
-		</div>
-		<!-- #endregion -->
-		<!-- #region Charts -->
 
+		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
+			<div class="card">
+				<div class="card-header p-2 ps-3">
+					<div class="d-flex justify-content-between">
+						<div>
+							<p style="font-size:small;">Average Sales per Day This Month</p>
+							@if (Model.AvgSalesPerDayRate == -1)
+							{
+								<h6 class="mb-0">No Invoices This Month</h6>
+							}
+							else
+							{
+								<h4 class="mb-0">E£ @Model.AvgSalesPerDay.ToString("N1")</h4>
+							}
+						</div>
+						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+							<i class="material-symbols-rounded opacity-10">receipt_long</i>
+						</div>
+					</div>
+				</div>
+				<hr class="dark horizontal my-0">
+				<div class="card-footer p-2 ps-3">
+					@if (Model.AvgSalesPerDayRate == -2)
+					{
+						<p class="mb-0 text-sm">No invoices last month</p>
+					}
+					else if (Model.AvgSalesPerDayRate == -1)
+					{
+						<p class="mb-0 text-sm">
+							<span class="font-weight-bolder">
+								0 %
+							</span>
+							than last month
+						</p>
+					}
+					else
+					{
+						<p class="mb-0 text-sm">
+							<span class="@(Model.AvgSalesPerDayRate >= 0 ? "text-success" : "text-danger") font-weight-bolder">
+								@(Model.AvgSalesPerDayRate > 0 ? "+" : "")@Model.AvgSalesPerDayRate.ToString("N1") %
+							</span>
+							than last month
+						</p>
+					}
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 mt-4">
+			<div class="card">
+				<div class="card-header p-2 ps-3">
+					<div class="d-flex justify-content-between">
+						<div>
+							<p class="text-sm mb-0 text-capitalize" style="padding-bottom:16px;">Total Stock Value</p>
+							<h4 class="mb-0">E£ @Model.TotalStockVal.ToString("N0")</h4>
+						</div>
+						<div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+							<i class="material-symbols-rounded opacity-10">warehouse</i>
+						</div>
+					</div>
+				</div>
+				<hr class="dark horizontal my-0">
+				<div class="card-footer p-2 ps-3" style="padding-bottom:30px !important;">
+					<p class="mb-0 text-sm"></p>
+				</div>
+			</div>
+		</div>
+
+
+		<!--Charts-->
 		<div class="col-lg-6 col-md-12 mb-4" style="margin-top:24px !important;">
 			<div class="card">
 				<div class="card-body">
@@ -204,6 +273,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="col-lg-6 col-md-12 mb-4" style="margin-top:24px !important;">
 			<div class="card">
 				<div class="card-body">
@@ -223,8 +293,6 @@
 			</div>
 		</div>
 
-		<!-- #endregion -->
-		<!-- #region Bottom Tables -->
 		<div class="col-lg-6 col-md-6 mb-md-0 mb-4">
 			<div class="card">
 				<div class="card-header pb-0">
@@ -278,6 +346,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="col-lg-6 col-md-6">
 			<div class="card h-100">
 				<div class="card-header pb-0">
@@ -312,7 +381,6 @@
 			</div>
 		</div>
 
-
 		<div class="col-lg-6 col-md-6 mb-md-0 mb-4" style="margin-top:24px !important;">
 			<div class="card">
 				<div class="card-header pb-0">
@@ -343,6 +411,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="col-lg-6 col-md-6" style="margin-top:24px !important;">
 			<div class="card h-100">
 				<div class="card-header pb-0">
@@ -366,6 +435,5 @@
 				</div>
 			</div>
 		</div>
-		<!-- #endregion -->
 	</div>
 </div>

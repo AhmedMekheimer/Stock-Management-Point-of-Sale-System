@@ -67,23 +67,13 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     Value = t.Rate.ToString()
                 }).ToList();
 
-            var discount = _UnitOfWork.Discounts
-                .GetAsync()
-                .GetAwaiter().GetResult()
-                .Select(d => new SelectListItem
-                {
-                    Text = d.Name,
-                    Value = d.Rate.ToString()
-                }).ToList();
-
-
             var ReceiveOrderVM = new ReceiveOrderVM()
             {
                 Date = DateOnly.FromDateTime(DateTime.Now),
                 SupplierList = suplier,
                 BranchList = branches,
-                DiscountList = discount,
                 TaxList = taxes,
+
                 ApplicationUserId = _UserManager.GetUserAsync(User).Result?.Id ?? ""
 
             };
@@ -100,7 +90,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     ReceiveOrderVM.SupplierId = ReceiveOrder.SupplierId;
                     ReceiveOrderVM.TaxId = ReceiveOrder.TotalTaxesRate;
                     ReceiveOrderVM.TotalDiscountAmount = ReceiveOrder.TotalDiscountAmount;
-                    ReceiveOrderVM.DiscountId = ReceiveOrder.TotalDiscountRate;
+                    ReceiveOrderVM.DiscountPercentage = ReceiveOrder.TotalDiscountRate;
                     ReceiveOrderVM.GrandTotal = ReceiveOrder.GrandTotal;
                     ReceiveOrderVM.TotalAmount = ReceiveOrder.TotalAmount;
                     ReceiveOrderVM.TotalQuantity = ReceiveOrder.TotalQuantity;
@@ -108,6 +98,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     ReceiveOrderVM.TotalDiscountRate = ReceiveOrder.TotalDiscountRate;
                     ReceiveOrderVM.TotalTaxesRate = ReceiveOrder.TotalTaxesRate;
                     ReceiveOrderVM.Status = ReceiveOrder.status;
+                    ReceiveOrderVM.Code = ReceiveOrder.Code ?? "";
 
                     var oprationItems = await _UnitOfWork.OperationItems.GetAsync(o => o.OperationId == ReceiveOrder.Id, [o => o.Item]);
 
@@ -165,6 +156,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
 
 
                 receiveOrder.status = Status.Approved;
+                receiveOrder.Code = _UnitOfWork.ReceiveOrders.GenerateCode(receiveOrder.BranchId);
                 await _UnitOfWork.ReceiveOrders.CommitAsync();
 
                 TempData["success"] = "Receive order Confirmed successfully";
@@ -175,6 +167,8 @@ namespace PresentationLayer.Areas.Branch.Controllers
             TempData["success"] = "Bad action";
             return RedirectToAction(nameof(Save));
         }
+
+        
 
 
         [HttpPost]
@@ -200,9 +194,10 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     TotalTaxesAmount = receiveOrderVM.TotalTaxesAmount,
                     RoundedGrandTotal = (int)Math.Ceiling(receiveOrderVM.GrandTotal),
                     ApplicationUserId = receiveOrderVM.ApplicationUserId,
-
+                    //Code = receiveOrderVM.Code,
                     OperationItems = receiveOrderVM.OperationItems.Select(o => new OperationItem
                     {
+
                         ItemId = o.ItemId,
                         Quantity = o.Quantity,
                         BuyingPrice = o.BuyingPrice,
@@ -241,6 +236,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
             receiceOrder.TotalTaxesAmount = receiveOrderVM.TotalTaxesAmount;
             receiceOrder.TotalDiscountRate = receiveOrderVM.TotalDiscountRate;
             receiceOrder.TotalTaxesRate = receiveOrderVM.TotalTaxesRate;
+            //receiceOrder.Code = 
             var resultReceiceOrder = await _UnitOfWork.ReceiveOrders.CommitAsync();
 
             var EditedList = new List<OperationItem>();
@@ -265,11 +261,16 @@ namespace PresentationLayer.Areas.Branch.Controllers
                 }
             }
 
-            var oldOperationItemCount = (await _UnitOfWork.OperationItems.GetAsync(o => o.OperationId == receiceOrder.Id));
 
-            if (oldOperationItemCount.Count > receiceOrder.OperationItems.Count)
+
+            var oldOperationItemCount = (await _UnitOfWork.OperationItems.GetAsync(o => o.OperationId == receiceOrder.Id)).ToList();
+
+
+
+            if (oldOperationItemCount.Count() > receiceOrder.OperationItems.Count)
             {
                 var removedOperationList = oldOperationItemCount.Where(o => EditedList.Any(e => o.Id != e.Id)).ToList();
+
 
                 await _UnitOfWork.OperationItems.DeleteRangeAsync(removedOperationList);
 

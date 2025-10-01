@@ -14,6 +14,8 @@ namespace CoreLayer.Models
     public abstract class Operation
     {
         public int Id { get; set; }
+        //[Required]
+        public string? Code { get; set; } 
         [Required]
         public DateOnly Date { get; set; }
         [Required]

@@ -13,10 +13,10 @@
 
                     <div class="mb-3 col-3">
                         <label asp-for="Date" class="control-label"></label>
-                        <input asp-for="Date" class="form-control" />
+                        <input asp-for="Date" type="date" class="form-control" />
                         <span asp-validation-for="Date" class="text-danger"></span>
                     </div>
-
+       
                     <div class="mb-3 col-3">
                         <label asp-for="SupplierId" class="form-label">Supplier </label>
                         <select class="form-select" asp-for="SupplierId" asp-items="@Model.SupplierList">
@@ -42,13 +42,15 @@
                     </div>
 
                     <div class="mb-3 col-3">
-                        <label asp-for="DiscountId" class="form-label">Discount</label>
-                        <select class="form-select" asp-for="DiscountId" asp-items="@Model.DiscountList">
-                            <option value="">Select Item Tax</option>
-                        </select>
-                        <span asp-validation-for="DiscountId" class="text-danger"></span>
+                        <label asp-for="DiscountPercentage" class="form-label">Total discount Percentage</label>
+                        <input asp-for="DiscountPercentage" type="number" class="form-control" />
+                        <span asp-validation-for="DiscountPercentage" class="text-danger"></span>
                     </div>
-
+                    <div class="mb-3 col-3">
+                        <label asp-for="Code" class="control-label"></label>
+                        <input asp-for="Code" disabled class="form-control" />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
 
                     <div class="row">
                         <div class="col-12">
@@ -81,11 +83,15 @@
                                                 <partial name="Details" model="new OperationItem()" />
                                             }
                                         </tbody>
+                                        
+                                        @if(Model.Status == Status.Draft)
+                                        {
+                                            <div class="mt-2">
+                                                <button type="button" id="addRow" class="btn btn-success">+ Add Row</button>
+                                            </div>
 
-                                        <div class="mt-2">
-                                            <button type="button" id="addRow" class="btn btn-success">+ Add Row</button>
-                                        </div>
-
+                                        }
+                             
 
                                     </table>
                                 </div>
@@ -96,33 +102,53 @@
 
                     </div>
 
-                    <div class="mb-3 col-6">
-                        <label asp-for="TotalAmount" class="control-label">Total Amount</label>
-                        <input disabled asp-for="TotalAmount" class="form-control" />
-                        <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                    <div class="col-12 row">
+                        <div class="mb-3 col-4">
+                            <label asp-for="TotalQuantity" class="control-label">Total Quantity</label>
+                            <input disabled asp-for="TotalQuantity" class="form-control" />
+                            <span asp-validation-for="TotalQuantity" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-4">
+                            <label asp-for="TotalAmount" class="control-label">Total Amount</label>
+                            <input disabled asp-for="TotalAmount" class="form-control" />
+                            <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-4">
+                            <label asp-for="GrandTotal" class="control-label"> Grand Total</label>
+                            <input disabled asp-for="GrandTotal" class="form-control grandTotal" />
+                            <span asp-validation-for="GrandTotal" class="text-danger"></span>
+                        </div>
                     </div>
-                    <div class="mb-3 col-6">
-                        <label asp-for="GrandTotal" class="control-label"> Grand Total</label>
-                        <input disabled asp-for="GrandTotal" class="form-control grandTotal" />
-                        <span asp-validation-for="GrandTotal" class="text-danger"></span>
+                    <hr />
+             
+                    
+                    <div class="col-12">
+                        <div class="mb-3 col-4">
+                            <label asp-for="TotalDiscountAmount" class="control-label">Total Discount Amount</label>
+                            <input disabled asp-for="TotalDiscountAmount" class="form-control" />
+                            <span asp-validation-for="TotalDiscountAmount" class="text-danger"></span>
+                        </div>
                     </div>
+                    <hr />
+                    <div class="col-12">
+                        <div class="mb-3 col-4">
+                            <label asp-for="TotalTaxesAmount" class="control-label">Total Taxes Amount
+                                <span id="TaxesPercentage"> 
+                                    @if (Model.TaxId != 0){
+                                        <text>
+                                        @Model.TaxId 
+                                        %
+                                        </text>
+                                    }
 
-                    <div class="mb-3 col-4">
-                        <label asp-for="TotalQuantity" class="control-label">Total Quantity</label>
-                        <input disabled asp-for="TotalQuantity" class="form-control" />
-                        <span asp-validation-for="TotalQuantity" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3 col-4">
-                        <label asp-for="TotalDiscountAmount" class="control-label">Total Discount Amount</label>
-                        <input disabled asp-for="TotalDiscountAmount" class="form-control" />
-                        <span asp-validation-for="TotalDiscountAmount" class="text-danger"></span>
-                    </div>
-                    <div class="mb-3 col-4">
-                        <label asp-for="TotalTaxesAmount" class="control-label">Total Taxes Amount</label>
-                        <input disabled asp-for="TotalTaxesAmount" class="form-control" />
-                        <span asp-validation-for="TotalTaxesAmount" class="text-danger"></span>
-                    </div>
+                                </span>
 
+                            </label>
+                            <input disabled asp-for="TotalTaxesAmount" class="form-control" />
+                            <span asp-validation-for="TotalTaxesAmount" class="text-danger"></span>
+                        </div>
+                    </div>
+       
                 <div class="d-flex justify-content-between">
 
                         <!-- Submit -->
@@ -153,6 +179,10 @@
 
 <script>
     $(document).ready(function () {
+
+        
+
+
         // Add new row
         $('#addRow').click(function () {
             $.get('@Url.Action("RenderEmptyRow", "ReceiveOrder")', function (data) {
@@ -164,8 +194,13 @@
 
         // Delete row
         $('#itemsTableBody').on('click', '.delete-row', function () {
-            $(this).closest('tr').remove();
-            updateGrandTotal();
+
+            var rowCount = $('#itemsTableBody tr').length;
+           
+            if(rowCount > 1 ) {
+                $(this).closest('tr').remove();
+                updateGrandTotal();
+            }
         });
 
         // Load items dynamically
@@ -243,7 +278,7 @@
             $('#SubTotal').val(subTotal.toFixed(2));
 
             // apply discount %
-            const discountPercent = parseFloat($("#DiscountId").val()) || 0;
+            const discountPercent = parseFloat($("#DiscountPercentage").val()) || 0;
             let discountAmount = 0;
             if (discountPercent > 0) {
                 discountAmount = (discountPercent / 100) * subTotal;
@@ -267,9 +302,27 @@
         }
 
         // Trigger recalculation when tax or discount changes
-        $('#TaxId, #DiscountId').on("change", function () {
+        $('#TaxId').on("change", function () {
+            var Percentage = this.value;
+            console.log(Percentage);
+            updateGrandTotal();
+
+
+            if(Percentage == "") {
+
+                $("#TaxesPercentage").html("") .css("display", "none"); 
+
+            } else {
+
+                $("#TaxesPercentage").html(Percentage + "%").css("display", "inline-block");
+            }
+
+        });
+
+        $('#DiscountPercentage').on("input", function () {
             updateGrandTotal();
         });
+
 
         // init
         updateGrandTotal();
@@ -288,31 +341,10 @@
                     // submit with AJAX
     $("#submitBtn").on("click", function (e) {
         e.preventDefault();
-
-        // collect items from table
+        var isRowsHasErrors = false;
         const items = [];
-        $("#itemsTableBody tr").each(function () {
-            const $row = $(this);
-            const itemId = $row.find(".itemSelect").val();
-            const operationId = $row.find("#Id").val();
-            if (!itemId) return; // skip empty rows
 
-            items.push({
-                Id : operationId,
-                ItemId: itemId,
-                Quantity: parseFloat($row.find(".Quantity").val()) || 0,
-                BuyingPrice: parseFloat($row.find(".BuyingPrice").val()) || 0,
-                DiscountRate: parseFloat($row.find(".DiscountRate").val()) || 0,
-                TotalPrice: parseFloat($row.find(".TotalPrice").val()) || 0
-            });
-        });
 
-                     if (items.length === 0) {
-        $("#validation")
-            .show()
-            .text("Please enter row data");
-        return;
-    }
 
     if ($("#BranchId").val() === "") {
         $("#validation")
@@ -328,6 +360,54 @@
         return;
     }
 
+       $("#itemsTableBody tr").each(function () {
+            const $row = $(this);
+            const itemId = $row.find(".itemSelect").val();
+            const Quantity = $row.find(".Quantity").val();
+            const  BuyingPrice = parseFloat($row.find(".BuyingPrice").val()) || 0;
+
+            if(itemId == 0 || Quantity == 0 || BuyingPrice == 0) {
+                 $("#validation")
+            .show()
+            .text("Please make sure all items are selected and have quantity and price ");
+             isRowsHasErrors = true;
+            }
+
+        });
+
+        if(isRowsHasErrors) {
+            return null;
+        }
+
+
+
+
+
+
+        // collect items from table
+        $("#itemsTableBody tr").each(function () {
+            const $row = $(this);
+            const itemId = $row.find(".itemSelect").val();
+            const operationId = $row.find("#Id").val();
+       
+            items.push({
+                Id : operationId,
+                ItemId: itemId,
+                Quantity: parseFloat($row.find(".Quantity").val()) || 0,
+                BuyingPrice: parseFloat($row.find(".BuyingPrice").val()) || 0,
+                DiscountRate: parseFloat($row.find(".DiscountRate").val()) || 0,
+                TotalPrice: parseFloat($row.find(".TotalPrice").val()) || 0
+            });
+        });
+
+
+    if (items.length === 0) {
+        $("#validation")
+            .show()
+            .text("Please enter row data");
+        return;
+    }
+
 
 
         console.log(items);
@@ -338,15 +418,16 @@
             SupplierId: $("select[name='SupplierId']").val(),
             BranchId: $("select[name='BranchId']").val(),
             TaxId: $("select[name='TaxId']").val(),
-            DiscountId: $("select[name='DiscountId']").val(),
+            DiscountPercentage: $("input[name='DiscountPercentage']").val(),
             TotalAmount: parseFloat($("#TotalAmount").val()) || 0,
             GrandTotal: parseFloat($("#GrandTotal").val()) || 0,
             TotalQuantity: parseFloat($("#TotalQuantity").val()) || 0,
             TotalDiscountAmount: parseFloat($("#TotalDiscountAmount").val()) || 0,
-            TotalDiscountRate: parseFloat($("select[name='DiscountId']").val()) || 0,
+            TotalDiscountRate: parseFloat($("input[name='DiscountPercentage']").val()) || 0,
             TotalTaxesAmount: parseFloat($("#TotalTaxesAmount").val()) || 0,
             TotalTaxesRate: parseFloat($("select[name='TaxId']").val()) || 0,
             ApplicationUserId: $("#ApplicationUserId").val(),
+            Code: $("#Code").val(),
 
             OperationItems: items
         };

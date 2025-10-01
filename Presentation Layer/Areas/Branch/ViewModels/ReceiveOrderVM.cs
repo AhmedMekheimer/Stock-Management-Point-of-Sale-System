@@ -16,8 +16,10 @@ namespace PresentationLayer.Areas.Branch.ViewModels
         public int SupplierId { get; set; }
         [Required]
         public DateOnly Date { get; set; }
+
+        public string Code { get; set; } = string.Empty;
         public int? TaxId { get; set; }
-        public int? DiscountId { get; set; }
+        public int? DiscountPercentage { get; set; }
         public int TotalQuantity { get; set; }
         public double TotalAmount { get; set; }
         public double? TotalTaxesAmount { get; set; }

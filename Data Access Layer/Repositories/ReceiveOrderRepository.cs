@@ -18,5 +18,13 @@ namespace InfrastructureLayer.Repositories
         {
             _context = context;
         }
+
+
+        public string GenerateCode(int BranchId)
+        {
+            return $"2_{BranchId}_{_context.ReceiveOrders.Count() + 1}";
+        }
+
+
     }
 }

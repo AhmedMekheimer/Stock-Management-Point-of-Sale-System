@@ -15,6 +15,6 @@ namespace InfrastructureLayer.Interfaces.IRepositories
 
         ///"count" The number of top items to retrieve (e.g., 5)
         /// returns: A list of ItemSalesSummary DTOs (BranchId, BranchName, TotalSales)
-        Task<List<ItemQuantitySummary>> GetTopSellingItemsAsync(int count);
+        Task<List<ItemQuantitySummaryDTO>> GetTopSellingItemsAsync(int count);
     }
 }

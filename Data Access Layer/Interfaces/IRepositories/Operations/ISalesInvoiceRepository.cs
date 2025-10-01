@@ -12,6 +12,6 @@ namespace InfrastructureLayer.Interfaces.IRepositories.Operations
 {
     public interface ISalesInvoiceRepository : IRepository<SalesInvoice>
     {
-
+        Task AddBranchItemTrackingAsync(SalesInvoice invoice);
     }
 }

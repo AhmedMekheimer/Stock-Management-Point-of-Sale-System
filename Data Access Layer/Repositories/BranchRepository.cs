@@ -18,11 +18,11 @@ namespace InfrastructureLayer.Repositories
             _dbSet = context.Set<Branch>();
         }
 
-        public async Task<List<BranchSalesSummary>> GetTopSellingBranchesAsync(int count)
+        public async Task<List<BranchSalesSummaryDTO>> GetTopSellingBranchesAsync(int count)
         {
             return await _dbSet
                 // 1. Project directly to the BranchSalesSummary DTO
-                .Select(branch => new BranchSalesSummary
+                .Select(branch => new BranchSalesSummaryDTO
                 {
                     BranchId = branch.Id,
                     BranchName = branch.Name,

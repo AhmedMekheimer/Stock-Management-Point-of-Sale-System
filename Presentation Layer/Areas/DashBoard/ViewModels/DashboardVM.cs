@@ -27,7 +27,10 @@ namespace PresentationLayer.Areas.DashBoard.ViewModels
         public List<int> Last12MonthsSales { get; set; } = new List<int>();
         public List<int> Last12MonthsPurchases { get; set; } = new List<int>();
 
-        public List<BranchSalesSummary> TopSellingBranches { get; set; } = new List<BranchSalesSummary>();
-        public List<ItemQuantitySummary> TopSellingItems { get; set; } = new List<ItemQuantitySummary>();
+        public List<BranchSalesSummaryDTO> TopSellingBranches { get; set; } = new List<BranchSalesSummaryDTO>();
+        public List<ItemQuantitySummaryDTO> TopSellingItems { get; set; } = new List<ItemQuantitySummaryDTO>();
+
+        public List<BranchItem> LowStockBranchItems { get; set; } = new List<BranchItem>();
+        public List<SlowMovingItemDTO> SlowMovingBranchItems { get; set; } = new List<SlowMovingItemDTO>();
     }
 }

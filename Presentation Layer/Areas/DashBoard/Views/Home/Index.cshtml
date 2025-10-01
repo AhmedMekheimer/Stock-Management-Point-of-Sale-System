@@ -370,12 +370,13 @@
 			</div>
 		</div>
 
+		<!--Low-Stock Alerts-->
 		<div class="col-lg-6 col-md-6 mb-md-0 mb-4" style="margin-top:24px !important;">
 			<div class="card">
 				<div class="card-header pb-0">
 					<h6>Low-Stock Alerts</h6>
 					<p class="text-sm">
-						Items with quantity below the reorder point.
+						Items with quantity below their Restock Threshold.
 					</p>
 				</div>
 				<div class="card-body px-0 pb-2">
@@ -383,43 +384,72 @@
 						<table class="table align-items-center mb-0">
 							<thead>
 								<tr>
-									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Item Name</th>
+									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Item</th>
+									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Branch</th>
+									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Restock Threshold</th>
 									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Current Stock</th>
-									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Reorder Point</th>
 								</tr>
 							</thead>
-							<tbody>
-								<tr>
-									<td><h6 class="mb-0 text-sm ps-3">Blue T-Shirt - M</h6></td>
-									<td><span class="text-xs font-weight-bold">10</span></td>
-									<td><span class="text-xs font-weight-bold">15</span></td>
-								</tr>
-							</tbody>
+							@foreach (var item in Model.LowStockBranchItems)
+							{
+								<tbody>
+									<tr>
+										<td><h6 class="mb-0 text-sm ps-3">@item.Item.Name</h6></td>
+										<td><h6 class="mb-0 text-sm ps-3">@item.Branch.Name</h6></td>
+										<td><span class="text-xs font-weight-bold">@item.RestockThreshold</span></td>
+										<td><span class="text-xs font-weight-bold">@item.Quantity.ToString("N0")</span></td>
+									</tr>
+								</tbody>
+							}
 						</table>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="col-lg-6 col-md-6" style="margin-top:24px !important;">
-			<div class="card h-100">
+		<!--Slow-Moving Items-->
+		<div class="col-lg-6 col-md-6 mb-md-0 mb-4" style="margin-top:24px !important;">
+			<div class="card">
 				<div class="card-header pb-0">
 					<h6>Slow-Moving Items</h6>
 					<p class="text-sm">
 						Items that haven't sold in a long time.
 					</p>
 				</div>
-				<div class="card-body p-3">
-					<div class="timeline timeline-one-side">
-						<div class="timeline-block mb-3">
-							<span class="timeline-step">
-								<i class="material-symbols-rounded text-danger text-gradient">luggage</i>
-							</span>
-							<div class="timeline-content">
-								<h6 class="text-dark text-sm font-weight-bold mb-0">Winter Coat - XL</h6>
-								<p class="text-secondary font-weight-bold text-xs mt-1 mb-0">Last Sold: 180 days ago</p>
-							</div>
-						</div>
+				<div class="card-body px-0 pb-2">
+					<div class="table-responsive">
+						<table class="table align-items-center mb-0">
+							<thead>
+								<tr>
+									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Item</th>
+									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Branch</th>
+									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Last Sold in</th>
+									<th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Current Stock</th>
+								</tr>
+							</thead>
+							@foreach (var item in Model.SlowMovingBranchItems)
+							{
+								<tbody>
+									<tr>
+										<td><h6 class="mb-0 text-sm ps-3">@item.ItemName</h6></td>
+										<td><h6 class="mb-0 text-sm ps-3">@item.BranchName</h6></td>
+										@if(item.YearsSinceLastSale>0)
+										{
+										<td><span class="text-xs font-weight-bold">@item.YearsSinceLastSale Years</span></td>											
+										}
+										else if(item.MonthsSinceLastSale>0)
+										{
+											<td><span class="text-xs font-weight-bold">@item.MonthsSinceLastSale Months</span></td>
+										}
+										else
+										{
+											<td><span class="text-xs font-weight-bold">@item.DaysSinceLastSale Days</span></td>
+										}
+										<td><h6 class="mb-0 text-sm ps-3">@item.Quantity.ToString("N0")</h6></td>
+									</tr>
+								</tbody>
+							}
+						</table>
 					</div>
 				</div>
 			</div>

@@ -10,5 +10,7 @@ namespace InfrastructureLayer.Interfaces.IRepositories
 {
     public interface IBranchItemRepository : IRepository<BranchItem>
     {
+        Task<List<BranchItem>> GetLowStockBranchItems();
+        Task<List<SlowMovingItemDTO>> GetSlowMovingBranchItems();
     }
 }

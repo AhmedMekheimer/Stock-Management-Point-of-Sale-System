@@ -17,20 +17,20 @@ namespace InfrastructureLayer.Repositories
         {
             _context = context;
         }
-        public async Task<List<ItemQuantitySummary>> GetTopSellingItemsAsync(int count)
+        public async Task<List<ItemQuantitySummaryDTO>> GetTopSellingItemsAsync(int count)
         {
             var operationItems = await _context.OperationItems.Include(o => o.Item).ToListAsync();
-            List<ItemQuantitySummary> items = new List<ItemQuantitySummary>();
+            List<ItemQuantitySummaryDTO> items = new List<ItemQuantitySummaryDTO>();
 
             foreach (var opItem in operationItems)
             {
-                if (items.Find(i => i.ItemId == opItem.ItemId) is ItemQuantitySummary i)
+                if (items.Find(i => i.ItemId == opItem.ItemId) is ItemQuantitySummaryDTO i)
                 {
                     i.TotalQuantity += (decimal)opItem.TotalPrice;
                 }
                 else
                 {
-                    items.Add(new ItemQuantitySummary
+                    items.Add(new ItemQuantitySummaryDTO
                     {
                         ItemId = opItem.ItemId,
                         ItemName = opItem.Item.Name,

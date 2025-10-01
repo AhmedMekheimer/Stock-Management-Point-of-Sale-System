@@ -21,6 +21,13 @@ namespace CoreLayer.Models
         public double BuyingPriceAvg { get; set; }
         public double LastBuyingPrice { get; set; }
         public double? SellingPrice { get; set; }
+        public int RestockThreshold { get; set; }
+
+        // The property used for slow-moving calculation
+        [Range(1, int.MaxValue)]
+        public int OutDatedInMonths { get; set; }
+
+        public ICollection<BranchItemSalesInvoice> BranchItemSalesInvoices { get; set; }=new List<BranchItemSalesInvoice>();
 
         // Navigation properties
         public Branch Branch { get; set; }= null!;

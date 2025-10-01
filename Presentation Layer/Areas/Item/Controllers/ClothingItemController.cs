@@ -110,6 +110,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
             branchItem.SellingPrice = branchItemDTO.SellingPrice;
             branchItem.Quantity = branchItemDTO.Quantity;
             branchItem.DiscountRate = branchItemDTO.DiscountRate;
+            branchItem.RestockThreshold= branchItemDTO.RestockThreshold;
+            branchItem.OutDatedInMonths= branchItemDTO.OutDatedInMonths;
 
             var result = await _UnitOfWork.BranchItems.UpdateAsync(branchItem);
 

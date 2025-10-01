@@ -164,6 +164,12 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
             // Best Selling Items
             vm.TopSellingItems = await _UnitOfWork.OperationItems.GetTopSellingItemsAsync(count: 5);
 
+            // Restock Threshold - Low-Stock Alerts
+            vm.LowStockBranchItems = await _UnitOfWork.BranchItems.GetLowStockBranchItems();
+
+            // Slow Moving Items
+            vm.SlowMovingBranchItems = await _UnitOfWork.BranchItems.GetSlowMovingBranchItems();
+
             return View(vm);
         }
     }

@@ -15,6 +15,6 @@ namespace InfrastructureLayer.Interfaces.IRepositories
 
         ///"count" The number of top branches to retrieve (e.g., 5)
         /// returns: A list of BranchSalesSummary DTOs (BranchId, BranchName, TotalSales)
-        Task<List<BranchSalesSummary>> GetTopSellingBranchesAsync(int count);
+        Task<List<BranchSalesSummaryDTO>> GetTopSellingBranchesAsync(int count);
     }
 }

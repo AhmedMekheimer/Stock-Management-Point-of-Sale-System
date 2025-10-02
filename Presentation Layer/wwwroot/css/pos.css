@@ -446,3 +446,117 @@ body.g-sidenav-show.bg-gray-100 {
     .branch-user-box .d-flex {
         margin: 0;
     }
+
+
+/* Item card styles for POS (append to pos.css) */
+.item-card {
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 140px;
+    box-sizing: border-box;
+    background: #fff;
+    user-select: none;
+}
+
+    .item-card:focus {
+        outline: none;
+    }
+
+    .item-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+
+/* image area */
+.item-card-media {
+    position: relative;
+    width: 100%;
+    height: 68px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .item-card-media .item-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+/* fallback if no image */
+.no-image-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #555;
+    text-align: center;
+    padding: 4px;
+    line-height: 1.1;
+}
+
+/* badges */
+.badge.discount-badge {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    background: #e63946;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.7rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.badge.qty-badge {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.7rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+/* body area */
+.item-card-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+/* single price only */
+.price-single {
+    font-size: 0.8rem; /* smaller text */
+    font-weight: 600;
+    color: #0d6efd;
+    text-align: center;
+}
+
+/* responsive tweaks */
+@media (max-width: 800px) {
+    .item-card {
+        height: 150px;
+    }
+
+    .item-card-media {
+        height: 78px;
+    }
+
+    .price-single {
+        font-size: 0.78rem;
+    }
+}
+

@@ -56,10 +56,10 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 switch (vm.SortBy)
                 {
                     case "date_asc":
-                        invoices = invoices.OrderBy(d => d.Date).ToList();
+                        invoices = invoices.OrderBy(d => d.Date).OrderBy(d=>d.Time).ToList();
                         break;
                     case "date_desc":
-                        invoices = invoices.OrderByDescending(d => d.Date).ToList();
+                        invoices = invoices.OrderByDescending(d => d.Date).OrderByDescending(d=>d.Time).ToList();
                         break;
                     case "qty_asc":
                         invoices = invoices.OrderBy(d => d.TotalQuantity).ToList();

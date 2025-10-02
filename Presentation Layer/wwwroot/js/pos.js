@@ -253,53 +253,69 @@
         const $itemsGrid = $('.items-grid');
         $itemsGrid.empty();
 
-        if (!filteredItems || filteredItems.length === 0) {
+        if (!filteredItems) filteredItems = [];
+        if (!Array.isArray(filteredItems)) filteredItems = [filteredItems];
+
+        if (filteredItems.length === 0) {
             $itemsGrid.html('<div class="empty-state"><i class="fas fa-box-open fa-3x mb-3"></i><p>No items found</p></div>');
             return;
         }
 
         filteredItems.forEach(item => {
-            if (item.price == item.discountPrice) {
-                const $itemCard = $(` 
-                <div class="item-card" data-item-id="${item.id}"> 
-                    <div class="item-card-content"> 
-                        <div class="fw-bold mb-1 text-truncate">${item.name}</div> 
-                        <div class="text-muted small mb-2 text-truncate">${item.type}</div> 
-                        <div class="fw-bold text-primary">${item.price.toFixed(2)} EGP</div> 
-                    </div> 
-                </div>`);
-                $itemsGrid.append($itemCard);
+            const hasDiscount = (typeof item.discountPrice === 'number') && item.discountPrice < item.price;
+            const displayPrice = hasDiscount ? item.discountPrice : item.price;
+            const discountRate = item.discountRate ?? 0;
+            const inStock = typeof item.quantity === 'number' && item.quantity > 0;
+            const qtyText = typeof item.quantity === 'number' ? item.quantity : '0';
+
+            let mediaContent;
+            if (item.imageName) {
+                const imageUrl = `/Images/${encodeURIComponent(item.imageName)}`;
+                mediaContent = `<img src="${imageUrl}" alt="${item.name}" loading="lazy" class="item-img" />`;
+            } else {
+                mediaContent = `<div class="no-image-text">${item.name}</div>`;
             }
-            else {
-                const $itemCard = $(` 
-                <div class="item-card" data-item-id="${item.id}"> 
-                    <div class="item-card-content"> 
-                        <div class="fw-bold mb-1 text-truncate">${item.name}</div> 
-                        <div class="text-muted small mb-2 text-truncate">${item.type}</div> 
-                        <div class="text-primary strikethrough-price">${item.price.toFixed(2)} EGP</div>
-                        <div class="fw-bold text-primary">${item.discountPrice.toFixed(2)} EGP</div>
-                    </div> 
-                </div>`);
-                $itemsGrid.append($itemCard);
-            }
+
+            const $itemCard = $(`
+            <div class="item-card" data-item-id="${item.id}">
+                <div class="item-card-media">
+                    ${mediaContent}
+                    ${hasDiscount ? `<div class="badge discount-badge">-${discountRate}%</div>` : ''}
+                    <div class="badge qty-badge">${inStock ? qtyText : '0'}</div>
+                </div>
+
+                <div class="item-card-body">
+                    <div class="price-single">${displayPrice.toFixed(2)} EGP</div>
+                </div>
+            </div>
+        `);
+
+            $itemsGrid.append($itemCard);
         });
     }
 
-    // Barcode search showing the item card
-    $('#barcodeInput').on('keypress', function (e) {
-        if (e.which === 13) { // Enter key 
-            const barcode = $(this).val().trim();
-            if (!barcode) return;
 
-            const item = items.find(i => i.barcode == barcode);
-            if (item) {
-                renderItems([item]); // pass array with just this item 
-                $(this).val(''); // clear after use 
+
+    // Barcode & Name search showing the item card
+    $('#barcodeOrNameInput').on('keypress', function (e) {
+        if (e.which === 13) { // Enter key 
+            const barcodeOrName = $(this).val().trim();
+            if (!barcodeOrName) return;
+
+            // Case-insensitive partial name search + exact barcode search
+            const matchedItems = items.filter(i =>
+                i.barcode == barcodeOrName ||
+                i.name.toLowerCase().includes(barcodeOrName.toLowerCase())
+            );
+
+            if (matchedItems.length > 0) {
+                renderItems(matchedItems);
             } else {
-                toastr.error("Item not found for barcode: " + barcode);
+                toastr.error("No items found for: " + barcodeOrName);
             }
         }
     });
+
 
     // Adding item to cart through clicking item card
     $(document).on('click', '.item-card', function () {
@@ -709,8 +725,8 @@
         </div>
     `;
 
-        // Insert receipt into modal body and show modal
-        $('#checkoutModal .modal-body').html(receiptHtml);
+        // Insert receipt into #receiptArea only
+        $('#receiptArea').html(receiptHtml);
         $('#checkoutModal').modal('show');
     });
 
@@ -748,13 +764,29 @@
                 sellingPrice: c.price,
                 discountPrice: c.discountPrice,
                 discountRate: c.discountRate || 0
-            }))
+            })),
         };
     }
 
+    // Confirm Checkout
     $(document).on('click', '#confirmCheckoutBtn', function () {
+        const paidCash = parseFloat($('#paidCashInput').val()) || 0;
+        const roundedTotal = parseFloat($('#roundedTotal').text()) || 0;
+
+        // Validate Paid Cash
+        if (paidCash < roundedTotal) {
+            toastr.error(`Paid cash must be at least ${roundedTotal.toFixed(2)} EGP`);
+            return; // stop here, keep modal open
+        }
+
+        const change = paidCash - roundedTotal;
+
+        // Build payload and add paidCash + change
         const payload = buildInvoicePayload();
         if (!payload) return;
+
+        payload.paidCash = paidCash;
+        payload.change = change;
 
         $.ajax({
             url: '/api/Sales/posapi/createSalesInvoice',
@@ -762,16 +794,13 @@
             contentType: 'application/json',
             data: JSON.stringify(payload),
             success: function (resp) {
-                // resp should include invoiceId
                 if (resp && resp.invoiceId) {
                     const pdfUrl = `/api/Sales/PosApi/receipt?operationId=${resp.invoiceId}`;
-                    // Open PDF in a new tab, inline
                     window.open(pdfUrl, '_blank');
                 } else {
                     toastr.warning('Invoice created but PDF could not be opened automatically.');
                 }
 
-                // UI updates
                 toastr.success('Sales Invoice Created');
                 cart = [];
                 updateCartDisplay();
@@ -783,5 +812,18 @@
                 console.error(msg);
             }
         });
+    });
+
+    // Paid Cash input handler
+    $(document).on('input', '#paidCashInput', function () {
+        const paidCash = parseFloat($(this).val()) || 0;
+        const roundedTotal = parseFloat($('#roundedTotal').text()) || 0;
+
+        if (paidCash < roundedTotal) {
+            $('#changeAmount').text("0.00 EGP");
+        } else {
+            const change = paidCash - roundedTotal;
+            $('#changeAmount').text(change.toFixed(2) + ' EGP');
+        }
     });
 });

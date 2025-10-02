@@ -16,6 +16,8 @@ namespace CoreLayer.Models.Operations
         [Required]
         public int RetailCustomerId { get; set; }  // FK to Partner
         public Partner RetailCustomer { get; set; } = null!;
+        public int PaidCash { get; set; }
+        public int Change { get; set; }
         public ICollection<DiscountSalesInvoice> DiscountSalesInvoices { get; set; } = new List<DiscountSalesInvoice>();
         public ICollection<BranchItemSalesInvoice> BranchItemSalesInvoices { get; set; } = new List<BranchItemSalesInvoice>();
     }

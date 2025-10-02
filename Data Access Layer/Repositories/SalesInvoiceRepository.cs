@@ -51,5 +51,10 @@ namespace InfrastructureLayer.Repositories
                 }
             }
         }
+
+        public string GenerateCode(int BranchId)
+        {
+            return $"1_{BranchId}_{_context.SalesInvoices.Count() + 1}";
+        }
     }
 }

@@ -166,7 +166,8 @@ namespace PresentationLayer.Areas.Sales.Controllers
                     quantity = i.Quantity,
                     price = i.SellingPrice,
                     discountPrice = (i.DiscountRate is null) ? i.SellingPrice : i.SellingPrice - i.SellingPrice * i.DiscountRate / 100.0,
-                    discountRate = i.DiscountRate
+                    discountRate = i.DiscountRate,
+                    imageName = i.Item.Image
                 });
 
                 // All Items Button
@@ -271,7 +272,9 @@ namespace PresentationLayer.Areas.Sales.Controllers
                     SellingPrice = o.SellingPrice,
                     DiscountRate = o.DiscountRate,
                     TotalPrice = o.DiscountPrice * o.Quantity,
-                }).ToList()
+                }).ToList(),
+                PaidCash = dto.PaidCash,
+                Change = dto.Change
             };
 
             var created = await _UnitOfWork.SalesInvoices.CreateAsync(invoice);
@@ -287,13 +290,12 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 .ToList();
             foreach (var discount in discountSalesInvoices)
             {
-                if(!(await _UnitOfWork.Discounts.IncrementDiscountsUses(discount.DiscountId)))
+                if (!(await _UnitOfWork.Discounts.IncrementDiscountsUses(discount.DiscountId)))
                     return BadRequest($"Error Incrementing Uses of Discount No.{discount.DiscountId}");
             }
             invoice.DiscountSalesInvoices = discountSalesInvoices;
 
-            // Compose invoice code
-            invoice.Code = $"{invoice.BranchId.ToString().PadLeft(5, '0')}_{invoice.Id.ToString().PadLeft(5, '0')}S";
+            invoice.Code = _UnitOfWork.SalesInvoices.GenerateCode(invoice.BranchId);
 
             var updated = await _UnitOfWork.SalesInvoices.UpdateAsync(invoice);
             if (!updated)
@@ -317,6 +319,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
             // Add The Sales Invoice to each BranchItem's (BranchItemSalesInvoices) List
             await _UnitOfWork.SalesInvoices.AddBranchItemTrackingAsync(invoice);
 
+            // Create Sales Invoice Pdf Receipt
             var pdfUrl = $"/api/Sales/PosApi/receipt?operationId={invoice.Id}";
 
             // Return invoice id and pdf url to client

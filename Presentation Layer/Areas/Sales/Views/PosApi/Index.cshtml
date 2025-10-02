@@ -2,7 +2,7 @@
     ViewData["Title"] = "Point Of Sale";
 }
 
-<div class="pos-container">
+<div class="pos-container" style="padding-top:0px;">
     <!-- Left Panel (30%) -->
     <div class="left-panel">
         <!-- Branch/User Info -->
@@ -102,8 +102,21 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Receipt details will be injected here -->
+                    <div id="receiptArea"><!-- Receipt details will be injected here --></div>
+
+                    <!-- Payment Section -->
+                    <div class="mt-4">
+                        <div class="mb-3">
+                            <label for="paidCashInput" class="form-label fw-semibold">Paid Cash</label>
+                            <input type="number" class="form-control" id="paidCashInput" min="0" step="0.01" placeholder="Enter amount paid">
+                        </div>
+                        <div class="mb-2 d-flex justify-content-between">
+                            <span>Change</span>
+                            <strong id="changeAmount">0.00 EGP</strong>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-success" id="confirmCheckoutBtn">Confirm</button>
@@ -112,16 +125,14 @@
         </div>
     </div>
 
-
-
     <!-- Right Panel (70%) -->
     <div class="right-panel">
         <!-- Barcode Input -->
         <div class="barcode-box">
-            <label for="barcodeInput" class="form-label">
-                <i class="fas fa-barcode me-1"></i> Barcode Scanner
+            <label for="barcodeOrNameInput" class="form-label">
+                <i class="fas fa-barcode me-1"></i> Search By Barcode or Name
             </label>
-            <input type="text" class="form-control" id="barcodeInput" placeholder="Scan or enter barcode">
+            <input type="text" class="form-control" id="barcodeOrNameInput" placeholder="Search ...">
         </div>
 
         <!-- Item Types -->

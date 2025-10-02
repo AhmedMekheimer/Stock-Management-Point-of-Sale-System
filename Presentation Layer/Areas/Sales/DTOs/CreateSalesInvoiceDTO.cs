@@ -14,6 +14,8 @@ namespace PresentationLayer.Areas.Sales.DTOs
         public double TotalDiscountAmount { get; set; }
         public double GrandTotal { get; set; }
         public int RoundedGrandTotal { get; set; }
+        public int PaidCash { get; set; }
+        public int Change { get; set; }
 
         public List<int> GeneralDiscounts { get; set; } = new();
 

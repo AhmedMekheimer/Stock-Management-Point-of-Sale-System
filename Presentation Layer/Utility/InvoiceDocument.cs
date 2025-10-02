@@ -121,8 +121,8 @@ namespace PresentationLayer.Utility
                     col.Item().AlignRight().Text($"Rounded Grand Total: {_invoice.RoundedGrandTotal:0.00}").Bold();
 
                     // Payment summary
-                    col.Item().AlignRight().Text($"Paid Cash: {_invoice.GrandTotal:0.00}");
-                    col.Item().AlignRight().Text("Change: 0.00");
+                    col.Item().AlignRight().Text($"Paid Cash: {_invoice.PaidCash:0.00}");
+                    col.Item().AlignRight().Text($"Change: {_invoice.Change:0.00}");
 
                     col.Item().LineHorizontal(1);
 

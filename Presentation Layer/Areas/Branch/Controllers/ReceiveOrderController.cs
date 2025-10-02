@@ -3,13 +3,11 @@ using CoreLayer.Models.Operations;
 using Humanizer;
 using InfrastructureLayer;
 using InfrastructureLayer.Interfaces;
-using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PresentationLayer.Areas.Branch.ViewModels;
-using System.Threading.Tasks;
 using static CoreLayer.Models.Global;
 namespace PresentationLayer.Areas.Branch.Controllers
 {
@@ -29,10 +27,12 @@ namespace PresentationLayer.Areas.Branch.Controllers
         }
         [Authorize(Policy = "ReceiveOrder.View")]
         public async Task<IActionResult> Index()
-        {
-            var userId = _UserManager.GetUserId(User);
+      {
+            var user = await _UserManager.GetUserAsync(User);
+            if (user is null)
+                return NotFound();
 
-            var ReceiveOrders = await _UnitOfWork.ReceiveOrders.GetAsync(r => r.ApplicationUserId == userId,
+            var ReceiveOrders = await _UnitOfWork.ReceiveOrders.GetAsync( r => user.BranchId == null || r.ApplicationUserId == user.Id,
                include: [r => r.Branch, r => r.Supplier]
                 );
             return View(ReceiveOrders);

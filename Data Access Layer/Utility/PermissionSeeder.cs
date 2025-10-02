@@ -119,9 +119,29 @@ namespace InfrastructureLayer.Utility
 
              //UserLogins
              new Permission { Id = 380, Name = "UserLoginHistory", EnglishName = "User Login History", ParentId = 12 },
-             new Permission { Id = 381, Name = "UserLoginHistory.View", EnglishName = "View UserLoginHistory", ParentId = 380 }
+             new Permission { Id = 381, Name = "UserLoginHistory.View", EnglishName = "View UserLoginHistory", ParentId = 380 },
 
              #endregion
+
+            #region Sales
+             new Permission { Id = 13, Name = "Sales", EnglishName = "Sales", ParentId = 1 },
+
+             // POS
+             new Permission { Id = 400, Name = "POS", EnglishName = "POS", ParentId = 13 },
+
+            // SalesInvoice
+              new Permission { Id = 420, Name = "SalesInvoice", EnglishName = "Sales Invoice", ParentId = 13 },
+              new Permission { Id = 421, Name = "SalesInvoice.View", EnglishName = "View Sales Invoice", ParentId = 420 },
+              new Permission { Id = 422, Name = "SalesInvoice.Print", EnglishName = "Print Sales Invoice", ParentId = 420 },
+              #endregion
+
+            #region Dashboard
+              new Permission { Id = 14, Name = "Dashboard", EnglishName = "Dashboard", ParentId = 1 },
+            // DashboardView
+              new Permission { Id = 440, Name = "Dashboard.View", EnglishName = "View Dashboard", ParentId = 14 }
+              #endregion
+
+
 
 
 

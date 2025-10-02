@@ -29,8 +29,12 @@ namespace PresentationLayer.Areas.Branch.Controllers
             if (vm.PageId < 1)
                 return NotFound();
 
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
+
             List<CoreLayer.Models.Branch> branches = await _UnitOfWork.Branches.GetAsync(t =>
-            string.IsNullOrEmpty(vm.Search) || t.Name.Contains(vm.Search)
+                (user.BranchId == null || t.Id == user.BranchId)
+                &&
+                string.IsNullOrEmpty(vm.Search) || t.Name.Contains(vm.Search)
             );
 
             int totalPages = 0;
@@ -59,7 +63,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
                 branchVM.Name = branch.Name;
                 branchVM.BranchId = branch.Id;
                 branchVM.Address = branch.Address;
-                branchVM.PhoneNumber=branch.PhoneNumber;
+                branchVM.PhoneNumber = branch.PhoneNumber;
                 return View(branchVM);
             }
             return View(branchVM);
@@ -81,8 +85,8 @@ namespace PresentationLayer.Areas.Branch.Controllers
                         return View(branchVM);
                     }
                     oldBranch.Name = branchVM.Name;
-                    oldBranch.Address=branchVM.Address;
-                    oldBranch.PhoneNumber=branchVM.PhoneNumber;
+                    oldBranch.Address = branchVM.Address;
+                    oldBranch.PhoneNumber = branchVM.PhoneNumber;
                     var result = await _UnitOfWork.Branches.UpdateAsync(oldBranch);
                     if (result)
                     {

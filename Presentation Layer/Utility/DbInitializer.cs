@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Areas.administrative.ViewModels;
 using System.Data;
 using System.Threading.Tasks;
+using static CoreLayer.Models.Partner;
 
 namespace PresentationLayer.Utility
 {
@@ -33,6 +34,50 @@ namespace PresentationLayer.Utility
             {
                 _Context.Database.Migrate();
             }
+
+            const int anonymousCustomerId = 1;
+            const string anonymousCustomerName = "Anonymous Customer";
+
+            bool anonymousCustomerExists = _Context.Partners
+                .Any(p => p.Id == anonymousCustomerId); // Check if ID 1 exists
+
+            if (!anonymousCustomerExists)
+            {
+                var anonymousCustomer = new Partner
+                {
+                    Id = anonymousCustomerId,
+                    Name = anonymousCustomerName,
+                    partnerType=PartnerType.RetailCustomer
+                };
+
+                // CRITICAL STEP: Temporarily override Identity Insertion using synchronous methods
+                if (_Context.Database.IsRelational())
+                {
+                    _Context.Database.OpenConnection();
+
+                    try
+                    {
+                        // WARNING: This uses synchronous database execution (ExecuteSqlRaw)
+                        // and assumes SQL Server (Partner entity table is named 'Partners').
+                        _Context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Partners ON");
+
+                        _Context.Partners.Add(anonymousCustomer);
+                        _Context.SaveChanges(); // Persist the row with ID = 1
+                    }
+                    finally
+                    {
+                        _Context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Partners OFF");
+                        _Context.Database.CloseConnection();
+                    }
+                }
+                else
+                {
+                    // Fallback for non-relational or different setups
+                    _Context.Partners.Add(anonymousCustomer);
+                }
+            }
+
+            _Context.SaveChanges();
 
             if (!_Context.Users.Any() || !_Context.Roles.Any() || !_Context.Partners.Any())
             {
@@ -69,7 +114,7 @@ namespace PresentationLayer.Utility
 
                     }
                 }
-               _Context.SaveChanges();
+                _Context.SaveChanges();
             }
         }
     }

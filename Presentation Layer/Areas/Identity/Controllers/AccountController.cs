@@ -83,7 +83,7 @@ namespace PresentationLayer.Areas.Identity.controller
             var log = new UserLoginHistory
             {
                 UserId = user.Id,
-                LoginTime = DateTime.UtcNow,
+                LoginTime = DateTime.Now,
                 IPAddress = ip
             };
 
@@ -101,7 +101,7 @@ namespace PresentationLayer.Areas.Identity.controller
 
             if (lastLogin != null)
             {
-                lastLogin.LogoutTime = DateTime.UtcNow;
+                lastLogin.LogoutTime = DateTime.Now;
                 await _UnitOfWork.UserLoginHistories.UpdateAsync(lastLogin);
             }
         }
@@ -139,7 +139,7 @@ namespace PresentationLayer.Areas.Identity.controller
         //       principal,
         //       new AuthenticationProperties
         //       {
-        //           ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8) // or whatever you prefer
+        //           ExpiresUtc = DateTimeOffset.Now.AddHours(8) // or whatever you prefer
         //       });
         //    return claims;
 
@@ -172,7 +172,7 @@ namespace PresentationLayer.Areas.Identity.controller
                     ApplicationUserId = user.Id,
                     OTPNumber = otpNumber,
                     Status = true,
-                    ValidTo = DateTime.UtcNow.AddMinutes(30)
+                    ValidTo = DateTime.Now.AddMinutes(30)
                 });
 
                 await _emailSender.SendEmailAsync(user!.Email ?? "", "OTP Your Account", $"<h1>Reset Password using OTP: {otpNumber}</h1>");
@@ -205,7 +205,7 @@ namespace PresentationLayer.Areas.Identity.controller
                     return View(resetPasswordVM);
                 var lastOTP = (await _UnitOfWork.ApplicationUserOTPs.GetAsync(e => e.ApplicationUserId == resetPasswordVM.UserId)).OrderBy(e => e.Id).LastOrDefault();
 
-                if (lastOTP is not null && lastOTP.OTPNumber == resetPasswordVM.OTPNumber && lastOTP.Status && lastOTP.ValidTo > DateTime.UtcNow)
+                if (lastOTP is not null && lastOTP.OTPNumber == resetPasswordVM.OTPNumber && lastOTP.Status && lastOTP.ValidTo > DateTime.Now)
                 {
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                     var result = await _userManager.ResetPasswordAsync(user, token, resetPasswordVM.Password);

@@ -76,12 +76,12 @@
 									@item.Email
 								</td>
 								<td>
-									@(item.partnerType == PartnerType.Supplier ? "Supplier" : item.partnerType == PartnerType.RetailCustomer ? "Customer" : "Retail")
+									@(item.partnerType == PartnerType.Supplier ? "Supplier" : item.partnerType == PartnerType.RetailCustomer ? "Customer" : "Customer")
 								</td>
 								<td>
 									@item.PhoneNumber
 								</td>
-								@if (item.partnerType == PartnerType.RetailCustomer || item.partnerType == PartnerType.Supplier)
+								@if ((item.partnerType == PartnerType.RetailCustomer || item.partnerType == PartnerType.Supplier) && item.Id != 1)
 								{
 									<td>
 										<div class="d-flex gap-2">

@@ -18,7 +18,7 @@
     let branches = [];
     let currentBranchId;
     let customers = [];
-    let currentCustomerId = 1;
+    let currentCustomerId = 0;
     let currentUser = null;
 
     // Initialize the POS system
@@ -79,6 +79,9 @@
             success: function (data) {
                 console.log("Customers received:", data);
                 customers = data;
+                if (currentCustomerId == 0) {
+                    currentCustomerId = customers[0].id;
+                }
                 initCustomers();
             },
             error: function (xhr, status, error) {
@@ -732,7 +735,7 @@
 
             totalQuantity: parseInt($('#totalQty').text(), 10),
             totalAmount: parseFloat($('#totalAmount').text()),
-            totalDiscountRate: parseInt($('#totalDiscountRate').text(),10) || 0,
+            totalDiscountRate: parseInt($('#totalDiscountRate').text(), 10) || 0,
             totalDiscountAmount: parseFloat($('#totalDiscountAmount').text()) || 0,
             grandTotal: parseFloat($('#grandTotal').text()),
             roundedGrandTotal: parseInt($('#roundedTotal').text(), 10),

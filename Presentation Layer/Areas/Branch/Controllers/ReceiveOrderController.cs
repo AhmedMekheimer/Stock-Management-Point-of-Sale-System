@@ -185,7 +185,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     GrandTotal = receiveOrderVM.GrandTotal,
                     TotalDiscountRate = receiveOrderVM.TotalDiscountRate,
                     Date = receiveOrderVM.Date,
-                    Time = TimeOnly.FromDateTime(DateTime.UtcNow), // Wrong approach
+                    Time = TimeOnly.FromDateTime(DateTime.Now), // Wrong approach
                     status = Status.Draft,
                     TotalQuantity = receiveOrderVM.TotalQuantity,
                     TotalTaxesRate = receiveOrderVM.TotalTaxesRate,

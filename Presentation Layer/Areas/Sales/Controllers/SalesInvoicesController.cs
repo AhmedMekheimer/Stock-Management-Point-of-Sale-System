@@ -14,18 +14,24 @@ namespace PresentationLayer.Areas.Sales.Controllers
     public class SalesInvoicesController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
-        public SalesInvoicesController(IUnitOfWork UnitOfWork)
+        private readonly UserManager<ApplicationUser> _UserManager;
+        public SalesInvoicesController(IUnitOfWork UnitOfWork, UserManager<ApplicationUser> userManager)
         {
             _UnitOfWork = UnitOfWork;
+            _UserManager = userManager;
         }
         public async Task<IActionResult> Index(SalesInvoicesVM vm)
         {
             if (vm.PageId < 1)
                 return NotFound();
 
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
+
             // Fetching with Search & Filters
             var invoices = await _UnitOfWork.SalesInvoices.GetAsyncIncludes(
                 condition: s =>
+                (user.BranchId == null || s.BranchId==user.BranchId)
+                &&
                 (string.IsNullOrEmpty(vm.Search)
                 || s.Code.Contains(vm.Search)
                 || (!string.IsNullOrEmpty(s.ApplicationUser.UserName) && s.ApplicationUser.UserName.Contains(vm.Search))

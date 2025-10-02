@@ -22,10 +22,12 @@ namespace PresentationLayer.Areas.Stock.Controllers
     public class ClothingItemController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;
+        private readonly UserManager<ApplicationUser> _UserManager;
 
-        public ClothingItemController(IUnitOfWork UnitOfWork)
+        public ClothingItemController(IUnitOfWork UnitOfWork, UserManager<ApplicationUser> userManager)
         {
             _UnitOfWork = UnitOfWork;
+            _UserManager = userManager;
         }
 
         [Authorize(Policy = "ClothingItem.View")]
@@ -33,6 +35,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
         {
             if (vm.PageId < 1)
                 return NotFound();
+
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
 
             // Fetching with Search & Filters
             var items = await _UnitOfWork.Items.GetAsync(s =>
@@ -73,6 +77,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
         {
             var itemVM = new ItemVM();
 
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
+
             // Display Edit Page
             if (id != 0)
             {
@@ -82,7 +88,11 @@ namespace PresentationLayer.Areas.Stock.Controllers
                     itemVM = item.Adapt<ItemVM>();
                     LoadData(itemVM).GetAwaiter().GetResult();
                     ViewBag.ShowBranchItems = true;
-                    var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == id, include: [b => b.Branch]);
+                    var branchItems = await _UnitOfWork.BranchItems.GetAsync(
+                        b => (b.ItemId == id) && (user.BranchId == null || b.BranchId == user.BranchId),
+                        include: [b => b.Branch]
+                        );
+
                     itemVM.BranchItem = branchItems;
                     return View(itemVM);
                 }
@@ -131,6 +141,8 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 return View(itemVM);
             Result resultImg = new Result();
 
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
+
             LoadData(itemVM).GetAwaiter().GetResult();
 
             // Saving an Existing Item
@@ -148,7 +160,10 @@ namespace PresentationLayer.Areas.Stock.Controllers
                             ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
                         }
                         ViewBag.ShowBranchItems = true;
-                        var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == itemVM.Id, include: [b => b.Branch]);
+                        var branchItems = await _UnitOfWork.BranchItems.GetAsync(
+                            b => (b.ItemId == itemVM.Id) && (user.BranchId == null || b.BranchId == user.BranchId),
+                            include: [b => b.Branch]);
+
                         itemVM.BranchItem = branchItems;
                         itemVM.Image = item.Image;
                         return View(itemVM);
@@ -157,7 +172,10 @@ namespace PresentationLayer.Areas.Stock.Controllers
                     {
                         ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
                         ViewBag.ShowBranchItems = true;
-                        var branchItems = await _UnitOfWork.BranchItems.GetAsync(b => b.ItemId == itemVM.Id, include: [b => b.Branch]);
+                        var branchItems = await _UnitOfWork.BranchItems.GetAsync(
+                            b => (b.ItemId == itemVM.Id) && (user.BranchId == null || b.BranchId == user.BranchId),
+                            include: [b => b.Branch]);
+
                         itemVM.BranchItem = branchItems;
                         itemVM.Image = item.Image;
                         return View(itemVM);

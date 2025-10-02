@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Utility;
 using QuestPDF.Companion;
 using QuestPDF.Infrastructure;
+using static CoreLayer.Models.Global;
 
 namespace PresentationLayer.Areas.Sales.Controllers
 {

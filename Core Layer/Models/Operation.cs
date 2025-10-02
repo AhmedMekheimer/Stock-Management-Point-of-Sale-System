@@ -15,9 +15,7 @@ namespace CoreLayer.Models
     {
         public int Id { get; set; }
         //[Required]
-        public string? Code { get; set; } 
-        [Required]
-        public string Code { get; set; } = null!;
+        public string? Code { get; set; }
 
         [Required]
         public DateOnly Date { get; set; }

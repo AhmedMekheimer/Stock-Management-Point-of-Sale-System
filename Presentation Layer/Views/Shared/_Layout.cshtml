@@ -22,6 +22,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 	<!-- CSS Files -->
 	<link id="pagestyle" href="~/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
+	<link id="pagestyle" href="~/css/bootstrap-icons.css" rel="stylesheet" />
 	<link href="~/css/toastr.min.css" rel="stylesheet" />
 	@RenderSection("Styles", required: false)
 </head>
@@ -128,6 +129,16 @@
                             <a class="nav-link text-dark" asp-area="Branch" asp-controller="Branch" asp-action="Index">
                                 <i class="material-symbols-rounded opacity-5">storefront</i>
                                 <span class="nav-link-text ms-1">Branches</span>
+                            </a>
+                        </li>
+                    }
+
+                    @if (User.HasClaim("Permission", "ReceiveOrder"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Branch" asp-controller="ReceiveOrder" asp-action="Index">
+                                <i class="material-symbols-rounded opacity-5">notifications</i>
+                                <span class="nav-link-text ms-1">Receive Order</span>
                             </a>
                         </li>
                     }

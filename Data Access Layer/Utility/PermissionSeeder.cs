@@ -31,6 +31,7 @@ namespace InfrastructureLayer.Utility
              new Permission { Id = 122, Name = "ReceiveOrder.Add", EnglishName = "Add Receive Order", ParentId = 120 },
              new Permission { Id = 123, Name = "ReceiveOrder.Edit", EnglishName = "Edit Receive Order", ParentId = 120 },
              new Permission { Id = 124, Name = "ReceiveOrder.Delete", EnglishName = "Delete Receive Order", ParentId = 120 },
+             new Permission { Id = 125, Name = "ReceiveOrder.Confirm", EnglishName = "Confirm Receive Order", ParentId = 120 },
             #endregion
 
             #region Item

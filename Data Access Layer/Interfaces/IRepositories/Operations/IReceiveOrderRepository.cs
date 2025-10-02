@@ -11,6 +11,7 @@ namespace InfrastructureLayer.Interfaces.IRepositories.Operations
 {
     public interface IReceiveOrderRepository : IRepository<ReceiveOrder>
     {
+        public string GenerateCode(int BranchId);
 
     }
 }

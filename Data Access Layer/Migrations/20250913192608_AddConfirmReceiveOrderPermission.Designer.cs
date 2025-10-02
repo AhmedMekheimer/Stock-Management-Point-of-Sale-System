@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250906204703_Error")]
-    partial class Error
+    [Migration("20250913192608_AddConfirmReceiveOrderPermission")]
+    partial class AddConfirmReceiveOrderPermission
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -131,10 +131,18 @@ namespace InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -159,9 +167,6 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("float");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RestockThreshold")
                         .HasColumnType("int");
 
                     b.Property<double?>("SellingPrice")
@@ -454,15 +459,14 @@ namespace InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<double>("BuyingPrice")
+                        .HasColumnType("float");
+
                     b.Property<int?>("DiscountRate")
                         .HasColumnType("int");
 
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ItemNameSnapshot")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OperationId")
                         .HasColumnType("int");
@@ -623,6 +627,13 @@ namespace InfrastructureLayer.Migrations
                             Id = 124,
                             EnglishName = "Delete Receive Order",
                             Name = "ReceiveOrder.Delete",
+                            ParentId = 120
+                        },
+                        new
+                        {
+                            Id = 125,
+                            EnglishName = "Confirm Receive Order",
+                            Name = "ReceiveOrder.Confirm",
                             ParentId = 120
                         },
                         new
@@ -1313,7 +1324,11 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RetailCustomerId")
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RetailCustomerId")
                         .HasColumnType("int");
 
                     b.HasIndex("BranchId");
@@ -1644,7 +1659,8 @@ namespace InfrastructureLayer.Migrations
                     b.HasOne("CoreLayer.Models.Partner", "RetailCustomer")
                         .WithMany("SalesInvoices")
                         .HasForeignKey("RetailCustomerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Branch");
 

@@ -72,7 +72,9 @@
 
     // Fetch Customers from API
     function fetchCustomers() {
-        return $.ajax({
+        return
+
+        $.ajax({
             url: '/api/Sales/PosApi/customers',
             method: 'GET',
             dataType: 'json',

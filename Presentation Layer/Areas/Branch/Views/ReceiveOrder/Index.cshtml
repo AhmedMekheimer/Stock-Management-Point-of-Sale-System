@@ -1,0 +1,121 @@
+﻿@model IEnumerable<ReceiveOrder>
+@if (User.HasClaim("Permission", "ReceiveOrder.View"))
+{
+    <div class="p-3">
+
+        <div class="d-flex justify-content-between">
+            <h1>Receive Order</h1>
+
+            @if (User.HasClaim("Permission", "ReceiveOrder.Add"))
+            {
+                <p>
+                    <a asp-action="Save" class="btn btn-primary">Add</a>
+                </p>
+            }
+        </div>
+
+        <div class="table-responsive">
+            <table id="categoryTable" class="table table-striped  table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th width="10%">
+                            Date
+                        </th>
+
+                        <th width="10%">
+                            Supplier Name
+                        </th>
+                        <th width="10%">
+                            Branch
+                        </th>
+                        <th width="10%">
+                            Tax Rate
+                        </th>
+                        <th width="10%">
+                            Discount Rate
+                        </th>
+                        <th width="10%">
+                            Total Amount
+                        </th>
+                        <th width="10%">
+                            Confirm
+                        </th>
+                        <th width="20%">Actions</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.Date
+                            </td>
+                            <td>
+                                @item.Supplier.Name
+                            </td>
+                            <td>
+                                @item.Branch.Name
+                            </td>
+                            <td>
+                                @item.TotalTaxesRate
+                            </td>
+                            <td>
+                                @item.TotalDiscountRate
+                            </td>
+                            <td>
+                                @item.GrandTotal
+                            </td>
+                            <td>
+                                @if (item.status == Status.Draft)
+                                {
+                                    <text>
+
+                                        Not Confirmed
+
+                                    </text>
+                                }
+                                else
+                                {
+                                    <text>
+                                        Confirmed
+                                    </text>
+                                }
+                            </td>
+                            <td class="row gap-1">
+
+                                @if (User.HasClaim("Permission", "ReceiveOrder.Edit"))
+                                {
+                                    <a asp-action="Save" asp-route-id="@item.Id" class="col-3 btn btn-sm btn-info">Edit</a>
+
+                                }
+                                @if (User.HasClaim("Permission", "ReceiveOrder.Delete") && item.status == Status.Draft)
+                                {
+                                    <button type="button" class="col-4 btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id">Delete </button>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <partial name="Delete" />
+
+    @section Scripts {
+        <script>
+            $('#confirmDeleteModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var Id = button.data('id');
+                $(this).find('#IdToDelete').val(Id);
+            });
+
+            $('#confirmDeleteButton').on('click', function () {
+                $('#deleteUser').submit();
+            });
+        </script>
+    }
+
+}

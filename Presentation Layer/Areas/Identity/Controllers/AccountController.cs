@@ -1,18 +1,11 @@
 ﻿using CoreLayer.Models;
-using InfrastructureLayer.Data;
 using InfrastructureLayer.Interfaces;
-using InfrastructureLayer.Interfaces.IRepositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using PresentationLayer.Areas.Identity.ViewModels;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading.Tasks;
+
 
 namespace PresentationLayer.Areas.Identity.controller
 {
@@ -23,14 +16,12 @@ namespace PresentationLayer.Areas.Identity.controller
         private readonly IEmailSender _emailSender;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUnitOfWork _UnitOfWork;
-        private readonly RoleManager<IdentityRole> _RoleManager;
         public AccountController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, SignInManager<ApplicationUser> signInManager, IUnitOfWork UnitOfWork, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _signInManager = signInManager;
             _UnitOfWork = UnitOfWork;
-            _RoleManager = roleManager;
         }
 
         public IActionResult Login()
@@ -59,12 +50,12 @@ namespace PresentationLayer.Areas.Identity.controller
                 if (result)
                     {
 
-                    var claims = await GetClaims(user);
+                    //var claims = await GetClaims(user);
                     await RegisterUserLogins(user);
 
-                    await _signInManager.SignInWithClaimsAsync(user, LoginVM.RememberMe, claims);
+                    await _signInManager.SignInAsync(user, new AuthenticationProperties{ IsPersistent = LoginVM.RememberMe,});
 
-                        TempData["Success"] = "Logged In Successfully";
+                    TempData["Success"] = "Logged In Successfully";
                         return RedirectToAction("Index", "Home", new { area = "DashBoard" });
                     }
 
@@ -115,38 +106,44 @@ namespace PresentationLayer.Areas.Identity.controller
             }
         }
 
-        [NonAction]
-        public async Task<List<Claim>> GetClaims(ApplicationUser user)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
+        //[NonAction]
+        //public async Task<List<Claim>> GetClaims(ApplicationUser user)
+        //{
+        //    var roles = await _userManager.GetRolesAsync(user);
 
-            var role = await _RoleManager.FindByNameAsync(roles.FirstOrDefault() ?? "");
+        //    var role = await _RoleManager.FindByNameAsync(roles.FirstOrDefault() ?? "");
 
-            var rolePermissions = (await _UnitOfWork.RolePermissions.GetAsync(r => r.RoleId == role!.Id)).Select(r => r.PermissionId);
+        //    var rolePermissions = (await _UnitOfWork.RolePermissions.GetAsync(r => r.RoleId == role!.Id)).Select(r => r.PermissionId);
 
-            var permissions = (await _UnitOfWork.Permissions.GetAsync(p => rolePermissions.Contains(p.Id))).Select(x => x.Name);
+        //    var permissions = (await _UnitOfWork.Permissions.GetAsync(p => rolePermissions.Contains(p.Id))).Select(x => x.Name);
 
-            // Build claims 
-            var claims = new List<Claim>
-                      {
-                       new Claim(ClaimTypes.NameIdentifier, user.Id),
-                       new Claim(ClaimTypes.Name, user.UserName!)
-                     };
+        //    // Build claims 
+        //    var claims = new List<Claim>
+        //              {
+        //               new Claim(ClaimTypes.NameIdentifier, user.Id),
+        //               new Claim(ClaimTypes.Name, user.UserName!)
+        //             };
 
-            // Add role claims
-            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+        //    // Add role claims
+        //    claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-            // Add permission claims
-            claims.AddRange(permissions.Distinct().Select(p => new Claim("Permission", p)));
+        //    // Add permission claims
+        //    claims.AddRange(permissions.Distinct().Select(p => new Claim("Permission", p)));
 
 
-            // Create identity and sign in with claims 
-            var identity = new ClaimsIdentity(claims, "ApplicationCookie");
-            var principal = new ClaimsPrincipal(identity);
+        //    // Create identity and sign in with claims 
+        //    var identity = new ClaimsIdentity(claims, "ApplicationCookie");
+        //    var principal = new ClaimsPrincipal(identity);
+        //    await HttpContext.SignInAsync(
+        //       IdentityConstants.ApplicationScheme, 
+        //       principal,
+        //       new AuthenticationProperties
+        //       {
+        //           ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8) // or whatever you prefer
+        //       });
+        //    return claims;
 
-            return claims;
-
-        }
+        //}
 
         [HttpPost]
         public async Task<IActionResult> ForgetPassword(ForgetPasswordVM forgetPasswordVM)
@@ -237,6 +234,7 @@ namespace PresentationLayer.Areas.Identity.controller
             await RegisterUserLogins();
 
             await _signInManager.SignOutAsync();
+            //await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
             TempData["Success"] = $"Signed Out Successfully";
             return RedirectToAction("Login", "Account", new { area = "Identity" });
         }

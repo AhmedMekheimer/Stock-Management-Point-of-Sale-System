@@ -116,18 +116,22 @@
 
         @if (ViewBag.ShowBranchItems && User.HasClaim("Permission", "ClothingItem.BranchItem") )
         {
-
 			<div class="table-responsive my-5">
-				<table class="table table-bordered table-striped w-100 align-middle" style="table-layout: fixed;">
+				<table class="table table-bordered table-striped w-100 align-middle">
 					<thead class="table-secondary text-center align-middle">
 						<tr>
-							<th style="width:16%;">Branch</th>
-							<th style="width:12%;">Quantity</th>
-							<th style="width:16%;">Buying Price Avg</th>
-							<th style="width:16%;">Last Buying Price</th>
-							<th style="width:16%;">Selling Price</th>
-							<th style="width:16%;">Discount Rate (%)</th>
-							<th style="width:8%;">Save</th>
+							<th>Branch</th>
+
+							<th>Quantity</th>
+
+							<th style="white-space: nowrap;">Restock Threshold</th>
+							<th style="white-space: nowrap;">Buying Price Avg</th>
+							<th style="white-space: nowrap;">Last Buying Price</th>
+
+							<th>Selling Price</th>
+							<th>Discount Rate(%)</th>
+							<th>Max. Unsold Months</th>
+							<th>Save</th>
 						</tr>
 					</thead>
 					<tbody class="text-center align-middle">
@@ -137,6 +141,9 @@
 								<td>@branchItem.Branch?.Name</td>
 								<td>
 									<input type="number" value="@branchItem.Quantity" class="form-control text-center Quantity" />
+								</td>
+								<td>
+									<input type="number" value="@branchItem.RestockThreshold" class="form-control text-center RestockThreshold" />
 								</td>
 								<td>
 									<input type="number" value="@branchItem.BuyingPriceAvg.ToString("N2")" class="form-control text-center BuyingPriceAvg" />
@@ -149,6 +156,9 @@
 								</td>
 								<td>
 									<input type="number" value="@branchItem.DiscountRate" class="form-control text-center DiscountRate" min="0" max="100" />
+								</td>
+								<td>
+									<input type="number" value="@branchItem.OutDatedInMonths" class="form-control text-center OutDatedInMonths" />
 								</td>
 								<td> <button type="button" class="btnSaveItemBranch btn btn-secondary" data-branchId="@branchItem.BranchId" data-itemId="@branchItem.ItemId" name="name">Save</button> </td>
 							</tr>
@@ -239,6 +249,8 @@
 			let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
 			let sellingPrice    = parent.find(".SellingPrice").val();
 			let discountRate	= parent.find(".DiscountRate").val();
+			let restockThreshold= parent.find(".RestockThreshold").val();
+			let outDatedInMonths= parent.find(".OutDatedInMonths").val();
 
 			var data = {
 				Quantity: quantity,
@@ -248,6 +260,8 @@
 				BranchId: branchId,
 				ItemId: itemId,
 				DiscountRate:discountRate,
+				RestockThreshold: restockThreshold,
+				OutDatedInMonths:outDatedInMonths
 			};
 
 			$.ajax({

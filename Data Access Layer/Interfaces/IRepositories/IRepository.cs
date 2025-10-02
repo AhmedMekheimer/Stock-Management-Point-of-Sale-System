@@ -18,14 +18,10 @@ namespace InfrastructureLayer.Interfaces.IRepositories
         Task<bool> DeleteAsync(T entity);
         Task<bool> DeleteRangeAsync(IEnumerable<T> entity);
 
-        Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null,
-    Expression<Func<T, object>>[]? include = null,
-     bool tracked = false 
-    );
+        Task<List<T>> GetAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = true,
+            Expression<Func<T, IOrderedQueryable>>? orderByExpression = null, int take = -1);
 
-        Task<T?> GetOneAsync(Expression<Func<T, bool>>? expression = null,
-    Expression<Func<T, object>>[]? include = null,
-     bool tracked = false);
+        Task<T?> GetOneAsync(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>[]? include = null, bool tracked = false);
 
         Task<List<T>> GetAsyncIncludes(Expression<Func<T, bool>>? condition = null, List<Func<IQueryable<T>, IQueryable<T>>>? includes = null, bool tracked = true);
 

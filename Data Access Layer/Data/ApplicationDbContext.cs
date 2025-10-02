@@ -42,6 +42,7 @@ namespace InfrastructureLayer.Data
         public DbSet<Permission> Permissions{ get; set; }
         public DbSet<UserLoginHistory> userLoginHistories { get; set; }
         public DbSet<DiscountSalesInvoice> DiscountSalesInvoices { get; set; }
+        public DbSet<BranchItemSalesInvoice> BranchItemSalesInvoices { get; set; }
 
         public override int SaveChanges()
         {
@@ -126,6 +127,24 @@ namespace InfrastructureLayer.Data
                 .WithMany(i => i.TaxReceiveOrders)
                 .HasForeignKey(to => to.OperationId);
 
+
+            // BranchItem - Sales Invoice Bridge Table relation configuration
+            modelBuilder.Entity<BranchItemSalesInvoice>()
+                .HasKey(to => new { to.BranchId, to.ItemId, to.OperationId });
+
+            modelBuilder.Entity<BranchItemSalesInvoice>()
+                .HasOne(to => to.BranchItem)
+                .WithMany(b => b.BranchItemSalesInvoices)                  
+                .HasForeignKey(to => new { to.BranchId, to.ItemId })
+                .OnDelete(DeleteBehavior.Restrict); // Consider using Restrict or Cascade as appropriate
+
+            modelBuilder.Entity<BranchItemSalesInvoice>()
+                .HasOne(to => to.SalesInvoice)
+                .WithMany(i => i.BranchItemSalesInvoices)
+                .HasForeignKey(to => to.OperationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             // Discount - Sales Invoice Bridge Table relation configuration
             modelBuilder.Entity<DiscountSalesInvoice>()
                 .HasKey(to => new { to.DiscountId, to.OperationId });  // Composite PK
@@ -140,6 +159,7 @@ namespace InfrastructureLayer.Data
                 .WithMany(i => i.DiscountSalesInvoices)
                 .HasForeignKey(to => to.OperationId);
 
+
             // Branch - Item Bridge Table relation configuration
             modelBuilder.Entity<BranchItem>()
                 .HasKey(bi => new { bi.BranchId, bi.ItemId });  // Composite PK
@@ -153,6 +173,7 @@ namespace InfrastructureLayer.Data
                 .HasOne(bi => bi.Item)
                 .WithMany(i => i.BranchItems)
                 .HasForeignKey(bi => bi.ItemId);
+
 
             // Item Table relation with Item Variants Tables
             // Restricted Delete Behavior for any Item Variant if it is used in an Item

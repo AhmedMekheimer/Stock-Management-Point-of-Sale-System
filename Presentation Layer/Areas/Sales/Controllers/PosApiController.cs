@@ -314,7 +314,8 @@ namespace PresentationLayer.Areas.Sales.Controllers
                     return BadRequest("Error subtracting quantity from branch");
             }
 
-
+            // Add The Sales Invoice to each BranchItem's (BranchItemSalesInvoices) List
+            await _UnitOfWork.SalesInvoices.AddBranchItemTrackingAsync(invoice);
 
             var pdfUrl = $"/api/Sales/PosApi/receipt?operationId={invoice.Id}";
 

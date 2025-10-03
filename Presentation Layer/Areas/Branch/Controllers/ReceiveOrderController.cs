@@ -43,13 +43,12 @@ namespace PresentationLayer.Areas.Branch.Controllers
             (r.ApplicationUserId == userId)
             && (user.BranchId == null || r.BranchId == user.BranchId)
             && (string.IsNullOrEmpty(vm.Search)
-                || r.Code!.Contains(vm.Search)
-                || (!string.IsNullOrEmpty(r.ApplicationUser.UserName) && r.ApplicationUser.UserName.Contains(vm.Search))
                 || r.Supplier.Name.Contains(vm.Search))
             && (vm.BranchId == 0 || r.BranchId == vm.BranchId)
             && (vm.DateFilter == null || r.Date == vm.DateFilter)
-            && (vm.TotalQtyFilter == null || r.TotalQuantity >= vm.TotalQtyFilter)
-            && (vm.GrandTotalFilter == null || r.RoundedGrandTotal >= vm.GrandTotalFilter),
+            && (vm.DiscountRateFilter == null || r.TotalDiscountRate >= vm.DiscountRateFilter)
+            && (vm.TaxRateFilter == null || r.TotalTaxesRate >= vm.TaxRateFilter)
+            && (vm.GrandTotalFilter == null || r.GrandTotal >= vm.GrandTotalFilter),
             new List<Func<IQueryable<CoreLayer.Models.Operations.ReceiveOrder>, IQueryable<CoreLayer.Models.Operations.ReceiveOrder>>>
             {
             s => s.Include(s => s.Branch),
@@ -71,17 +70,23 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     case "date_desc":
                         ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.Date).OrderByDescending(d => d.Time).ToList();
                         break;
-                    case "qty_asc":
-                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.TotalQuantity).ToList();
+                    case "tax_asc":
+                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.TotalTaxesRate).ToList();
                         break;
-                    case "qty_desc":
-                        ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.TotalQuantity).ToList();
+                    case "tax_desc":
+                        ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.TotalTaxesRate).ToList();
+                        break;
+                    case "disc_asc":
+                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.TotalDiscountRate).ToList();
+                        break;
+                    case "disc_desc":
+                        ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.TotalDiscountRate).ToList();
                         break;
                     case "grand_asc":
-                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.RoundedGrandTotal).ToList();
+                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.GrandTotal).ToList();
                         break;
                     case "grand_desc":
-                        ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.RoundedGrandTotal).ToList();
+                        ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.GrandTotal).ToList();
                         break;
                     default:
                         //If no 'SortBy' is provided

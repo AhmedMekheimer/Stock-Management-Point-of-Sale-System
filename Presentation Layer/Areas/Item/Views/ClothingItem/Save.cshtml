@@ -108,66 +108,11 @@
 				
 				</div>
 			</form>
+			<a asp-action="ViewBranchItems" asp-route-id="@Model.Id" class="btn btn-sm btn-info">
+				Show Branches that contain this Item
+			</a>
 		</div>
 	</div>
-
-    <div>
-
-
-        @if (ViewBag.ShowBranchItems && User.HasClaim("Permission", "ClothingItem.BranchItem") )
-        {
-			<div class="table-responsive my-5">
-				<table class="table table-bordered table-striped w-100 align-middle">
-					<thead class="table-secondary text-center align-middle">
-						<tr>
-							<th>Branch</th>
-
-							<th>Quantity</th>
-
-							<th style="white-space: nowrap;">Restock Threshold</th>
-							<th style="white-space: nowrap;">Buying Price Avg</th>
-							<th style="white-space: nowrap;">Last Buying Price</th>
-
-							<th>Selling Price</th>
-							<th>Discount Rate(%)</th>
-							<th>Max. Unsold Months</th>
-							<th>Save</th>
-						</tr>
-					</thead>
-					<tbody class="text-center align-middle">
-						@foreach (var branchItem in Model.BranchItem)
-						{
-							<tr class="saveData">
-								<td>@branchItem.Branch?.Name</td>
-								<td>
-									<input type="number" value="@branchItem.Quantity" class="form-control text-center Quantity" />
-								</td>
-								<td>
-									<input type="number" value="@branchItem.RestockThreshold" class="form-control text-center RestockThreshold" />
-								</td>
-								<td>
-									<input type="number" value="@branchItem.BuyingPriceAvg.ToString("N2")" class="form-control text-center BuyingPriceAvg" />
-								</td>
-								<td>
-									<input type="number" value="@branchItem.LastBuyingPrice.ToString("N2")" class="form-control text-center lastBuyingPrice" />
-								</td>
-								<td>
-									<input type="number" value="@branchItem.SellingPrice?.ToString("N2")" class="form-control text-center SellingPrice" />
-								</td>
-								<td>
-									<input type="number" value="@branchItem.DiscountRate" class="form-control text-center DiscountRate" min="0" max="100" />
-								</td>
-								<td>
-									<input type="number" value="@branchItem.OutDatedInMonths" class="form-control text-center OutDatedInMonths" />
-								</td>
-								<td> <button type="button" class="btnSaveItemBranch btn btn-secondary" data-branchId="@branchItem.BranchId" data-itemId="@branchItem.ItemId" name="name">Save</button> </td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			</div>
-        }
-    </div>
 </div>
 
 @section Scripts {
@@ -249,8 +194,6 @@
 			let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
 			let sellingPrice    = parent.find(".SellingPrice").val();
 			let discountRate	= parent.find(".DiscountRate").val();
-			let restockThreshold= parent.find(".RestockThreshold").val();
-			let outDatedInMonths= parent.find(".OutDatedInMonths").val();
 
 			var data = {
 				Quantity: quantity,
@@ -260,8 +203,6 @@
 				BranchId: branchId,
 				ItemId: itemId,
 				DiscountRate:discountRate,
-				RestockThreshold: restockThreshold,
-				OutDatedInMonths:outDatedInMonths
 			};
 
 			$.ajax({

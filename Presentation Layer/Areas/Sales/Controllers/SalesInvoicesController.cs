@@ -33,7 +33,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                 (user.BranchId == null || s.BranchId==user.BranchId)
                 &&
                 (string.IsNullOrEmpty(vm.Search)
-                || s.Code.Contains(vm.Search)
+                || s.Code!.Contains(vm.Search)
                 || (!string.IsNullOrEmpty(s.ApplicationUser.UserName) && s.ApplicationUser.UserName.Contains(vm.Search))
                 || s.RetailCustomer.Name.Contains(vm.Search))
                 && (vm.BranchId == 0            || s.BranchId == vm.BranchId) 

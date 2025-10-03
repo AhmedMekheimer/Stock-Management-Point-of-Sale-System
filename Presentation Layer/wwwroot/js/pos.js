@@ -21,6 +21,7 @@
     let currentCustomerId = 0;
     let currentUser = null;
 
+
     // Initialize the POS system
     function initPOS() {
         fetchBranches()
@@ -826,4 +827,76 @@
             $('#changeAmount').text(change.toFixed(2) + ' EGP');
         }
     });
+
+    // Show Image Preview above the item card
+    (function () {
+        let hideTimer = null;
+        const $preview = $('#imagePreview');
+        const $previewImg = $('#previewImg');
+
+        // 🔧 Adjustable vertical offset (how far above center the preview should appear)
+        const verticalOffset = 0; // px → you can tweak this value
+
+        function showPreview($card, imgSrc) {
+            $previewImg.attr('src', imgSrc).show();
+
+            const container = $('.pos-container');
+            const containerOffset = container.offset();
+            const containerWidth = container.outerWidth();
+
+            const previewWidth = $preview.outerWidth();
+            const previewHeight = $preview.outerHeight();
+
+            // Center horizontally in the container
+            let left = containerOffset.left + (containerWidth / 2) - (previewWidth / 2);
+
+            // Position vertically: center of container minus offset
+            let top = containerOffset.top + (container.outerHeight() / 2) - previewHeight - verticalOffset;
+
+            // Keep inside viewport horizontally
+            const winWidth = $(window).width();
+            if (left < 8) left = 8;
+            if (left + previewWidth > winWidth - 8) left = winWidth - previewWidth - 8;
+
+            // Keep inside viewport vertically
+            const scrollTop = $(window).scrollTop();
+            const winHeight = $(window).height();
+            if (top < scrollTop + 8) {
+                top = scrollTop + 8;
+            } else if (top + previewHeight > scrollTop + winHeight - 8) {
+                top = scrollTop + winHeight - previewHeight - 8;
+            }
+
+            $preview.css({ top: top + 'px', left: left + 'px' })
+                .stop(true, true).fadeIn(120);
+        }
+
+        function scheduleHide(delay = 100) {
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(() => $preview.fadeOut(100), delay);
+        }
+        function cancelHide() {
+            clearTimeout(hideTimer);
+        }
+
+        // Hover handlers
+        $(document).on('mouseenter', '.item-card', function () {
+            cancelHide();
+            const $card = $(this);
+            const imgEl = $card.find('img.item-img').get(0);
+            if (imgEl && imgEl.src) {
+                showPreview($card, imgEl.src);
+            }
+        });
+
+        $(document).on('mouseleave', '.item-card', function () {
+            scheduleHide(150);
+        });
+
+        $preview.on('mouseenter', cancelHide)
+            .on('mouseleave', () => scheduleHide(100));
+
+        $(window).on('scroll resize', () => $preview.hide());
+    })();
+
 });

@@ -14,6 +14,7 @@ using PresentationLayer.Areas.Item.ViewModels;
 using PresentationLayer.Areas.Stock.ViewModels;
 using PresentationLayer.Utility;
 using System.Threading.Tasks;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace PresentationLayer.Areas.Stock.Controllers
 {
@@ -100,11 +101,107 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 return RedirectToAction(nameof(Index));
             }
             // Display Add Page
-            ViewBag.ShowBranchItems = false;
             LoadData(itemVM).GetAwaiter().GetResult();
             return View(itemVM);
         }
 
+        [HttpGet]
+        [Authorize(Policy = "ClothingItem.Add|ClothingItem.Edit")]
+        public async Task<IActionResult> ViewBranchItems(BranchItemsFiltersVM vm)
+        {
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
+
+            var branchItems = await _UnitOfWork.BranchItems.GetAsync(
+                b => (b.ItemId == vm.Id) && (user.BranchId == null || b.BranchId == user.BranchId)
+                && (vm.BranchId==null || b.BranchId==vm.BranchId)
+                && (vm.SellingPriceFilter == null || b.SellingPrice >= vm.SellingPriceFilter)
+                && (vm.BuyingPriceAvgFilter == null || b.BuyingPriceAvg >= vm.BuyingPriceAvgFilter)
+                && (vm.LastBuyingPriceFilter == null || b.LastBuyingPrice >= vm.LastBuyingPriceFilter)
+                && (vm.QuantityFilter == null || b.Quantity >= vm.QuantityFilter)
+                && (vm.RestockThresholdFilter == null || b.RestockThreshold >= vm.RestockThresholdFilter)
+                && (vm.DiscountRateFilter == null || b.DiscountRate >= vm.DiscountRateFilter)
+                && (vm.OutDatedInMonthsFilter == null || b.OutDatedInMonths >= vm.OutDatedInMonthsFilter)
+                , include: [b => b.Branch]
+                , false);
+
+            if (user.BranchId == null)
+            {
+                vm.Branches = (await _UnitOfWork.Branches.GetAsync()).Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name });
+            }
+            else
+            {
+                vm.Branches = (await _UnitOfWork.Branches.GetAsync(b => b.Id == user.BranchId)).Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name });
+            }
+
+            int totalPages = 0;
+
+            if (branchItems.Count != 0)
+            {
+                // Sorting By...
+                switch (vm.SortBy)
+                {
+                    case "qty_asc":
+                        branchItems = branchItems.OrderBy(d => d.Quantity).ToList();
+                        break;
+                    case "qty_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.Quantity).ToList();
+                        break;
+                    case "rth_asc":
+                        branchItems = branchItems.OrderBy(d => d.RestockThreshold).ToList();
+                        break;
+                    case "rth_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.RestockThreshold).ToList();
+                        break;
+                    case "avg_asc":
+                        branchItems = branchItems.OrderBy(d => d.BuyingPriceAvg).ToList();
+                        break;
+                    case "avg_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.BuyingPriceAvg).ToList();
+                        break;
+                    case "last_asc":
+                        branchItems = branchItems.OrderBy(d => d.LastBuyingPrice).ToList();
+                        break;
+                    case "last_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.LastBuyingPrice).ToList();
+                        break;
+                    case "sell_asc":
+                        branchItems = branchItems.OrderBy(d => d.SellingPrice).ToList();
+                        break;
+                    case "sell_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.SellingPrice).ToList();
+                        break;
+                    case "disc_asc":
+                        branchItems = branchItems.OrderBy(d => d.DiscountRate).ToList();
+                        break;
+                    case "disc_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.DiscountRate).ToList();
+                        break;
+                    case "out_asc":
+                        branchItems = branchItems.OrderBy(d => d.OutDatedInMonths).ToList();
+                        break;
+                    case "out_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.OutDatedInMonths).ToList();
+                        break;
+                    default:
+                        //If no 'SortBy' is provided
+                        branchItems = branchItems.OrderBy(d => d.BranchId).ToList();
+                        break;
+                }
+
+                // Pagination
+                const int itemsInPage = 4;
+                totalPages = (int)Math.Ceiling(branchItems.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    vm.PageId = 1;
+
+                branchItems = branchItems.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            vm.BranchItems = branchItems;
+
+            return View(vm);
+        }
 
         [HttpPost]
         [Authorize(Policy = "ClothingItem.BranchItem")]
@@ -252,14 +349,12 @@ namespace PresentationLayer.Areas.Stock.Controllers
                     {
                         ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
                     }
-                    ViewBag.ShowBranchItems = false;
                     LoadData(itemVM).GetAwaiter().GetResult();
                     return View(itemVM);
                 }
                 else if ((await _UnitOfWork.Items.GetOneAsync(e => e.Barcode == itemVM.Barcode) is CoreLayer.Models.Item))
                 {
                     ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
-                    ViewBag.ShowBranchItems = false;
                     LoadData(itemVM).GetAwaiter().GetResult();
                     return View(itemVM);
                 }

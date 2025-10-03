@@ -560,3 +560,25 @@ body.g-sidenav-show.bg-gray-100 {
     }
 }
 
+/* -------- Image preview styles (POS) -------- */
+/* Floating image preview tooltip */
+#imagePreview {
+    position: absolute;
+    display: none;
+    z-index: 9999;
+    border: 1px solid rgba(0,0,0,0.15);
+    background: #fff;
+    padding: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    pointer-events: auto;
+}
+
+    #imagePreview img#previewImg {
+        width: auto;
+        height: auto;
+        max-width: 300px; /* adjust preview size */
+        max-height: 300px;
+        object-fit: contain;
+        display: block;
+    }

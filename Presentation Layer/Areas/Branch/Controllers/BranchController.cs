@@ -5,7 +5,10 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PresentationLayer.Areas.Branch.ViewModels;
+using PresentationLayer.Areas.Item.ViewModels;
+using PresentationLayer.Areas.Stock.ViewModels;
 
 namespace PresentationLayer.Areas.Branch.Controllers
 {
@@ -57,7 +60,9 @@ namespace PresentationLayer.Areas.Branch.Controllers
         {
             var branchVM = new BranchVM();
             var branch = await _UnitOfWork.Branches.GetOneAsync(x => x.Id == Id);
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
 
+            // Display Edit Page
             if (branch is not null)
             {
                 branchVM.Name = branch.Name;
@@ -69,10 +74,126 @@ namespace PresentationLayer.Areas.Branch.Controllers
             return View(branchVM);
         }
 
+        [HttpGet]
+        [Authorize(Policy = "ClothingItem.Add|ClothingItem.Edit")]
+        public async Task<IActionResult> ViewBranchItems(BranchItemsFilters2VM vm)
+        {
+
+            var branchItems = await _UnitOfWork.BranchItems.GetAsync(
+                b => (b.BranchId == vm.Id)
+                && (vm.SellingPriceFilter == null || b.SellingPrice >= vm.SellingPriceFilter)
+                && (vm.BuyingPriceAvgFilter == null || b.BuyingPriceAvg >= vm.BuyingPriceAvgFilter)
+                && (vm.LastBuyingPriceFilter == null || b.LastBuyingPrice >= vm.LastBuyingPriceFilter)
+                && (vm.QuantityFilter == null || b.Quantity >= vm.QuantityFilter)
+                && (vm.RestockThresholdFilter == null || b.RestockThreshold >= vm.RestockThresholdFilter)
+                && (vm.DiscountRateFilter == null || b.DiscountRate >= vm.DiscountRateFilter)
+                && (vm.OutDatedInMonthsFilter == null || b.OutDatedInMonths >= vm.OutDatedInMonthsFilter)
+                , include: [b => b.Branch]
+                , false);
+
+
+            int totalPages = 0;
+
+            if (branchItems.Count != 0)
+            {
+                // Sorting By...
+                switch (vm.SortBy)
+                {
+                    case "qty_asc":
+                        branchItems = branchItems.OrderBy(d => d.Quantity).ToList();
+                        break;
+                    case "qty_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.Quantity).ToList();
+                        break;
+                    case "rth_asc":
+                        branchItems = branchItems.OrderBy(d => d.RestockThreshold).ToList();
+                        break;
+                    case "rth_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.RestockThreshold).ToList();
+                        break;
+                    case "avg_asc":
+                        branchItems = branchItems.OrderBy(d => d.BuyingPriceAvg).ToList();
+                        break;
+                    case "avg_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.BuyingPriceAvg).ToList();
+                        break;
+                    case "last_asc":
+                        branchItems = branchItems.OrderBy(d => d.LastBuyingPrice).ToList();
+                        break;
+                    case "last_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.LastBuyingPrice).ToList();
+                        break;
+                    case "sell_asc":
+                        branchItems = branchItems.OrderBy(d => d.SellingPrice).ToList();
+                        break;
+                    case "sell_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.SellingPrice).ToList();
+                        break;
+                    case "disc_asc":
+                        branchItems = branchItems.OrderBy(d => d.DiscountRate).ToList();
+                        break;
+                    case "disc_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.DiscountRate).ToList();
+                        break;
+                    case "out_asc":
+                        branchItems = branchItems.OrderBy(d => d.OutDatedInMonths).ToList();
+                        break;
+                    case "out_desc":
+                        branchItems = branchItems.OrderByDescending(d => d.OutDatedInMonths).ToList();
+                        break;
+                    default:
+                        //If no 'SortBy' is provided
+                        branchItems = branchItems.OrderBy(d => d.BranchId).ToList();
+                        break;
+                }
+
+                // Pagination
+                const int itemsInPage = 4;
+                totalPages = (int)Math.Ceiling(branchItems.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    vm.PageId = 1;
+
+                branchItems = branchItems.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+            vm.BranchItems = branchItems;
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "ClothingItem.BranchItem")]
+        public async Task<IActionResult> SaveBranchItem(BranchItemDTO branchItemDTO)
+        {
+            var branchItem = await _UnitOfWork.BranchItems.GetOneAsync(b => b.BranchId == branchItemDTO.BranchId && b.ItemId == branchItemDTO.ItemId);
+
+            if (branchItem is null)
+                return Json(new { status = false });
+
+            //branchItem.Quantity = branchItemDTO.Quantity;
+            //branchItem.BuyingPriceAvg = branchItemDTO.BuyingPriceAvg;
+            //branchItem.LastBuyingPrice = branchItemDTO.LastBuyingPrice;
+            branchItem.SellingPrice = branchItemDTO.SellingPrice;
+            branchItem.DiscountRate = branchItemDTO.DiscountRate;
+            branchItem.RestockThreshold = branchItemDTO.RestockThreshold;
+            branchItem.OutDatedInMonths = branchItemDTO.OutDatedInMonths;
+
+            var result = await _UnitOfWork.BranchItems.UpdateAsync(branchItem);
+
+            if (result)
+                return Json(new { status = true });
+            else
+                return Json(new { status = false });
+
+        }
+
         [HttpPost]
         [Authorize(Policy = "Stock.Add|Stock.Edit")]
         public async Task<IActionResult> Save(BranchVM branchVM)
         {
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
+
             if (branchVM.BranchId is not null)
             {
                 // Editing a Branch
@@ -82,6 +203,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name && e.Id != branchVM.BranchId) is CoreLayer.Models.Branch))
                     {
                         ModelState.AddModelError(nameof(branchVM.Name), "Name already exists");
+
                         return View(branchVM);
                     }
                     oldBranch.Name = branchVM.Name;
@@ -106,6 +228,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
                 if ((await _UnitOfWork.Branches.GetOneAsync(e => e.Name == branchVM.Name && e.Id != branchVM.BranchId) is CoreLayer.Models.Branch))
                 {
                     ModelState.AddModelError(nameof(branchVM.Name), "Name already exists");
+                    ViewBag.ShowBranchItems = false;
                     return View(branchVM);
                 }
 

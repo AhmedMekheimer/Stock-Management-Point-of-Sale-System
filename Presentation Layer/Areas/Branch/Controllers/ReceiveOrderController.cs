@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PresentationLayer.Areas.Branch.ViewModels;
 using System.Threading.Tasks;
 using static CoreLayer.Models.Global;
@@ -27,15 +28,78 @@ namespace PresentationLayer.Areas.Branch.Controllers
             _UnitOfWork = unitOfWork;
             _UserManager = userManager;
         }
-        [Authorize(Policy = "ReceiveOrder.View")]
-        public async Task<IActionResult> Index()
-        {
-            var userId = _UserManager.GetUserId(User);
 
-            var ReceiveOrders = await _UnitOfWork.ReceiveOrders.GetAsync(r => r.ApplicationUserId == userId,
-               include: [r => r.Branch, r => r.Supplier]
-                );
-            return View(ReceiveOrders);
+        [Authorize(Policy = "ReceiveOrder.View")]
+        public async Task<IActionResult> Index(ReceiveOrdersWithFiltersVM vm)
+        {
+            if (vm.PageId < 1)
+                return NotFound();
+
+            var userId = _UserManager.GetUserId(User);
+            ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
+
+            var ReceiveOrders = await _UnitOfWork.ReceiveOrders.GetAsyncIncludes(
+            condition: r =>
+            (r.ApplicationUserId == userId)
+            && (user.BranchId == null || r.BranchId == user.BranchId)
+            && (string.IsNullOrEmpty(vm.Search)
+                || r.Code!.Contains(vm.Search)
+                || (!string.IsNullOrEmpty(r.ApplicationUser.UserName) && r.ApplicationUser.UserName.Contains(vm.Search))
+                || r.Supplier.Name.Contains(vm.Search))
+            && (vm.BranchId == 0 || r.BranchId == vm.BranchId)
+            && (vm.DateFilter == null || r.Date == vm.DateFilter)
+            && (vm.TotalQtyFilter == null || r.TotalQuantity >= vm.TotalQtyFilter)
+            && (vm.GrandTotalFilter == null || r.RoundedGrandTotal >= vm.GrandTotalFilter),
+            new List<Func<IQueryable<CoreLayer.Models.Operations.ReceiveOrder>, IQueryable<CoreLayer.Models.Operations.ReceiveOrder>>>
+            {
+            s => s.Include(s => s.Branch),
+            s => s.Include(s => s.Supplier),
+            s => s.Include(s => s.ApplicationUser)
+            });
+
+            vm.Branches = (await _UnitOfWork.Branches.GetAsync()).Select(b => new SelectListItem { Value = b.Id.ToString(), Text = b.Name });
+
+            int totalPages = 0;
+            if (ReceiveOrders.Count != 0)
+            {
+                // Sorting By...
+                switch (vm.SortBy)
+                {
+                    case "date_asc":
+                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.Date).OrderBy(d => d.Time).ToList();
+                        break;
+                    case "date_desc":
+                        ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.Date).OrderByDescending(d => d.Time).ToList();
+                        break;
+                    case "qty_asc":
+                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.TotalQuantity).ToList();
+                        break;
+                    case "qty_desc":
+                        ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.TotalQuantity).ToList();
+                        break;
+                    case "grand_asc":
+                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.RoundedGrandTotal).ToList();
+                        break;
+                    case "grand_desc":
+                        ReceiveOrders = ReceiveOrders.OrderByDescending(d => d.RoundedGrandTotal).ToList();
+                        break;
+                    default:
+                        //If no 'SortBy' is provided
+                        ReceiveOrders = ReceiveOrders.OrderBy(d => d.Id).ToList();
+                        break;
+                }
+
+                // Pagination
+                const int itemsInPage = 6;
+                totalPages = (int)Math.Ceiling(ReceiveOrders.Count / (double)itemsInPage);
+                if (vm.PageId > totalPages)
+                    return NotFound();
+                vm.ReceiveOrders = ReceiveOrders.Skip((vm.PageId - 1) * itemsInPage).Take(itemsInPage).ToList();
+            }
+
+            vm.NoPages = totalPages;
+
+            return View(vm);
         }
         [HttpGet]
         [Authorize(Policy = "ReceiveOrder.Add|ReceiveOrder.Edit")]
@@ -123,10 +187,10 @@ namespace PresentationLayer.Areas.Branch.Controllers
         [Authorize(Policy = "ReceiveOrder.Confirm")]
         public async Task<IActionResult> Confirm(int receiveOrderId)
         {
-          var receiveOrder = await _UnitOfWork.ReceiveOrders.GetOneAsync(r => r.Id == receiveOrderId,
-              include: [r => r.OperationItems] ,tracked: true);
+            var receiveOrder = await _UnitOfWork.ReceiveOrders.GetOneAsync(r => r.Id == receiveOrderId,
+                include: [r => r.OperationItems], tracked: true);
 
-            if(receiveOrder is not null)
+            if (receiveOrder is not null)
             {
                 foreach (var item in receiveOrder.OperationItems)
                 {
@@ -168,7 +232,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
             return RedirectToAction(nameof(Save));
         }
 
-        
+
 
 
         [HttpPost]
@@ -222,7 +286,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
             if (receiceOrder == null)
                 return BadRequest(new { status = false, error = "No receive order to edit" });
 
-       
+
 
             receiceOrder.Date = receiveOrderVM.Date;
             receiceOrder.BranchId = receiveOrderVM.BranchId;
@@ -254,10 +318,11 @@ namespace PresentationLayer.Areas.Branch.Controllers
                     oprationItem.BuyingPrice = item.BuyingPrice;
                     oprationItem.TotalPrice = item.TotalPrice;
                     EditedList.Add(item);
-                } else
+                }
+                else
                 {
                     item.OperationId = receiceOrder.Id;
-                    await  _UnitOfWork.OperationItems.CreateAsync(item);
+                    await _UnitOfWork.OperationItems.CreateAsync(item);
                 }
             }
 
@@ -274,9 +339,9 @@ namespace PresentationLayer.Areas.Branch.Controllers
 
                 await _UnitOfWork.OperationItems.DeleteRangeAsync(removedOperationList);
 
-            } 
+            }
 
-                var resultOprationIrem = await _UnitOfWork.OperationItems.CommitAsync();
+            var resultOprationIrem = await _UnitOfWork.OperationItems.CommitAsync();
 
 
             if (!resultReceiceOrder || !resultOprationIrem)

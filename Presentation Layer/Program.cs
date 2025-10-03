@@ -24,7 +24,7 @@ namespace PresentationLayer
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
             // DB Configurations
             builder.Services.AddDbContext<ApplicationDbContext>(
-                option => option.UseSqlServer("Data Source=.;Initial Catalog=Stock and POS System; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;")
+                option => option.UseSqlServer("Data Source=.;Initial Catalog=Stock and POS System00; Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;")
             );
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

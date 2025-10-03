@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250829170754_AddBranchItemPermission")]
-    partial class AddBranchItemPermission
+    [Migration("20251003190543_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -93,6 +96,64 @@ namespace InfrastructureLayer.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "ADMIN-0001",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "3b8e7c11-4f94-44b6-bd2a-23456789abcd",
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "Admin@system.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@SYSTEM.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKJjDl/uiaaUyRTYVIUZQTZ+8Ag91FJZAO++PSmmunHQ4zeKohcN1tdI4+EBTgKGcA==",
+                            PhoneNumber = "+201000000000",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "c67d3f6a-9df2-4c2b-9d29-123456789abc",
+                            TwoFactorEnabled = false,
+                            UserName = "Admin"
+                        },
+                        new
+                        {
+                            Id = "CASHIER-0001",
+                            AccessFailedCount = 0,
+                            BranchId = 1,
+                            ConcurrencyStamp = "b9876543-c21d-4fed-8765-abcdef123456",
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "Cashier@system.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "CASHIER@SYSTEM.COM",
+                            NormalizedUserName = "CASHIER",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM1n6yL7RkI7GnXYVPh4eM6S2f/JXc1qR9mVh6Qv0I8K4OaX9O0xSck5x8uQ3+eU9w==",
+                            PhoneNumber = "+201111111111",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "a1234567-b89c-4def-9012-1234567890ab",
+                            TwoFactorEnabled = false,
+                            UserName = "Cashier"
+                        },
+                        new
+                        {
+                            Id = "BRANCH-0001",
+                            AccessFailedCount = 0,
+                            BranchId = 1,
+                            ConcurrencyStamp = "d11a4b23-9b73-44b6-9e28-fedcba987654",
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "BranchUser@system.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BRANCHUSER@SYSTEM.COM",
+                            NormalizedUserName = "BRANCHUSER",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKH+0zUzi5Y9I0F5VZ1+6tH8bUuQ3YzHf+8eK1J1N3mOqP2bXcW5r1y9Q1x7sU2F==",
+                            PhoneNumber = "+201222222222",
+                            PhoneNumberConfirmed = true,
+                            SecurityStamp = "e72d5a42-5ff3-4e92-a34c-abcdef123456",
+                            TwoFactorEnabled = false,
+                            UserName = "BranchUser"
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ApplicationUserOTP", b =>
@@ -131,21 +192,51 @@ namespace InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BranchManagerId")
+                    b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BranchManagerId")
-                        .IsUnique();
-
                     b.ToTable("Branches");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "123 Main Street, City Center",
+                            CreatedDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "Main Branch",
+                            PhoneNumber = "+1234567890"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "456 East Street, East Town",
+                            CreatedDate = new DateTime(2023, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "East Side Branch",
+                            PhoneNumber = "+1987654321"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "789 West Avenue, Westside",
+                            CreatedDate = new DateTime(2023, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "West End Branch",
+                            PhoneNumber = "+1123456789"
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.BranchItem", b =>
@@ -159,10 +250,19 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("BuyingPriceAvg")
                         .HasColumnType("float");
 
+                    b.Property<int?>("DiscountRate")
+                        .HasColumnType("int");
+
                     b.Property<double>("LastBuyingPrice")
                         .HasColumnType("float");
 
+                    b.Property<int>("OutDatedInMonths")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RestockThreshold")
                         .HasColumnType("int");
 
                     b.Property<double?>("SellingPrice")
@@ -173,6 +273,86 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("ItemId");
 
                     b.ToTable("BranchItems");
+
+                    b.HasData(
+                        new
+                        {
+                            BranchId = 1,
+                            ItemId = 1,
+                            BuyingPriceAvg = 0.0,
+                            LastBuyingPrice = 0.0,
+                            OutDatedInMonths = 0,
+                            Quantity = 0,
+                            RestockThreshold = 0
+                        },
+                        new
+                        {
+                            BranchId = 1,
+                            ItemId = 2,
+                            BuyingPriceAvg = 0.0,
+                            LastBuyingPrice = 0.0,
+                            OutDatedInMonths = 0,
+                            Quantity = 0,
+                            RestockThreshold = 0
+                        },
+                        new
+                        {
+                            BranchId = 2,
+                            ItemId = 1,
+                            BuyingPriceAvg = 0.0,
+                            LastBuyingPrice = 0.0,
+                            OutDatedInMonths = 0,
+                            Quantity = 0,
+                            RestockThreshold = 0
+                        },
+                        new
+                        {
+                            BranchId = 2,
+                            ItemId = 2,
+                            BuyingPriceAvg = 0.0,
+                            LastBuyingPrice = 0.0,
+                            OutDatedInMonths = 0,
+                            Quantity = 0,
+                            RestockThreshold = 0
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            ItemId = 1,
+                            BuyingPriceAvg = 0.0,
+                            LastBuyingPrice = 0.0,
+                            OutDatedInMonths = 0,
+                            Quantity = 0,
+                            RestockThreshold = 0
+                        },
+                        new
+                        {
+                            BranchId = 3,
+                            ItemId = 2,
+                            BuyingPriceAvg = 0.0,
+                            LastBuyingPrice = 0.0,
+                            OutDatedInMonths = 0,
+                            Quantity = 0,
+                            RestockThreshold = 0
+                        });
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.BranchItemSalesInvoice", b =>
+                {
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OperationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BranchId", "ItemId", "OperationId");
+
+                    b.HasIndex("OperationId");
+
+                    b.ToTable("BranchItemSalesInvoices");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Discount", b =>
@@ -200,10 +380,7 @@ namespace InfrastructureLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("Rate")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RawValue")
+                    b.Property<int>("Rate")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -211,13 +388,40 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Discounts", t =>
+                    b.ToTable("Discounts");
+
+                    b.HasData(
+                        new
                         {
-                            t.HasCheckConstraint("CK_Discounts_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
+                            Id = 1,
+                            CurrentUses = 0,
+                            ExpirationDate = new DateOnly(2028, 1, 1),
+                            IsActive = true,
+                            MaximumUses = 100,
+                            Name = "New Year Offer",
+                            Rate = 15
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CurrentUses = 0,
+                            ExpirationDate = new DateOnly(2025, 11, 30),
+                            IsActive = true,
+                            MaximumUses = 500,
+                            Name = "Black Friday",
+                            Rate = 25
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CurrentUses = 0,
+                            IsActive = true,
+                            Name = "Loyalty Discount",
+                            Rate = 10
                         });
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.DiscountOperation", b =>
+            modelBuilder.Entity("CoreLayer.Models.DiscountSalesInvoice", b =>
                 {
                     b.Property<int>("DiscountId")
                         .HasColumnType("int");
@@ -229,7 +433,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("DiscountOperations");
+                    b.ToTable("DiscountSalesInvoices");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -250,8 +454,8 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int>("ColorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DiscountPercentage")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
@@ -264,19 +468,16 @@ namespace InfrastructureLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("RestockThreshold")
-                        .HasColumnType("int");
-
                     b.Property<int>("SizeId")
                         .HasColumnType("int");
 
                     b.Property<int>("TargetAudienceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TaxPercentage")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("Barcode")
+                        .IsUnique();
 
                     b.HasIndex("BrandId");
 
@@ -284,14 +485,42 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("ItemTypeId");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.HasIndex("SizeId");
 
                     b.HasIndex("TargetAudienceId");
 
-                    b.HasIndex("Barcode", "Name")
-                        .IsUnique();
-
                     b.ToTable("Items");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Barcode = "ITEM-0001",
+                            BrandId = 1,
+                            ColorId = 1,
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Image = "PoloTshirt.jpg",
+                            ItemTypeId = 3,
+                            Name = "Polo Tshirt",
+                            SizeId = 1,
+                            TargetAudienceId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Barcode = "ITEM-0002",
+                            BrandId = 2,
+                            ColorId = 2,
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Image = "ZaraTshirt.jpg",
+                            ItemTypeId = 3,
+                            Name = "Zara Tshirt",
+                            SizeId = 1,
+                            TargetAudienceId = 1
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Brand", b =>
@@ -312,6 +541,26 @@ namespace InfrastructureLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Brands");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Image = "nike.png",
+                            Name = "Nike"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Image = "adidas.png",
+                            Name = "Adidas"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Image = "puma.png",
+                            Name = "Puma"
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Color", b =>
@@ -332,6 +581,26 @@ namespace InfrastructureLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Colors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Image = "red.png",
+                            Name = "Red"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Image = "blue.png",
+                            Name = "Blue"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Image = "black.png",
+                            Name = "Black"
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.ItemType", b =>
@@ -363,6 +632,34 @@ namespace InfrastructureLayer.Migrations
                         .HasFilter("[ItemTypeId] IS NOT NULL");
 
                     b.ToTable("ItemTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Image = "clothing.png",
+                            Name = "Clothing"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Image = "shoes.png",
+                            Name = "Shoes"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Image = "tshirts.png",
+                            ItemTypeId = 1,
+                            Name = "T-Shirts"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Image = "sneakers.png",
+                            ItemTypeId = 2,
+                            Name = "Sneakers"
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.Size", b =>
@@ -383,6 +680,26 @@ namespace InfrastructureLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sizes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Image = "s.png",
+                            Name = "Small"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Image = "m.png",
+                            Name = "Medium"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Image = "l.png",
+                            Name = "Large"
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.ItemVarients.TargetAudience", b =>
@@ -403,6 +720,26 @@ namespace InfrastructureLayer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TargetAudiences");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Image = "men.png",
+                            Name = "Men"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Image = "women.png",
+                            Name = "Women"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Image = "kids.png",
+                            Name = "Kids"
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Operation", b =>
@@ -416,6 +753,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<string>("ApplicationUserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
@@ -432,20 +772,20 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("TotalAmount")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalDiscountAmount")
+                    b.Property<double?>("TotalDiscountAmount")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalDiscountRate")
-                        .HasColumnType("float");
+                    b.Property<int?>("TotalDiscountRate")
+                        .HasColumnType("int");
 
                     b.Property<int>("TotalQuantity")
                         .HasColumnType("int");
 
-                    b.Property<double>("TotalTaxesAmount")
+                    b.Property<double?>("TotalTaxesAmount")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalTaxesRate")
-                        .HasColumnType("float");
+                    b.Property<int?>("TotalTaxesRate")
+                        .HasColumnType("int");
 
                     b.Property<int>("status")
                         .HasColumnType("int");
@@ -467,6 +807,12 @@ namespace InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<double>("BuyingPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("DiscountRate")
+                        .HasColumnType("int");
+
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
@@ -475,6 +821,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<double>("SellingPrice")
+                        .HasColumnType("float");
 
                     b.Property<double>("TotalPrice")
                         .HasColumnType("float");
@@ -486,6 +835,38 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("OperationId");
 
                     b.ToTable("OperationItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BuyingPrice = 15000.0,
+                            ItemId = 1,
+                            OperationId = 1,
+                            Quantity = 1,
+                            SellingPrice = 0.0,
+                            TotalPrice = 15000.0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BuyingPrice = 200.0,
+                            ItemId = 2,
+                            OperationId = 1,
+                            Quantity = 1,
+                            SellingPrice = 0.0,
+                            TotalPrice = 200.0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BuyingPrice = 15000.0,
+                            ItemId = 1,
+                            OperationId = 2,
+                            Quantity = 1,
+                            SellingPrice = 0.0,
+                            TotalPrice = 15000.0
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Partner", b =>
@@ -497,7 +878,7 @@ namespace InfrastructureLayer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -512,7 +893,40 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Partners");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "contact@abc.com",
+                            Name = "ABC Suppliers",
+                            PhoneNumber = "+201001112233",
+                            partnerType = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "john.doe@example.com",
+                            Name = "John Doe",
+                            PhoneNumber = "+201112223344",
+                            partnerType = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Email = "sales@xyzretail.com",
+                            Name = "XYZ Retail",
+                            PhoneNumber = "+201223344556",
+                            partnerType = 2
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Permission", b =>
@@ -623,6 +1037,13 @@ namespace InfrastructureLayer.Migrations
                         },
                         new
                         {
+                            Id = 125,
+                            EnglishName = "Confirm Receive Order",
+                            Name = "ReceiveOrder.Confirm",
+                            ParentId = 120
+                        },
+                        new
+                        {
                             Id = 11,
                             EnglishName = "Item",
                             Name = "Item",
@@ -631,7 +1052,7 @@ namespace InfrastructureLayer.Migrations
                         new
                         {
                             Id = 140,
-                            EnglishName = "Clothing ClothingItem",
+                            EnglishName = "Clothing Item",
                             Name = "ClothingItem",
                             ParentId = 11
                         },
@@ -959,13 +1380,6 @@ namespace InfrastructureLayer.Migrations
                         },
                         new
                         {
-                            Id = 320,
-                            EnglishName = "Setting",
-                            Name = "Setting",
-                            ParentId = 12
-                        },
-                        new
-                        {
                             Id = 340,
                             EnglishName = "Tax",
                             Name = "Tax",
@@ -1002,37 +1416,100 @@ namespace InfrastructureLayer.Migrations
                         new
                         {
                             Id = 360,
-                            EnglishName = "Tax",
-                            Name = "Tax",
+                            EnglishName = "Discount",
+                            Name = "Discount",
                             ParentId = 12
                         },
                         new
                         {
                             Id = 361,
-                            EnglishName = "View Tax",
-                            Name = "Tax.View",
+                            EnglishName = "View Discount",
+                            Name = "Discount.View",
                             ParentId = 360
                         },
                         new
                         {
                             Id = 362,
-                            EnglishName = "Add Tax",
-                            Name = "Tax.Add",
+                            EnglishName = "Add Discount",
+                            Name = "Discount.Add",
                             ParentId = 360
                         },
                         new
                         {
                             Id = 363,
-                            EnglishName = "Edit Tax",
-                            Name = "Tax.Edit",
+                            EnglishName = "Edit Discount",
+                            Name = "Discount.Edit",
                             ParentId = 360
                         },
                         new
                         {
                             Id = 364,
-                            EnglishName = "Delete Tax",
-                            Name = "Tax.Delete",
+                            EnglishName = "Delete Discount",
+                            Name = "Discount.Delete",
                             ParentId = 360
+                        },
+                        new
+                        {
+                            Id = 380,
+                            EnglishName = "User Login History",
+                            Name = "UserLoginHistory",
+                            ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 381,
+                            EnglishName = "View UserLoginHistory",
+                            Name = "UserLoginHistory.View",
+                            ParentId = 380
+                        },
+                        new
+                        {
+                            Id = 13,
+                            EnglishName = "Sales",
+                            Name = "Sales",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 400,
+                            EnglishName = "POS",
+                            Name = "POS",
+                            ParentId = 13
+                        },
+                        new
+                        {
+                            Id = 420,
+                            EnglishName = "Sales Invoice",
+                            Name = "SalesInvoice",
+                            ParentId = 13
+                        },
+                        new
+                        {
+                            Id = 421,
+                            EnglishName = "View Sales Invoice",
+                            Name = "SalesInvoice.View",
+                            ParentId = 420
+                        },
+                        new
+                        {
+                            Id = 422,
+                            EnglishName = "Print Sales Invoice",
+                            Name = "SalesInvoice.Print",
+                            ParentId = 420
+                        },
+                        new
+                        {
+                            Id = 14,
+                            EnglishName = "Dashboard",
+                            Name = "Dashboard",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 440,
+                            EnglishName = "View Dashboard",
+                            Name = "Dashboard.View",
+                            ParentId = 14
                         });
                 });
 
@@ -1064,10 +1541,7 @@ namespace InfrastructureLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("Rate")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RawValue")
+                    b.Property<int>("Rate")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1075,9 +1549,26 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Taxes", t =>
+                    b.ToTable("Taxes");
+
+                    b.HasData(
+                        new
                         {
-                            t.HasCheckConstraint("CK_Taxes_RateOrRawValue", "((Rate IS NULL OR Rate = 0) OR (RawValue IS NULL OR RawValue = 0)) AND NOT ((Rate IS NOT NULL AND Rate <> 0) AND (RawValue IS NOT NULL AND RawValue <> 0))");
+                            Id = 1,
+                            Name = "VAT",
+                            Rate = 14
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Service Tax",
+                            Rate = 10
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Luxury Tax",
+                            Rate = 5
                         });
                 });
 
@@ -1096,7 +1587,7 @@ namespace InfrastructureLayer.Migrations
                     b.ToTable("TaxReceiveOrders");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.Transaction", b =>
+            modelBuilder.Entity("CoreLayer.Models.UserLoginHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1104,15 +1595,25 @@ namespace InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("OperationId")
-                        .HasColumnType("int");
+                    b.Property<string>("IPAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LoginTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LogoutTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OperationId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("userLoginHistories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1140,6 +1641,36 @@ namespace InfrastructureLayer.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "ROLE-Super Admin",
+                            ConcurrencyStamp = "00000000-0000-0000-0000-00000000000",
+                            Name = "Super Admin",
+                            NormalizedName = "SUPER ADMIN"
+                        },
+                        new
+                        {
+                            Id = "ROLE-ADMIN",
+                            ConcurrencyStamp = "11111111-1111-1111-1111-111111111111",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "ROLE-CASHIER",
+                            ConcurrencyStamp = "22222222-2222-2222-2222-222222222222",
+                            Name = "Cashier User",
+                            NormalizedName = "CASHIER USER"
+                        },
+                        new
+                        {
+                            Id = "ROLE-BRANCH",
+                            ConcurrencyStamp = "33333333-3333-3333-3333-333333333333",
+                            Name = "Branch User",
+                            NormalizedName = "BRANCH USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1227,6 +1758,23 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "ADMIN-0001",
+                            RoleId = "ROLE-ADMIN"
+                        },
+                        new
+                        {
+                            UserId = "CASHIER-0001",
+                            RoleId = "ROLE-CASHIER"
+                        },
+                        new
+                        {
+                            UserId = "BRANCH-0001",
+                            RoleId = "ROLE-BRANCH"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -1263,6 +1811,46 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("SupplierId");
 
                     b.ToTable("ReceiveOrders", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ApplicationUserId = "BRANCH-0001",
+                            Code = "2_1_1",
+                            Date = new DateOnly(2025, 1, 1),
+                            GrandTotal = 16720.0,
+                            RoundedGrandTotal = 16720,
+                            Time = new TimeOnly(10, 0, 0),
+                            TotalAmount = 15200.0,
+                            TotalDiscountAmount = 0.0,
+                            TotalDiscountRate = 0,
+                            TotalQuantity = 2,
+                            TotalTaxesAmount = 1520.0,
+                            TotalTaxesRate = 10,
+                            status = 1,
+                            BranchId = 1,
+                            SupplierId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ApplicationUserId = "ADMIN-0001",
+                            Code = "2_1_2",
+                            Date = new DateOnly(2025, 3, 1),
+                            GrandTotal = 15750.0,
+                            RoundedGrandTotal = 15750,
+                            Time = new TimeOnly(10, 0, 0),
+                            TotalAmount = 15000.0,
+                            TotalDiscountAmount = 0.0,
+                            TotalDiscountRate = 0,
+                            TotalQuantity = 1,
+                            TotalTaxesAmount = 750.0,
+                            TotalTaxesRate = 5,
+                            status = 1,
+                            BranchId = 1,
+                            SupplierId = 1
+                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Operations.SalesInvoice", b =>
@@ -1272,7 +1860,7 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RetailCustomerId")
+                    b.Property<int>("RetailCustomerId")
                         .HasColumnType("int");
 
                     b.HasIndex("BranchId");
@@ -1320,17 +1908,6 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.Branch", b =>
-                {
-                    b.HasOne("CoreLayer.Models.ApplicationUser", "BranchManager")
-                        .WithOne("ManagedBranch")
-                        .HasForeignKey("CoreLayer.Models.Branch", "BranchManagerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("BranchManager");
-                });
-
             modelBuilder.Entity("CoreLayer.Models.BranchItem", b =>
                 {
                     b.HasOne("CoreLayer.Models.Branch", "Branch")
@@ -1350,23 +1927,42 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.DiscountOperation", b =>
+            modelBuilder.Entity("CoreLayer.Models.BranchItemSalesInvoice", b =>
+                {
+                    b.HasOne("CoreLayer.Models.Operations.SalesInvoice", "SalesInvoice")
+                        .WithMany("BranchItemSalesInvoices")
+                        .HasForeignKey("OperationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoreLayer.Models.BranchItem", "BranchItem")
+                        .WithMany("BranchItemSalesInvoices")
+                        .HasForeignKey("BranchId", "ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BranchItem");
+
+                    b.Navigation("SalesInvoice");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.DiscountSalesInvoice", b =>
                 {
                     b.HasOne("CoreLayer.Models.Discount", "Discount")
-                        .WithMany("DiscountOperations")
+                        .WithMany("DiscountSalesInvoices")
                         .HasForeignKey("DiscountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoreLayer.Models.Operation", "Operation")
-                        .WithMany("DiscountOperations")
+                    b.HasOne("CoreLayer.Models.Operations.SalesInvoice", "SalesInvoice")
+                        .WithMany("DiscountSalesInvoices")
                         .HasForeignKey("OperationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Discount");
 
-                    b.Navigation("Operation");
+                    b.Navigation("SalesInvoice");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -1499,15 +2095,15 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Tax");
                 });
 
-            modelBuilder.Entity("CoreLayer.Models.Transaction", b =>
+            modelBuilder.Entity("CoreLayer.Models.UserLoginHistory", b =>
                 {
-                    b.HasOne("CoreLayer.Models.Operation", "Operation")
+                    b.HasOne("CoreLayer.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("OperationId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Operation");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1603,7 +2199,8 @@ namespace InfrastructureLayer.Migrations
                     b.HasOne("CoreLayer.Models.Partner", "RetailCustomer")
                         .WithMany("SalesInvoices")
                         .HasForeignKey("RetailCustomerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Branch");
 
@@ -1638,8 +2235,6 @@ namespace InfrastructureLayer.Migrations
             modelBuilder.Entity("CoreLayer.Models.ApplicationUser", b =>
                 {
                     b.Navigation("ApplicationUserOTPs");
-
-                    b.Navigation("ManagedBranch");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Branch", b =>
@@ -1657,9 +2252,14 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("SalesInvoices");
                 });
 
+            modelBuilder.Entity("CoreLayer.Models.BranchItem", b =>
+                {
+                    b.Navigation("BranchItemSalesInvoices");
+                });
+
             modelBuilder.Entity("CoreLayer.Models.Discount", b =>
                 {
-                    b.Navigation("DiscountOperations");
+                    b.Navigation("DiscountSalesInvoices");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -1698,8 +2298,6 @@ namespace InfrastructureLayer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.Operation", b =>
                 {
-                    b.Navigation("DiscountOperations");
-
                     b.Navigation("OperationItems");
                 });
 
@@ -1725,6 +2323,13 @@ namespace InfrastructureLayer.Migrations
             modelBuilder.Entity("CoreLayer.Models.Operations.ReceiveOrder", b =>
                 {
                     b.Navigation("TaxReceiveOrders");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.Operations.SalesInvoice", b =>
+                {
+                    b.Navigation("BranchItemSalesInvoices");
+
+                    b.Navigation("DiscountSalesInvoices");
                 });
 #pragma warning restore 612, 618
         }

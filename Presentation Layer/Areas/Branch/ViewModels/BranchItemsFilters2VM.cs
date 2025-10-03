@@ -6,6 +6,7 @@ namespace PresentationLayer.Areas.Branch.ViewModels
     public class BranchItemsFilters2VM
     {
         public int Id { get; set; }
+        public string Search { get; set; } = null!;
         public IEnumerable<SelectListItem> Branches { get; set; } = new List<SelectListItem>();
         public int? QuantityFilter { get; set; }
         public int? RestockThresholdFilter { get; set; }

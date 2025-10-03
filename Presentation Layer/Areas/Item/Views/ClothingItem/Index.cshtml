@@ -125,6 +125,12 @@
 												Delete
 											</button>
 										}
+										@if (User.HasClaim("Permission", "ClothingItem.BranchItem"))
+										{
+											<a asp-action="ViewBranchItems" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+												Show Branches
+											</a>
+										}
 									</div>
 								</td>
 							</tr>

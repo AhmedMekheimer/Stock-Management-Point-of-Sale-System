@@ -87,7 +87,7 @@
 							   style="color: white;">
 								<i class="fas fa-sort-up"></i>
 							</a>
-							</th>
+						</th>
 						<th width="5%">
 							Total Qty (Items)
 							<a asp-action="Index"
@@ -112,7 +112,7 @@
 							   style="color: white;">
 								<i class="fas fa-sort-up"></i>
 							</a>
-							</th>
+						</th>
 						<th width="10%">
 							Grand Total (EGP)
 							<a asp-action="Index"
@@ -137,7 +137,7 @@
 							   style="color: white;">
 								<i class="fas fa-sort-up"></i>
 							</a>
-							</th>
+						</th>
 						<th width="20%">Branch</th>
 						<th width="20%">Issued By</th>
 						<th width="10%">Customer Served</th>
@@ -195,7 +195,10 @@
 					{
 						<li class="page-item @(i == Model.PageId ? "active" : "")">
 							<a class="page-link"
-							   asp-controller="SalesInvoices" asp-action="Index" asp-route-PageId="@i" asp-route-Search="@Model.Search"
+							   asp-controller="SalesInvoices"
+							   asp-action="Index"
+							   asp-route-PageId="@i"
+							   asp-route-Search="@Model.Search"
 							   asp-route-BranchId="@Model.BranchId"
 							   asp-route-DateFilter="@Model.DateFilter"
 							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"
@@ -208,8 +211,11 @@
 					@if (Model.NoPages > Model.PageId)
 					{
 						<li class="page-item">
-							<a class="page-link" asp-controller="SalesInvoices" asp-action="Index"
-							   asp-route-PageId="@(Model.PageId + 1)" asp-route-Search="@Model.Search"
+							<a class="page-link"
+							   asp-controller="SalesInvoices"
+							   asp-action="Index"
+							   asp-route-PageId="@(Model.PageId + 1)"
+							   asp-route-Search="@Model.Search"
 							   asp-route-BranchId="@Model.BranchId"
 							   asp-route-DateFilter="@Model.DateFilter"
 							   asp-route-TotalQtyFilter="@Model.TotalQtyFilter"

@@ -75,12 +75,16 @@ namespace PresentationLayer.Areas.Branch.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "ClothingItem.Add|ClothingItem.Edit")]
+        [Authorize(Policy = "ClothingItem.BranchItem")]
         public async Task<IActionResult> ViewBranchItems(BranchItemsFilters2VM vm)
         {
 
             var branchItems = await _UnitOfWork.BranchItems.GetAsync(
                 b => (b.BranchId == vm.Id)
+                &&
+                (string.IsNullOrEmpty(vm.Search)
+                || b.Item.Barcode.Contains(vm.Search)
+                || b.Item.Name.Contains(vm.Search))
                 && (vm.SellingPriceFilter == null || b.SellingPrice >= vm.SellingPriceFilter)
                 && (vm.BuyingPriceAvgFilter == null || b.BuyingPriceAvg >= vm.BuyingPriceAvgFilter)
                 && (vm.LastBuyingPriceFilter == null || b.LastBuyingPrice >= vm.LastBuyingPriceFilter)
@@ -88,7 +92,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
                 && (vm.RestockThresholdFilter == null || b.RestockThreshold >= vm.RestockThresholdFilter)
                 && (vm.DiscountRateFilter == null || b.DiscountRate >= vm.DiscountRateFilter)
                 && (vm.OutDatedInMonthsFilter == null || b.OutDatedInMonths >= vm.OutDatedInMonthsFilter)
-                , include: [b => b.Branch]
+                , include: [b => b.Branch, b => b.Item]
                 , false);
 
 

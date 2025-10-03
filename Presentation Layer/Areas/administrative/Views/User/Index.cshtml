@@ -63,11 +63,20 @@
 									<div class="d-flex gap-2 ">
 										@if (User.HasClaim("Permission", "User.Edit"))
 										{
-											<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
-												Edit
-											</a>
+											if (item.UserName == "SuperAdmin" && User.Identity!.Name == "SuperAdmin")
+											{
+												<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+													Edit
+												</a>
+											}
+											else if (item.UserName != "SuperAdmin")
+											{
+												<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+													Edit
+												</a>
+											}
 										}
-										@if (User.Identity!.Name != item.UserName && User.HasClaim("Permission", "User.Delete"))
+										@if (User.Identity!.Name != item.UserName && User.HasClaim("Permission", "User.Delete") && item.UserName != "SuperAdmin")
 										{
 											<button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
 													data-id="@item.Id" data-name="@item.UserName">

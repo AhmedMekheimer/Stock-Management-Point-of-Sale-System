@@ -99,7 +99,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "ClothingItem.Add|ClothingItem.Edit")]
+        [Authorize(Policy = "ClothingItem.BranchItem")]
         public async Task<IActionResult> ViewBranchItems(BranchItemsFiltersVM vm)
         {
             ApplicationUser user = (await _UserManager.GetUserAsync(User))!;
@@ -114,7 +114,7 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 && (vm.RestockThresholdFilter == null || b.RestockThreshold >= vm.RestockThresholdFilter)
                 && (vm.DiscountRateFilter == null || b.DiscountRate >= vm.DiscountRateFilter)
                 && (vm.OutDatedInMonthsFilter == null || b.OutDatedInMonths >= vm.OutDatedInMonthsFilter)
-                , include: [b => b.Branch]
+                , include: [b => b.Branch, b=>b.Item]
                 , false);
 
             if (user.BranchId == null)

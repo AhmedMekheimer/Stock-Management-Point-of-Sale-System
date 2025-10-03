@@ -17,12 +17,20 @@
 					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 					<input asp-for="UserId" type="hidden" value="@Model.Id" />
+
 					<!-- Username -->
-					<div class="mb-3 col-3">
-						<label asp-for="UserName" class="control-label"></label>
-						<input asp-for="UserName" class="form-control" />
-						<span asp-validation-for="UserName" class="text-danger"></span>
-					</div>
+					@if (User.Identity!.Name != "SuperAdmin")
+					{
+						<div class="mb-3 col-3">
+							<label asp-for="UserName" class="control-label"></label>
+							<input asp-for="UserName" class="form-control" />
+							<span asp-validation-for="UserName" class="text-danger"></span>
+						</div>
+					}
+					else
+					{
+						<input asp-for="UserName" type="hidden" value="@Model.UserName" />
+					}
 					@if (Model.Id is null)
 					{
 						<!-- Password -->
@@ -48,12 +56,19 @@
 						</select>
 					</div>
 
-					<div class="mb-3 col-12">
-						<label asp-for="RoleId" class="form-label">Role</label>
-						<select class="form-select" asp-for="RoleId" asp-items="@Model.RolesList">
-							<option value="0">Select a role</option>
-						</select>
-					</div>
+					@if (User.Identity!.Name != "SuperAdmin")
+					{
+						<div class="mb-3 col-12">
+							<label asp-for="RoleId" class="form-label">Role</label>
+							<select class="form-select" asp-for="RoleId" asp-items="@Model.RolesList">
+								<option value="0">Select a role</option>
+							</select>
+						</div>
+					}
+					else
+					{
+						<input asp-for="RoleId" type="hidden" value="@Model.RoleId" />
+					}
 
 					<!-- Submit -->
 					<div class="d-grid col-2 ">

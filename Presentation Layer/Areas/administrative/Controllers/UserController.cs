@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PresentationLayer.Areas.Administrative.ViewModels;
+using PresentationLayer.Utility;
 
 
 namespace PresentationLayer.Areas.DashBoard.Controllers
@@ -104,6 +105,14 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
         [Authorize(Policy = "User.Add|User.Edit")]
         public async Task<IActionResult> Save(CreateUser createUser)
         {
+            ApplicationUser userLoggedIn = (await _UserManager.GetUserAsync(User))!;
+
+            if (userLoggedIn.UserName != "SuperAdmin" && createUser.UserName.Contains("superadmin", StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(createUser.UserName), "The 'SuperAdmin' username is reserved.");
+                return View(createUser);
+            }
+
             var branches = await _UnitOfWork.Branches.GetAsync();
 
             createUser.BranchList = branches

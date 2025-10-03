@@ -1,74 +1,83 @@
 ﻿@model BranchItemsFilters2VM
-
-@if (Model.Id != 0)
+@if (User.HasClaim("Permission", "ClothingItem.BranchItem"))
 {
-	<!-- Branch Items Filters -->
-	<div class="d-flex justify-content-between align-items-center mb-3">
-		<h1 class="m-0">Branch Items</h1>
-	</div>
-
-	<!-- Filters Section -->
-	<div class="card mb-3 compact-filter-card">
-		<div class="card-body compact-filter-body">
-			<form asp-action="ViewBranchItems" asp-route-id="@Model.Id" method="get" class="row g-2 align-items-center">
-				<input type="hidden" asp-for="@Model.Id" />
-
-				<!-- Numbers Filters -->
-
-				<div class="col-md-2">
-					<input asp-for="QuantityFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. Qty" />
-				</div>
-
-				<div class="col-md-2">
-					<input asp-for="RestockThresholdFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. RestockThreshold" />
-				</div>
-
-				<div class="col-md-2">
-					<input asp-for="BuyingPriceAvgFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. BuyingPriceAvg" />
-				</div>
-
-
-				<div class="col-md-2">
-					<input asp-for="LastBuyingPriceFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. LastBuyingPrice" />
-				</div>
-
-
-				<div class="col-md-2">
-					<input asp-for="SellingPriceFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. SellingPrice" />
-				</div>
-
-
-				<div class="col-md-2">
-					<input asp-for="DiscountRateFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. DiscountRate" />
-				</div>
-
-				<div class="col-md-2">
-					<input asp-for="OutDatedInMonthsFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. OutDatedInMonths" />
-				</div>
-
-				<!-- Apply Button -->
-				<div class="col-md-2 d-flex justify-content-end align-items-center">
-					<button type="submit" class="btn btn-sm btn-primary">Apply</button>
-				</div>
-			</form>
+	@if (Model.Id != 0)
+	{
+		<!-- Branch Items Filters -->
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h1 class="m-0">@Model.BranchItems[0].Branch.Name</h1>
 		</div>
-	</div>
 
-	<!-- Branch Items Table -->
-	@if (Model.BranchItems.Count == 0)
-	{
-		<h3 class="mt-4">No Branch Items Found</h3>
-	}
-	else
-	{
-		<div>
-			@if (User.HasClaim("Permission", "ClothingItem.BranchItem"))
-			{
+		<!-- Filters Section -->
+		<div class="card mb-3 compact-filter-card">
+			<div class="card-body compact-filter-body">
+				<form asp-action="ViewBranchItems" asp-route-id="@Model.Id" method="get" class="row g-2 align-items-center">
+					<input type="hidden" asp-for="@Model.Id" />
+
+					<!-- Search -->
+					<div class="col-md-4">
+						<div class="table-search-wrapper">
+							<input asp-for="Search" class="form-control form-control-sm" placeholder="Search Item By Name or Barcode ..." />
+							<button type="submit" class="btn btn-sm btn-primary">
+								<i class="fa fa-search"></i>
+							</button>
+						</div>
+					</div>
+
+					<!-- Numbers Filters -->
+
+					<div class="col-md-2">
+						<input asp-for="QuantityFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. Qty" />
+					</div>
+
+					<div class="col-md-2">
+						<input asp-for="RestockThresholdFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. RestockThreshold" />
+					</div>
+
+					<div class="col-md-2">
+						<input asp-for="BuyingPriceAvgFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. BuyingPriceAvg" />
+					</div>
+
+
+					<div class="col-md-2">
+						<input asp-for="LastBuyingPriceFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. LastBuyingPrice" />
+					</div>
+
+
+					<div class="col-md-2">
+						<input asp-for="SellingPriceFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. SellingPrice" />
+					</div>
+
+
+					<div class="col-md-2">
+						<input asp-for="DiscountRateFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. DiscountRate" />
+					</div>
+
+					<div class="col-md-2">
+						<input asp-for="OutDatedInMonthsFilter" type="number" min="0" class="form-control form-control-sm" placeholder="Min. OutDatedInMonths" />
+					</div>
+
+					<!-- Apply Button -->
+					<div class="col-md-2 d-flex">
+						<button type="submit" class="btn btn-sm btn-primary">Apply</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Branch Items Table -->
+		@if (Model.BranchItems.Count == 0)
+		{
+			<h3 class="mt-4">No Branch Items Found</h3>
+		}
+		else
+		{
+			<div>
 				<div class="table-responsive">
 					<table id="categoryTable" class="table table-striped table-bordered text-center align-middle">
 						<thead class="thead-dark">
 							<tr>
-								<th>Branch</th>
+								<th>Item</th>
 
 								<th>
 									Quantity
@@ -76,6 +85,7 @@
 									   asp-route-SortBy="qty_asc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -90,6 +100,7 @@
 									   asp-route-SortBy="qty_desc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -108,6 +119,7 @@
 									   asp-route-SortBy="rth_asc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -122,6 +134,7 @@
 									   asp-route-SortBy="rth_desc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -140,6 +153,7 @@
 									   asp-route-SortBy="avg_asc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -154,6 +168,7 @@
 									   asp-route-SortBy="avg_desc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -172,6 +187,7 @@
 									   asp-route-SortBy="last_asc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -186,6 +202,7 @@
 									   asp-route-SortBy="last_desc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -204,6 +221,7 @@
 									   asp-route-SortBy="sell_asc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -218,6 +236,7 @@
 									   asp-route-SortBy="sell_desc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -236,6 +255,7 @@
 									   asp-route-SortBy="disc_asc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -250,6 +270,7 @@
 									   asp-route-SortBy="disc_desc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -268,6 +289,7 @@
 									   asp-route-SortBy="out_asc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -282,6 +304,7 @@
 									   asp-route-SortBy="out_desc"
 									   asp-route-PageId="1"
 									   asp-route-Id="@Model.Id"
+									   asp-route-Search="@Model.Search"
 									   asp-route-QuantityFilter="@Model.QuantityFilter"
 									   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
 									   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
@@ -303,7 +326,7 @@
 							@foreach (var branchItem in Model.BranchItems)
 							{
 								<tr class="saveData">
-									<td>@branchItem.Branch?.Name</td>
+									<td>@branchItem.Item.Name</td>
 									<td>
 										<input type="number" value="@branchItem.Quantity" class="form-control text-center Quantity" disabled />
 									</td>
@@ -336,138 +359,140 @@
 						</tbody>
 					</table>
 				</div>
-			}
+			</div>
+		}
+		@if (Model.NoPages > 0)
+		{
+			<div class="d-flex justify-content-center">
+				<nav aria-label="Page navigation example">
+					<ul class="pagination custom-pagination mb-0">
+						@if (Model.PageId > 1)
+						{
+							<li class="page-item">
+								<a class="page-link" asp-action="ViewBranchItems"
+								   asp-route-PageId="@(Model.PageId - 1)"
+								   asp-route-SortBy="@Model.SortBy"
+								   asp-route-Id="@Model.Id"
+								   asp-route-Search="@Model.Search"
+								   asp-route-QuantityFilter="@Model.QuantityFilter"
+								   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
+								   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
+								   asp-route-SellingPriceFilter="@Model.SellingPriceFilter"
+								   asp-route-RestockThresholdFilter="@Model.RestockThresholdFilter"
+								   asp-route-DiscountRateFilter="@Model.DiscountRateFilter"
+								   asp-route-OutDatedInMonthsFilter="@Model.OutDatedInMonthsFilter">
+									Previous
+								</a>
+							</li>
+						}
+						@for (int i = 1; i <= Model.NoPages; i++)
+						{
+							<li class="page-item @(i == Model.PageId ? "active" : "")">
+								<a class="page-link"
+								   asp-action="ViewBranchItems"
+								   asp-route-PageId="@i"
+								   asp-route-SortBy="@Model.SortBy"
+								   asp-route-Id="@Model.Id"
+								   asp-route-Search="@Model.Search"
+								   asp-route-QuantityFilter="@Model.QuantityFilter"
+								   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
+								   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
+								   asp-route-SellingPriceFilter="@Model.SellingPriceFilter"
+								   asp-route-RestockThresholdFilter="@Model.RestockThresholdFilter"
+								   asp-route-DiscountRateFilter="@Model.DiscountRateFilter"
+								   asp-route-OutDatedInMonthsFilter="@Model.OutDatedInMonthsFilter">
+									@i
+								</a>
+							</li>
+						}
+						@if (Model.NoPages > Model.PageId)
+						{
+							<li class="page-item">
+								<a class="page-link"
+								   asp-action="ViewBranchItems"
+								   asp-route-PageId="@(Model.PageId + 1)"
+								   asp-route-SortBy="@Model.SortBy"
+								   asp-route-Id="@Model.Id"
+								   asp-route-Search="@Model.Search"
+								   asp-route-QuantityFilter="@Model.QuantityFilter"
+								   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
+								   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
+								   asp-route-SellingPriceFilter="@Model.SellingPriceFilter"
+								   asp-route-RestockThresholdFilter="@Model.RestockThresholdFilter"
+								   asp-route-DiscountRateFilter="@Model.DiscountRateFilter"
+								   asp-route-OutDatedInMonthsFilter="@Model.OutDatedInMonthsFilter">
+									Next
+								</a>
+							</li>
+						}
+					</ul>
+				</nav>
+			</div>
+		}
 
-		</div>
-	}
-	@if (Model.NoPages > 0)
-	{
-		<div class="d-flex justify-content-center">
-			<nav aria-label="Page navigation example">
-				<ul class="pagination custom-pagination mb-0">
-					@if (Model.PageId > 1)
-					{
-						<li class="page-item">
-							<a class="page-link" asp-action="ViewBranchItems"
-							   asp-route-PageId="@(Model.PageId - 1)"
-							   asp-route-SortBy="@Model.SortBy"
-							   asp-route-Id="@Model.Id"
-							   asp-route-QuantityFilter="@Model.QuantityFilter"
-							   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
-							   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
-							   asp-route-SellingPriceFilter="@Model.SellingPriceFilter"
-							   asp-route-RestockThresholdFilter="@Model.RestockThresholdFilter"
-							   asp-route-DiscountRateFilter="@Model.DiscountRateFilter"
-							   asp-route-OutDatedInMonthsFilter="@Model.OutDatedInMonthsFilter">
-								Previous
-							</a>
-						</li>
-					}
-					@for (int i = 1; i <= Model.NoPages; i++)
-					{
-						<li class="page-item @(i == Model.PageId ? "active" : "")">
-							<a class="page-link"
-							   asp-action="ViewBranchItems"
-							   asp-route-PageId="@i"
-							   asp-route-SortBy="@Model.SortBy"
-							   asp-route-Id="@Model.Id"
-							   asp-route-QuantityFilter="@Model.QuantityFilter"
-							   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
-							   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
-							   asp-route-SellingPriceFilter="@Model.SellingPriceFilter"
-							   asp-route-RestockThresholdFilter="@Model.RestockThresholdFilter"
-							   asp-route-DiscountRateFilter="@Model.DiscountRateFilter"
-							   asp-route-OutDatedInMonthsFilter="@Model.OutDatedInMonthsFilter">
-								@i
-							</a>
-						</li>
-					}
-					@if (Model.NoPages > Model.PageId)
-					{
-						<li class="page-item">
-							<a class="page-link"
-							   asp-action="ViewBranchItems"
-							   asp-route-PageId="@(Model.PageId + 1)"
-							   asp-route-SortBy="@Model.SortBy"
-							   asp-route-Id="@Model.Id"
-							   asp-route-QuantityFilter="@Model.QuantityFilter"
-							   asp-route-BuyingPriceAvgFilter="@Model.BuyingPriceAvgFilter"
-							   asp-route-LastBuyingPriceFilter="@Model.LastBuyingPriceFilter"
-							   asp-route-SellingPriceFilter="@Model.SellingPriceFilter"
-							   asp-route-RestockThresholdFilter="@Model.RestockThresholdFilter"
-							   asp-route-DiscountRateFilter="@Model.DiscountRateFilter"
-							   asp-route-OutDatedInMonthsFilter="@Model.OutDatedInMonthsFilter">
-								Next
-							</a>
-						</li>
-					}
-				</ul>
-			</nav>
-		</div>
-	}
-
-}
-
-
-
-@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
 
-	<script>
 
-		 //Chnage BranchItem Values.
-		  $(".btnSaveItemBranch").on("click", function () {
-			let branchId = $(this).data("branchid");
-			let itemId   = $(this).data("itemid");
 
-			let parent = $(this).closest(".saveData");
+	@section Scripts {
+		@{
+			await Html.RenderPartialAsync("_ValidationScriptsPartial");
+		}
 
-			let quantity        = parent.find(".Quantity").val();
-			let buyingPriceAvg  = parent.find(".BuyingPriceAvg").val();
-			let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
-			let sellingPrice    = parent.find(".SellingPrice").val();
-			let discountRate	= parent.find(".DiscountRate").val();
-			let restockThreshold= parent.find(".RestockThreshold").val();
-			let outDatedInMonths= parent.find(".OutDatedInMonths").val();
+		<script>
 
-			var data = {
-				Quantity: quantity,
-				BuyingPriceAvg: buyingPriceAvg,
-				LastBuyingPrice: lastBuyingPrice,
-				SellingPrice: sellingPrice,
-				BranchId: branchId,
-				ItemId: itemId,
-				DiscountRate:discountRate,
-				RestockThreshold: restockThreshold,
-				OutDatedInMonths:outDatedInMonths
-			};
+			 //Chnage BranchItem Values.
+			  $(".btnSaveItemBranch").on("click", function () {
+				let branchId = $(this).data("branchid");
+				let itemId   = $(this).data("itemid");
 
-			$.ajax({
-				url: '@Url.Action("SaveBranchItem", "ClothingItem", new { area = "Item" })',
-				type: "POST",
+				let parent = $(this).closest(".saveData");
 
-				data: {BranchItemDTO : data},
-				success: function (res) {
-					console.log("Saved:", res);
+				let quantity        = parent.find(".Quantity").val();
+				let buyingPriceAvg  = parent.find(".BuyingPriceAvg").val();
+				let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
+				let sellingPrice    = parent.find(".SellingPrice").val();
+				let discountRate	= parent.find(".DiscountRate").val();
+				let restockThreshold= parent.find(".RestockThreshold").val();
+				let outDatedInMonths= parent.find(".OutDatedInMonths").val();
 
-					if (res.status) {
-						toastr.success("Branch item saved successfully!");
-					} else {
-						toastr.error("Failed to save branch item.");
+				var data = {
+					Quantity: quantity,
+					BuyingPriceAvg: buyingPriceAvg,
+					LastBuyingPrice: lastBuyingPrice,
+					SellingPrice: sellingPrice,
+					BranchId: branchId,
+					ItemId: itemId,
+					DiscountRate:discountRate,
+					RestockThreshold: restockThreshold,
+					OutDatedInMonths:outDatedInMonths
+				};
+
+				$.ajax({
+					url: '@Url.Action("SaveBranchItem", "ClothingItem", new { area = "Item" })',
+					type: "POST",
+
+					data: {BranchItemDTO : data},
+					success: function (res) {
+						console.log("Saved:", res);
+
+						if (res.status) {
+							toastr.success("Branch item saved successfully!");
+						} else {
+							toastr.error("Failed to save branch item.");
+						}
+					},
+					error: function (xhr, status, error) {
+						console.error("Error:", error);
+						toastr.error("Something went wrong: " + error);
 					}
-				},
-				error: function (xhr, status, error) {
-					console.error("Error:", error);
-					toastr.error("Something went wrong: " + error);
-				}
+				});
 			});
-		});
-	</script>
-}
+		</script>
+	}
 
-@section Styles {
-	<link href="~/css/pagination.css" rel="stylesheet" />
-	<link href="~/css/tableStyling.css" rel="stylesheet" />
+	@section Styles {
+		<link href="~/css/pagination.css" rel="stylesheet" />
+		<link href="~/css/tableStyling.css" rel="stylesheet" />
+	}
 }

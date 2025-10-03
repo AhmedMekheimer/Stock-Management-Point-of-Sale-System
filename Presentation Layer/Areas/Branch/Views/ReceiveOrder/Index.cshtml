@@ -59,7 +59,7 @@
 					</div>
 
 					<!-- Apply Button -->
-					<div class="col-md-2 d-flex justify-content-end align-items-center">
+					<div class="col-md-2 d-flex">
 						<button type="submit" class="btn btn-sm btn-primary">Apply</button>
 					</div>
 				</form>
@@ -236,16 +236,20 @@
 										</text>
 									}
 								</td>
-								<td class="row gap-1">
+								<td class="d-flex gap-2">
 
-									@if (User.HasClaim("Permission", "ReceiveOrder.Edit"))
+									@if (User.HasClaim("Permission", "ReceiveOrder.Edit") && item.status == Status.Draft)
 									{
-										<a asp-action="Save" asp-route-id="@item.Id" class="col-3 btn btn-sm btn-info">Edit</a>
+										<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a>
 
+									}
+									else if (User.HasClaim("Permission", "ReceiveOrder.Edit") && item.status == Status.Approved)
+									{
+										<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">Show</a>
 									}
 									@if (User.HasClaim("Permission", "ReceiveOrder.Delete") && item.status == Status.Draft)
 									{
-										<button type="button" class="col-4 btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id">Delete </button>
+										<button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id">Delete </button>
 									}
 								</td>
 

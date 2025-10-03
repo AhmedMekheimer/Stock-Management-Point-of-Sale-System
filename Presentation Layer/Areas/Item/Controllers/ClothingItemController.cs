@@ -88,13 +88,6 @@ namespace PresentationLayer.Areas.Stock.Controllers
                 {
                     itemVM = item.Adapt<ItemVM>();
                     LoadData(itemVM).GetAwaiter().GetResult();
-                    ViewBag.ShowBranchItems = true;
-                    var branchItems = await _UnitOfWork.BranchItems.GetAsync(
-                        b => (b.ItemId == id) && (user.BranchId == null || b.BranchId == user.BranchId),
-                        include: [b => b.Branch]
-                        );
-
-                    itemVM.BranchItem = branchItems;
                     return View(itemVM);
                 }
                 TempData["Error"] = "Clothing Item Not Found";
@@ -256,24 +249,12 @@ namespace PresentationLayer.Areas.Stock.Controllers
                         {
                             ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
                         }
-                        ViewBag.ShowBranchItems = true;
-                        var branchItems = await _UnitOfWork.BranchItems.GetAsync(
-                            b => (b.ItemId == itemVM.Id) && (user.BranchId == null || b.BranchId == user.BranchId),
-                            include: [b => b.Branch]);
-
-                        itemVM.BranchItem = branchItems;
                         itemVM.Image = item.Image;
                         return View(itemVM);
                     }
                     else if ((await _UnitOfWork.Items.GetOneAsync(e => e.Barcode == itemVM.Barcode && e.Id != itemVM.Id) is CoreLayer.Models.Item))
                     {
                         ModelState.AddModelError(nameof(itemVM.Barcode), "Barcode already exists");
-                        ViewBag.ShowBranchItems = true;
-                        var branchItems = await _UnitOfWork.BranchItems.GetAsync(
-                            b => (b.ItemId == itemVM.Id) && (user.BranchId == null || b.BranchId == user.BranchId),
-                            include: [b => b.Branch]);
-
-                        itemVM.BranchItem = branchItems;
                         itemVM.Image = item.Image;
                         return View(itemVM);
                     }

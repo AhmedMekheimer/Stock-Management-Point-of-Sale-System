@@ -182,48 +182,5 @@
 			}
 		}
 
-		 //Chnage BranchItem Values.
-		  $(".btnSaveItemBranch").on("click", function () {
-			let branchId = $(this).data("branchid");
-			let itemId   = $(this).data("itemid");
-
-			let parent = $(this).closest(".saveData");
-
-			let quantity        = parent.find(".Quantity").val();
-			let buyingPriceAvg  = parent.find(".BuyingPriceAvg").val();
-			let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
-			let sellingPrice    = parent.find(".SellingPrice").val();
-			let discountRate	= parent.find(".DiscountRate").val();
-
-			var data = {
-				Quantity: quantity,
-				BuyingPriceAvg: buyingPriceAvg,
-				LastBuyingPrice: lastBuyingPrice,
-				SellingPrice: sellingPrice,
-				BranchId: branchId,
-				ItemId: itemId,
-				DiscountRate:discountRate,
-			};
-
-			$.ajax({
-				url: '@Url.Action("SaveBranchItem", "ClothingItem", new { area = "Item" })',
-				type: "POST",
-
-				data: {BranchItemDTO : data},
-				success: function (res) {
-					console.log("Saved:", res);
-
-					if (res.status) {
-						toastr.success("Branch item saved successfully!");
-					} else {
-						toastr.error("Failed to save branch item.");
-					}
-				},
-				error: function (xhr, status, error) {
-					console.error("Error:", error);
-					toastr.error("Something went wrong: " + error);
-				}
-			});
-		});
 	</script>
 }

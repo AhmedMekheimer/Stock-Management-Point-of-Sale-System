@@ -7,7 +7,7 @@
 namespace InfrastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingSalesAndDashboardPermissions : Migration
+    public partial class Sales_Dashboard_Permissions : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

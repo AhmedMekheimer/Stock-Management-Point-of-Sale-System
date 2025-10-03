@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251002095141_AddingSalesAndDashboardPermissions")]
-    partial class AddingSalesAndDashboardPermissions
+    [Migration("20251003181454_Sales_Dashboard_Permissions")]
+    partial class Sales_Dashboard_Permissions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1388,6 +1388,12 @@ namespace InfrastructureLayer.Migrations
                     b.HasBaseType("CoreLayer.Models.Operation");
 
                     b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Change")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaidCash")
                         .HasColumnType("int");
 
                     b.Property<int>("RetailCustomerId")

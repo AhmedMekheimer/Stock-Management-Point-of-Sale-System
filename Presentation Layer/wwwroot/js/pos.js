@@ -16,7 +16,7 @@
     let itemTypes = [];
     let items = [];
     let branches = [];
-    let currentBranchId;
+    let currentBranchId = 0;
     let customers = [];
     let currentCustomerId = 0;
     let currentUser = null;
@@ -25,12 +25,12 @@
     // Initialize the POS system
     function initPOS() {
         fetchBranches()
-            .then(() => fetchItemTypes())
-            .then(() => fetchItems(0, currentBranchId)) // first load: All Items for the first/only branch
             .then(() => fetchCustomers())
             .then(() => fetchCurrentUser())
             .then(() => fetchActiveDiscounts())
             .then(() => updateCartDisplay())
+            .then(() => fetchItemTypes())
+            .then(() => fetchItems(0, currentBranchId)) // first load: All Items for the first/only branch
             .catch(err => console.error('Init error:', err));
     }
 

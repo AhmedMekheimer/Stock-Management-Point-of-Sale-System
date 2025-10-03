@@ -111,22 +111,30 @@ namespace PresentationLayer.Areas.Item.Controllers
             }
             if (vm.ParentName is not null)
             {
-                if(vm.ParentName.Contains(vm.Name))
+                if (vm.ParentName.Contains(vm.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     ModelState.AddModelError(nameof(vm.Name), "Cannot set the parent to itself.");
                     return View(vm);
                 }
                 vm.Name = vm.Name + " " + vm.ParentName;
             }
-            _db.ItemTypes.Add(new ItemType
+            try
             {
-                Name = vm.Name,
-                ItemTypeId = vm.ParentId,
-                Image = vm.ItemType.Image
-            });
-            await _db.SaveChangesAsync();
+                _db.ItemTypes.Add(new ItemType
+                {
+                    Name = vm.Name,
+                    ItemTypeId = vm.ParentId,
+                    Image = vm.ItemType.Image
+                });
+                await _db.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                TempData["Error"] = "Root Parent Name Already Exists or a DB error";
+                return View(vm);
+            }
         }
 
         // -------------------- EDIT --------------------
@@ -179,7 +187,7 @@ namespace PresentationLayer.Areas.Item.Controllers
             Result result = new Result();
 
             // 1. Prevent moving under itself
-            if (vm.ParentId == id || vm.ParentName == vm.Name)
+            if (vm.ParentId == id || vm.ParentName.Contains(vm.Name, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(vm.Name), "Cannot set the parent to itself.");
                 vm.ItemType.Image = entity.Image;

@@ -1,7 +1,7 @@
 ﻿@model BranchItemsFilters2VM
 @if (User.HasClaim("Permission", "ClothingItem.BranchItem"))
 {
-	@if (Model.Id != 0)
+	@if (Model.Id != 0 && Model.BranchItems.Count > 0)
 	{
 		<!-- Branch Items Filters -->
 		<div class="d-flex justify-content-between align-items-center mb-3">
@@ -68,7 +68,7 @@
 		<!-- Branch Items Table -->
 		@if (Model.BranchItems.Count == 0)
 		{
-			<h3 class="mt-4">No Branch Items Found</h3>
+			<h3 class="mt-4">No Items Found</h3>
 		}
 		else
 		{
@@ -430,6 +430,10 @@
 			</div>
 		}
 
+	}
+	else
+	{
+		<h3 class="mt-4">No Items in This Branch</h3>
 	}
 
 

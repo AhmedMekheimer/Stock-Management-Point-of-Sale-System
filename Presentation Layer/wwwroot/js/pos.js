@@ -284,7 +284,7 @@
                     ${hasDiscount ? `<div class="badge discount-badge">-${discountRate}%</div>` : ''}
                     <div class="badge qty-badge">${inStock ? qtyText : '0'}</div>
                 </div>
-
+                <div class="item-name-single text-truncate">${item.name}</div>
                 <div class="item-card-body">
                     <div class="price-single">${displayPrice.toFixed(2)} EGP</div>
                 </div>
@@ -294,6 +294,7 @@
             $itemsGrid.append($itemCard);
         });
     }
+
 
 
 

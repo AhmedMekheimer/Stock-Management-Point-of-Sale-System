@@ -1,4 +1,5 @@
-﻿using CoreLayer.Models;
+﻿using CoreLayer.CustomValidations;
+using CoreLayer.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,7 +19,7 @@ namespace PresentationLayer.Areas.Branch.ViewModels
         public string Address { get; set; } = null!;
 
         [Required]
-        [RegularExpression(@"^\+?[1-9]\d{1,14}$", ErrorMessage = "Invalid phone number.")]
+        [InternationalPhoneNumber]
         public string PhoneNumber { get; set; } = null!;
     }
 }

@@ -24,6 +24,7 @@ namespace PresentationLayer.Areas.Administrative.ViewModels
 
         public string? UserId { get; set; }
 
+        public bool IsSuperAdmin { get; set; } = false;
 
         public int? BranchId { get; set; }
         public string RoleId { get; set; }

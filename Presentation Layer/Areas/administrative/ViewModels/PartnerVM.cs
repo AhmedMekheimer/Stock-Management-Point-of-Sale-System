@@ -15,10 +15,11 @@ namespace PresentationLayer.Areas.administrative.ViewModels
         [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Name cannot be only whitespace.")]
         public string Name { get; set; } = null!;
         [EmailAddress]
+        [RegularExpression(@"^(?!\s+$).*", ErrorMessage = "Email cannot be only whitespace.")]
         public string? Email { get; set; } = string.Empty;
         [Required]
         public PartnerType partnerType { get; set; }
-        [RegularExpression(@"^\+?[1-9]\d{1,14}$", ErrorMessage = "Invalid phone number.")]
+        [InternationalPhoneNumber]
         public string? PhoneNumber { get; set; }
 
         public List<SelectListItem> PartnerList = new List<SelectListItem>() {

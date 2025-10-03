@@ -80,6 +80,10 @@ namespace PresentationLayer.Areas.DashBoard.Controllers
 
                 if (user != null)
                 {
+                    if(user.UserName=="SuperAdmin")
+                    {
+                        createUser.IsSuperAdmin = true;
+                    }
                     createUser.Id = user.Id;
 
                     var branchId = (await _UnitOfWork.Branches.GetOneAsync((b => b.Id == user.BranchId)))?.Id ?? 0;

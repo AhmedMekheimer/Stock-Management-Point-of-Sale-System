@@ -34,7 +34,7 @@ namespace InfrastructureLayer.Utility
             SeedItems();
             SeedBranchItem();
             SeedReceiveOrder();
-
+            SeedSalesInvoices();
         }
         public static void SeedBranch()
         {
@@ -44,7 +44,7 @@ namespace InfrastructureLayer.Utility
                     Id = 1,
                     Name = "Main Branch",
                     Address = "123 Main Street, City Center",
-                    PhoneNumber = "+1234567890",
+                    PhoneNumber = "+201017671158",
                     CreatedDate = new DateTime(2023, 01, 01)
                 },
                 new Branch
@@ -52,7 +52,7 @@ namespace InfrastructureLayer.Utility
                     Id = 2,
                     Name = "East Side Branch",
                     Address = "456 East Street, East Town",
-                    PhoneNumber = "+1987654321",
+                    PhoneNumber = "+442079460958",
                     CreatedDate = new DateTime(2023, 02, 01)
                 },
                 new Branch
@@ -60,7 +60,7 @@ namespace InfrastructureLayer.Utility
                     Id = 3,
                     Name = "West End Branch",
                     Address = "789 West Avenue, Westside",
-                    PhoneNumber = "+1123456789",
+                    PhoneNumber = "+12025550123",
                     CreatedDate = new DateTime(2023, 03, 01)
                 }
             );
@@ -71,10 +71,8 @@ namespace InfrastructureLayer.Utility
                 new Partner
                 {
                     Id = 1,
-                    Name = "ABC Suppliers",
-                    Email = "contact@abc.com",
-                    partnerType = Partner.PartnerType.Supplier,
-                    PhoneNumber = "+201001112233"
+                    Name = "Anonymous Customer",
+                    partnerType = Partner.PartnerType.RetailCustomer
                 },
                 new Partner
                 {
@@ -90,7 +88,15 @@ namespace InfrastructureLayer.Utility
                     Name = "XYZ Retail",
                     Email = "sales@xyzretail.com",
                     partnerType = Partner.PartnerType.RetailCustomer,
-                    PhoneNumber = "+201223344556"
+                    PhoneNumber = "+12025550123"
+                },
+                new Partner
+                {
+                    Id = 4,
+                    Name = "ABC Suppliers",
+                    Email = "contact@abc.com",
+                    partnerType = Partner.PartnerType.Supplier,
+                    PhoneNumber = "+201001112233"
                 }
             );
         }
@@ -144,7 +150,7 @@ namespace InfrastructureLayer.Utility
                 {
                     Id = 3,
                     Name = "Loyalty Discount",
-                    Rate = 10,
+                    Rate = 2,
                     IsActive = true,
                     ExpirationDate = null, // never expires
                     CurrentUses = 0,
@@ -227,7 +233,7 @@ namespace InfrastructureLayer.Utility
                 ConcurrencyStamp = "b9876543-c21d-4fed-8765-abcdef123456",
                 PhoneNumber = "+201111111111",
                 PhoneNumberConfirmed = true,
-                BranchId = 1, 
+                BranchId = 1,
                 CreatedDate = new DateTime(2025, 1, 1),
                 PasswordHash = "AQAAAAIAAYagAAAAEM1n6yL7RkI7GnXYVPh4eM6S2f/JXc1qR9mVh6Qv0I8K4OaX9O0xSck5x8uQ3+eU9w==",
 
@@ -360,8 +366,8 @@ namespace InfrastructureLayer.Utility
             {
                 Id = 1,
                 Code = "2_1_1",
-                Date = new DateOnly(2025, 01, 01), 
-                Time = new TimeOnly(10, 0, 0),       
+                Date = new DateOnly(2025, 01, 01),
+                Time = new TimeOnly(10, 0, 0),
                 status = Status.Approved,
                 TotalQuantity = 2,
                 TotalAmount = 15200,
@@ -374,7 +380,7 @@ namespace InfrastructureLayer.Utility
 
                 ApplicationUserId = "BRANCH-0001", // seeded earlier
                 BranchId = 1,
-                SupplierId = 1
+                SupplierId = 4
             };
 
             var adminOrder = new ReceiveOrder
@@ -396,7 +402,7 @@ namespace InfrastructureLayer.Utility
 
                 ApplicationUserId = "ADMIN-0001", // seeded earlier
                 BranchId = 1,
-                SupplierId = 1
+                SupplierId = 4
             };
 
             _builder!.Entity<ReceiveOrder>().HasData(branchOrder, adminOrder);
@@ -408,7 +414,7 @@ namespace InfrastructureLayer.Utility
                 {
                     Id = 1,
                     OperationId = 1, // Branch Manager’s order
-                    ItemId = 1, 
+                    ItemId = 1,
                     Quantity = 1,
                     BuyingPrice = 15000,
                     SellingPrice = 0, // not used in receive order
@@ -418,7 +424,7 @@ namespace InfrastructureLayer.Utility
                 {
                     Id = 2,
                     OperationId = 1,
-                    ItemId = 2, 
+                    ItemId = 2,
                     Quantity = 1,
                     BuyingPrice = 200,
                     SellingPrice = 0,
@@ -435,6 +441,115 @@ namespace InfrastructureLayer.Utility
                     TotalPrice = 15000
                 }
             );
+        }
+        public static void SeedSalesInvoices()
+        {
+            var invoiceOne = new SalesInvoice
+            {
+                Id = 3,
+                Code = "1_1_3",
+                Date = new DateOnly(2025, 01, 01),
+                Time = new TimeOnly(10, 0, 0),
+                status = Status.Approved,
+                TotalQuantity = 50,
+                TotalAmount = 5000,
+                TotalDiscountRate = 2,
+                TotalDiscountAmount = 50,
+                GrandTotal = 4950,
+                RoundedGrandTotal = 4950,
+                PaidCash = 5000,
+                Change = 50,
+
+                ApplicationUserId = "BRANCH-0001", // seeded earlier
+                BranchId = 1,
+                RetailCustomerId = 1
+            };
+
+            var invoiceTwo = new SalesInvoice
+            {
+                Id = 4,
+                Code = "1_1_4",
+                Date = new DateOnly(2025, 01, 01),
+                Time = new TimeOnly(10, 0, 0),
+                status = Status.Approved,
+                TotalQuantity = 20,
+                TotalAmount = 2000,
+                TotalDiscountRate = 0,
+                TotalDiscountAmount = 0,
+                GrandTotal = 2000,
+                RoundedGrandTotal = 2000,
+                PaidCash = 2000,
+                Change = 0,
+
+                ApplicationUserId = "CASHIER-0001", // seeded earlier
+                BranchId = 1,
+                RetailCustomerId = 2
+            };
+            _builder!.Entity<SalesInvoice>().HasData(invoiceOne, invoiceTwo);
+
+            // Seed Operation Items
+            _builder!.Entity<OperationItem>().HasData(
+                new OperationItem
+                {
+                    Id = 4,
+                    OperationId = 3,
+                    ItemId = 1,
+                    Quantity = 50,
+                    BuyingPrice = 0,
+                    SellingPrice = 100,
+                    TotalPrice = 5000
+                },
+                new OperationItem
+                {
+                    Id = 5,
+                    OperationId = 4,
+                    ItemId = 1,
+                    Quantity = 10,
+                    BuyingPrice = 0,
+                    SellingPrice = 100,
+                    TotalPrice = 1000
+                },
+                new OperationItem
+                {
+                    Id = 6,
+                    OperationId = 4,
+                    ItemId = 2,
+                    Quantity = 10,
+                    BuyingPrice = 0,
+                    SellingPrice = 100,
+                    TotalPrice = 1000
+                });
+
+            // Seed Bridge Table - Discount SalesInvoices
+            _builder!.Entity<DiscountSalesInvoice>().HasData(
+                new DiscountSalesInvoice
+                {
+                    OperationId = 3,
+                    DiscountId = 3
+                }
+                );
+
+            // Seed Bridge Table - BranchItem SalesInvoices
+            _builder!.Entity<BranchItemSalesInvoice>().HasData(
+                new BranchItemSalesInvoice
+                {
+                    OperationId = 3,
+                    ItemId = 1,
+                    BranchId = 1
+                },
+                new BranchItemSalesInvoice
+                {
+                    OperationId = 4,
+                    ItemId = 1,
+                    BranchId = 2
+                },
+                new BranchItemSalesInvoice
+                {
+                    OperationId = 4,
+                    ItemId = 2,
+                    BranchId = 2
+                }
+                );
         }
     }
 }

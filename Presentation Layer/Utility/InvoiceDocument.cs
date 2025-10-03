@@ -114,7 +114,10 @@ namespace PresentationLayer.Utility
 
                     // Totals
                     col.Item().AlignRight().Text($"Subtotal: {_invoice.TotalAmount:0.00}");
-                    col.Item().AlignRight().Text($"{_invoice.DiscountSalesInvoices.ToList()[0].Discount.Name} Discount: {_invoice.TotalDiscountAmount ?? 0:0.00}");
+                    if (_invoice.DiscountSalesInvoices.Count > 0)
+                    {
+                        col.Item().AlignRight().Text($"{_invoice.DiscountSalesInvoices.ToList()[0].Discount.Name} Discount: {_invoice.TotalDiscountAmount ?? 0:0.00}");
+                    }
 
                     col.Item().LineHorizontal(1);
                     col.Item().AlignRight().Text($"Grand Total: {_invoice.GrandTotal:0.00}").Bold();

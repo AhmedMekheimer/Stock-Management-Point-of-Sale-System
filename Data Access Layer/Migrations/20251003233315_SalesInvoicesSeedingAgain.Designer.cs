@@ -4,6 +4,7 @@ using InfrastructureLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003233315_SalesInvoicesSeedingAgain")]
+    partial class SalesInvoicesSeedingAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -216,7 +219,7 @@ namespace InfrastructureLayer.Migrations
                             Address = "123 Main Street, City Center",
                             CreatedDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Main Branch",
-                            PhoneNumber = "+201017671158"
+                            PhoneNumber = "+1234567890"
                         },
                         new
                         {
@@ -224,7 +227,7 @@ namespace InfrastructureLayer.Migrations
                             Address = "456 East Street, East Town",
                             CreatedDate = new DateTime(2023, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "East Side Branch",
-                            PhoneNumber = "+442079460958"
+                            PhoneNumber = "+1987654321"
                         },
                         new
                         {
@@ -232,7 +235,7 @@ namespace InfrastructureLayer.Migrations
                             Address = "789 West Avenue, Westside",
                             CreatedDate = new DateTime(2023, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "West End Branch",
-                            PhoneNumber = "+12025550123"
+                            PhoneNumber = "+1123456789"
                         });
                 });
 
@@ -989,7 +992,7 @@ namespace InfrastructureLayer.Migrations
                             Id = 3,
                             Email = "sales@xyzretail.com",
                             Name = "XYZ Retail",
-                            PhoneNumber = "+12025550123",
+                            PhoneNumber = "+201223344556",
                             partnerType = 2
                         },
                         new

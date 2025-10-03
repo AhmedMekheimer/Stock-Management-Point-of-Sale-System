@@ -165,7 +165,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
                     barcode = i.Item.Barcode,
                     quantity = i.Quantity,
                     price = i.SellingPrice,
-                    discountPrice = (i.DiscountRate is null) ? i.SellingPrice : i.SellingPrice - i.SellingPrice * i.DiscountRate / 100.0,
+                    discountPrice = (i.DiscountRate == 0) ? i.SellingPrice : i.SellingPrice - i.SellingPrice * i.DiscountRate / 100.0,
                     discountRate = i.DiscountRate,
                     imageName = i.Item.Image
                 });

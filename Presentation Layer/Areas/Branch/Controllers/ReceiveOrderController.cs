@@ -38,8 +38,7 @@ namespace PresentationLayer.Areas.Branch.Controllers
 
             var ReceiveOrders = await _UnitOfWork.ReceiveOrders.GetAsyncIncludes(
             condition: r =>
-            (r.ApplicationUserId == userId)
-            && (user.BranchId == null || r.BranchId == user.BranchId)
+            (user.BranchId == null || r.BranchId == user.BranchId)
             && (string.IsNullOrEmpty(vm.Search)
                 || r.Supplier.Name.Contains(vm.Search))
             && (vm.BranchId == 0 || r.BranchId == vm.BranchId)

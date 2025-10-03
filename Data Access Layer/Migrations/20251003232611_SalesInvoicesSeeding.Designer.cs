@@ -4,6 +4,7 @@ using InfrastructureLayer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003232611_SalesInvoicesSeeding")]
+    partial class SalesInvoicesSeeding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -216,7 +219,7 @@ namespace InfrastructureLayer.Migrations
                             Address = "123 Main Street, City Center",
                             CreatedDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Main Branch",
-                            PhoneNumber = "+201017671158"
+                            PhoneNumber = "+1234567890"
                         },
                         new
                         {
@@ -224,7 +227,7 @@ namespace InfrastructureLayer.Migrations
                             Address = "456 East Street, East Town",
                             CreatedDate = new DateTime(2023, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "East Side Branch",
-                            PhoneNumber = "+442079460958"
+                            PhoneNumber = "+1987654321"
                         },
                         new
                         {
@@ -232,7 +235,7 @@ namespace InfrastructureLayer.Migrations
                             Address = "789 West Avenue, Westside",
                             CreatedDate = new DateTime(2023, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "West End Branch",
-                            PhoneNumber = "+12025550123"
+                            PhoneNumber = "+1123456789"
                         });
                 });
 
@@ -362,26 +365,6 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("OperationId");
 
                     b.ToTable("BranchItemSalesInvoices");
-
-                    b.HasData(
-                        new
-                        {
-                            BranchId = 1,
-                            ItemId = 1,
-                            OperationId = 3
-                        },
-                        new
-                        {
-                            BranchId = 2,
-                            ItemId = 1,
-                            OperationId = 4
-                        },
-                        new
-                        {
-                            BranchId = 2,
-                            ItemId = 2,
-                            OperationId = 4
-                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Discount", b =>
@@ -463,13 +446,6 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("OperationId");
 
                     b.ToTable("DiscountSalesInvoices");
-
-                    b.HasData(
-                        new
-                        {
-                            DiscountId = 3,
-                            OperationId = 3
-                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Item", b =>
@@ -902,36 +878,6 @@ namespace InfrastructureLayer.Migrations
                             Quantity = 1,
                             SellingPrice = 0.0,
                             TotalPrice = 15000.0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            BuyingPrice = 0.0,
-                            ItemId = 1,
-                            OperationId = 3,
-                            Quantity = 50,
-                            SellingPrice = 100.0,
-                            TotalPrice = 5000.0
-                        },
-                        new
-                        {
-                            Id = 5,
-                            BuyingPrice = 0.0,
-                            ItemId = 1,
-                            OperationId = 4,
-                            Quantity = 10,
-                            SellingPrice = 100.0,
-                            TotalPrice = 1000.0
-                        },
-                        new
-                        {
-                            Id = 6,
-                            BuyingPrice = 0.0,
-                            ItemId = 2,
-                            OperationId = 4,
-                            Quantity = 10,
-                            SellingPrice = 100.0,
-                            TotalPrice = 1000.0
                         });
                 });
 
@@ -989,7 +935,7 @@ namespace InfrastructureLayer.Migrations
                             Id = 3,
                             Email = "sales@xyzretail.com",
                             Name = "XYZ Retail",
-                            PhoneNumber = "+12025550123",
+                            PhoneNumber = "+201223344556",
                             partnerType = 2
                         },
                         new
@@ -1947,46 +1893,6 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("RetailCustomerId");
 
                     b.ToTable("SalesInvoices", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 3,
-                            ApplicationUserId = "BRANCH-0001",
-                            Code = "1_1_3",
-                            Date = new DateOnly(2025, 1, 1),
-                            GrandTotal = 4950.0,
-                            RoundedGrandTotal = 4950,
-                            Time = new TimeOnly(10, 0, 0),
-                            TotalAmount = 5000.0,
-                            TotalDiscountAmount = 50.0,
-                            TotalDiscountRate = 2,
-                            TotalQuantity = 50,
-                            status = 1,
-                            BranchId = 1,
-                            Change = 50,
-                            PaidCash = 5000,
-                            RetailCustomerId = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ApplicationUserId = "CASHIER-0001",
-                            Code = "1_1_4",
-                            Date = new DateOnly(2025, 1, 1),
-                            GrandTotal = 2000.0,
-                            RoundedGrandTotal = 2000,
-                            Time = new TimeOnly(10, 0, 0),
-                            TotalAmount = 2000.0,
-                            TotalDiscountAmount = 0.0,
-                            TotalDiscountRate = 0,
-                            TotalQuantity = 20,
-                            status = 1,
-                            BranchId = 1,
-                            Change = 0,
-                            PaidCash = 2000,
-                            RetailCustomerId = 2
-                        });
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Operations.Transfer", b =>

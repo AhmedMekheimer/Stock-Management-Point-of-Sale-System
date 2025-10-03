@@ -8,7 +8,14 @@
             }
             else
             {
-                <h4 class="mb-4">Edit Received Order</h4>
+                if(Model.Status==Status.Draft)
+                {
+                    <h4 class="mb-4">Edit Received Order</h4>
+                }
+                else
+                {
+                    <h4 class="mb-4">Approved Received Order</h4>
+                }
             }
 
             <form asp-action="Save" method="post">

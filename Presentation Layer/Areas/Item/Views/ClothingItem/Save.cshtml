@@ -101,14 +101,14 @@
 					</div>
                     @if (User.HasClaim("Permission", "ClothingItem.Add"))
                     {
-                        <div class="form-actions mt-3">
+                        <div class="form-actions mt-3" style="margin-top:0px;">
                             <button type="submit" class="btn btn-primary btn-sm">Submit</button>
                         </div>
                     }
 				
 				</div>
 			</form>
-			<a asp-action="ViewBranchItems" asp-route-id="@Model.Id" class="btn btn-sm btn-info">
+			<a asp-action="ViewBranchItems" asp-route-id="@Model.Id" class="btn btn-sm btn-info" style="margin-top:10px;">
 				Show Branches that contain this Item
 			</a>
 		</div>

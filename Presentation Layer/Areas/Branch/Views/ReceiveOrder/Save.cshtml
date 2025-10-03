@@ -2,7 +2,14 @@
 <div class="container">
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-body p-4">
-            <h4 class="mb-4">Add Received Order</h4>
+            @if(Model.ReveiveOrderId == null)
+            {
+                <h4 class="mb-4">Add Received Order</h4>
+            }
+            else
+            {
+                <h4 class="mb-4">Edit Received Order</h4>
+            }
 
             <form asp-action="Save" method="post">
                 <div class="row">

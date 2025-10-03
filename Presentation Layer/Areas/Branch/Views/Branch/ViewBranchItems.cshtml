@@ -424,18 +424,18 @@
 
 			let parent = $(this).closest(".saveData");
 
-			//let quantity        = parent.find(".Quantity").val();
-			//let buyingPriceAvg  = parent.find(".BuyingPriceAvg").val();
-			//let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
+			let quantity        = parent.find(".Quantity").val();
+			let buyingPriceAvg  = parent.find(".BuyingPriceAvg").val();
+			let lastBuyingPrice = parent.find(".lastBuyingPrice").val();
 			let sellingPrice    = parent.find(".SellingPrice").val();
 			let discountRate	= parent.find(".DiscountRate").val();
 			let restockThreshold= parent.find(".RestockThreshold").val();
 			let outDatedInMonths= parent.find(".OutDatedInMonths").val();
 
 			var data = {
-				//Quantity: quantity,
-				//BuyingPriceAvg: buyingPriceAvg,
-				//LastBuyingPrice: lastBuyingPrice,
+				Quantity: quantity,
+				BuyingPriceAvg: buyingPriceAvg,
+				LastBuyingPrice: lastBuyingPrice,
 				SellingPrice: sellingPrice,
 				BranchId: branchId,
 				ItemId: itemId,

@@ -295,7 +295,7 @@ namespace InfrastructureLayer.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             PermissionSeeder.Seed(modelBuilder);
-
+            ApplicationSeeder.Seed(modelBuilder);
         }
     }
 }

@@ -79,42 +79,52 @@ namespace PresentationLayer.Utility
 
             _Context.SaveChanges();
 
-            if (!_Context.Users.Any() || !_Context.Roles.Any() || !_Context.Partners.Any())
-            {
-                _RoleManager.CreateAsync(new(SD.SuperAdmin)).GetAwaiter().GetResult();
+            //if (!_Context.Users.Any() || !_Context.Roles.Any() || !_Context.Partners.Any())
+            //{
+                //_RoleManager.CreateAsync(new(SD.SuperAdmin)).GetAwaiter().GetResult();
                 //_RoleManager.CreateAsync(new(SD.StockManager)).GetAwaiter().GetResult();
                 //_RoleManager.CreateAsync(new(SD.BranchManager)).GetAwaiter().GetResult();
                 //_RoleManager.CreateAsync(new(SD.Cashier)).GetAwaiter().GetResult();
 
-                var result = _UserManager.CreateAsync(new ApplicationUser()
-                {
-                    UserName = "SuperAdmin",
-                    Email = "Email@gmail.com",
-                    EmailConfirmed = true,
-                }, "SuperAdmin1!").GetAwaiter().GetResult();
+                var superAdmin =  _UserManager.FindByNameAsync("SuperAdmin").GetAwaiter().GetResult();
 
-                if (result.Succeeded)
+                if (superAdmin == null)
                 {
-                    var Admin = SD.SuperAdmin == "Super Admin" ? "SuperAdmin" : null;
-                    var superAdmin = _UserManager.FindByNameAsync(Admin).GetAwaiter().GetResult();
-
-                    if (superAdmin is not null)
+                    var result = _UserManager.CreateAsync(new ApplicationUser()
                     {
-                        _UserManager.AddToRoleAsync(superAdmin, SD.SuperAdmin).GetAwaiter().GetResult();
-                         var role =  _RoleManager.FindByNameAsync("Super Admin").GetAwaiter().GetResult();
-                         var permissionIds = _Context.Permissions.ToList().Select(p => p.Id);
+                        UserName = "SuperAdmin",
+                        Email = "Email@gmail.com",
+                        EmailConfirmed = true,
+                    }, "SuperAdmin1!").GetAwaiter().GetResult();
 
-                        var rolePermissions = permissionIds.Select(pid => new RolePermission
+                    if (result.Succeeded)
+                    {
+                        var Admin = SD.SuperAdmin == "Super Admin" ? "SuperAdmin" : null;
+                        var getsuperAdmin = _UserManager.FindByNameAsync(Admin).GetAwaiter().GetResult();
+
+                        if (getsuperAdmin is not null)
                         {
-                            RoleId = role.Id,
-                            PermissionId = pid
-                        });
+                            _UserManager.AddToRoleAsync(getsuperAdmin, SD.SuperAdmin).GetAwaiter().GetResult();
+                            var role = _RoleManager.FindByNameAsync("Super Admin").GetAwaiter().GetResult();
+                            var permissionIds = _Context.Permissions.ToList().Select(p => p.Id);
 
-                         _Context.RolePermissions.AddRange(rolePermissions);
+                            var rolePermissions = permissionIds.Select(pid => new RolePermission
+                            {
+                                RoleId = role.Id,
+                                PermissionId = pid
+                            });
 
+                            _Context.RolePermissions.AddRange(rolePermissions);
+
+                        }
                     }
-                }
-                _Context.SaveChanges();
+
+
+
+
+                //}
+               
+               _Context.SaveChanges();
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using CoreLayer.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace InfrastructureLayer.Utility
              // Item
              new Permission { Id = 11, Name = "Item", EnglishName = "Item", ParentId = 1 },
 
-             new Permission { Id = 140, Name = "ClothingItem", EnglishName = "Clothing ClothingItem", ParentId = 11 },
+             new Permission { Id = 140, Name = "ClothingItem", EnglishName = "Clothing Item", ParentId = 11 },
              new Permission { Id = 141, Name = "ClothingItem.View", EnglishName = "View ClothingItem", ParentId = 140 },
              new Permission { Id = 142, Name = "ClothingItem.Add", EnglishName = "Add ClothingItem", ParentId = 140 },
              new Permission { Id = 143, Name = "ClothingItem.Edit", EnglishName = "Edit ClothingItem", ParentId = 140 },
@@ -101,7 +102,7 @@ namespace InfrastructureLayer.Utility
              new Permission { Id = 304, Name = "Role.Delete", EnglishName = "Delete Role", ParentId = 300 },
 
              // Setting
-             new Permission { Id = 320, Name = "Setting", EnglishName = "Setting", ParentId = 12 },
+             //new Permission { Id = 320, Name = "Setting", EnglishName = "Setting", ParentId = 12 },
 
              //Tax
              new Permission { Id = 340, Name = "Tax", EnglishName = "Tax", ParentId = 12 },
@@ -139,13 +140,7 @@ namespace InfrastructureLayer.Utility
               new Permission { Id = 14, Name = "Dashboard", EnglishName = "Dashboard", ParentId = 1 },
             // DashboardView
               new Permission { Id = 440, Name = "Dashboard.View", EnglishName = "View Dashboard", ParentId = 14 }
-              #endregion
-
-
-
-
-
-
+            #endregion
 
             );
         }

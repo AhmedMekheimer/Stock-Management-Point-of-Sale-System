@@ -67,6 +67,16 @@
                         </li>
                     }
 
+                    @* @if (User.HasClaim("Permission", "Setting"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Administrative" asp-controller="Setting" asp-action="Index">
+                                <i class="material-symbols-rounded opacity-5">settings</i>
+                                <span class="nav-link-text ms-1">Settings</span>
+                            </a>
+                        </li>
+                    } *@
+
                     @if (User.HasClaim("Permission", "Partner"))
                     {
                         <li class="nav-item">

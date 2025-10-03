@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace PresentationLayer.Areas.DashBoard.Controllers
 {
     [Area("DashBoard")]
-    [Authorize]
+    //[Authorize(Policy = "Dashboard.View")]
     public class HomeController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;

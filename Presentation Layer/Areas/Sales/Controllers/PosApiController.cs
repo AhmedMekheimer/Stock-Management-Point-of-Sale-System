@@ -26,7 +26,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
     [Area("Sales")]
     [Route("api/[area]/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "POS")]
     public class PosApiController : Controller
     {
         private readonly IUnitOfWork _UnitOfWork;

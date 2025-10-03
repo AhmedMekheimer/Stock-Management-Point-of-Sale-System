@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250925171454_AddCodeToOperation")]
-    partial class AddCodeToOperation
+    [Migration("20251002095141_AddingSalesAndDashboardPermissions")]
+    partial class AddingSalesAndDashboardPermissions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -135,6 +138,9 @@ namespace InfrastructureLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -166,7 +172,13 @@ namespace InfrastructureLayer.Migrations
                     b.Property<double>("LastBuyingPrice")
                         .HasColumnType("float");
 
+                    b.Property<int>("OutDatedInMonths")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RestockThreshold")
                         .HasColumnType("int");
 
                     b.Property<double?>("SellingPrice")
@@ -177,6 +189,24 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("ItemId");
 
                     b.ToTable("BranchItems");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.BranchItemSalesInvoice", b =>
+                {
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OperationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BranchId", "ItemId", "OperationId");
+
+                    b.HasIndex("OperationId");
+
+                    b.ToTable("BranchItemSalesInvoices");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.Discount", b =>
@@ -247,6 +277,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int>("ColorId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
@@ -410,7 +443,6 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Code")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("Date")
@@ -1066,6 +1098,55 @@ namespace InfrastructureLayer.Migrations
                             EnglishName = "View UserLoginHistory",
                             Name = "UserLoginHistory.View",
                             ParentId = 380
+                        },
+                        new
+                        {
+                            Id = 13,
+                            EnglishName = "Sales",
+                            Name = "Sales",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 400,
+                            EnglishName = "POS",
+                            Name = "POS",
+                            ParentId = 13
+                        },
+                        new
+                        {
+                            Id = 420,
+                            EnglishName = "Sales Invoice",
+                            Name = "SalesInvoice",
+                            ParentId = 13
+                        },
+                        new
+                        {
+                            Id = 421,
+                            EnglishName = "View Sales Invoice",
+                            Name = "SalesInvoice.View",
+                            ParentId = 420
+                        },
+                        new
+                        {
+                            Id = 422,
+                            EnglishName = "Print Sales Invoice",
+                            Name = "SalesInvoice.Print",
+                            ParentId = 420
+                        },
+                        new
+                        {
+                            Id = 14,
+                            EnglishName = "Dashboard",
+                            Name = "Dashboard",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 440,
+                            EnglishName = "View Dashboard",
+                            Name = "Dashboard.View",
+                            ParentId = 14
                         });
                 });
 
@@ -1121,25 +1202,6 @@ namespace InfrastructureLayer.Migrations
                     b.HasIndex("OperationId");
 
                     b.ToTable("TaxReceiveOrders");
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.Transaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("OperationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OperationId")
-                        .IsUnique();
-
-                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.UserLoginHistory", b =>
@@ -1328,10 +1390,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
-                    b.Property<string>("InvoiceNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("RetailCustomerId")
                         .HasColumnType("int");
 
@@ -1397,6 +1455,25 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Branch");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("CoreLayer.Models.BranchItemSalesInvoice", b =>
+                {
+                    b.HasOne("CoreLayer.Models.Operations.SalesInvoice", "SalesInvoice")
+                        .WithMany("BranchItemSalesInvoices")
+                        .HasForeignKey("OperationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoreLayer.Models.BranchItem", "BranchItem")
+                        .WithMany("BranchItemSalesInvoices")
+                        .HasForeignKey("BranchId", "ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BranchItem");
+
+                    b.Navigation("SalesInvoice");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.DiscountSalesInvoice", b =>
@@ -1546,17 +1623,6 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("ReceiveOrder");
 
                     b.Navigation("Tax");
-                });
-
-            modelBuilder.Entity("CoreLayer.Models.Transaction", b =>
-                {
-                    b.HasOne("CoreLayer.Models.Operation", "Operation")
-                        .WithMany()
-                        .HasForeignKey("OperationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Operation");
                 });
 
             modelBuilder.Entity("CoreLayer.Models.UserLoginHistory", b =>
@@ -1716,6 +1782,11 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("SalesInvoices");
                 });
 
+            modelBuilder.Entity("CoreLayer.Models.BranchItem", b =>
+                {
+                    b.Navigation("BranchItemSalesInvoices");
+                });
+
             modelBuilder.Entity("CoreLayer.Models.Discount", b =>
                 {
                     b.Navigation("DiscountSalesInvoices");
@@ -1786,6 +1857,8 @@ namespace InfrastructureLayer.Migrations
 
             modelBuilder.Entity("CoreLayer.Models.Operations.SalesInvoice", b =>
                 {
+                    b.Navigation("BranchItemSalesInvoices");
+
                     b.Navigation("DiscountSalesInvoices");
                 });
 #pragma warning restore 612, 618

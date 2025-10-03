@@ -1095,6 +1095,55 @@ namespace InfrastructureLayer.Migrations
                             EnglishName = "View UserLoginHistory",
                             Name = "UserLoginHistory.View",
                             ParentId = 380
+                        },
+                        new
+                        {
+                            Id = 13,
+                            EnglishName = "Sales",
+                            Name = "Sales",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 400,
+                            EnglishName = "POS",
+                            Name = "POS",
+                            ParentId = 13
+                        },
+                        new
+                        {
+                            Id = 420,
+                            EnglishName = "Sales Invoice",
+                            Name = "SalesInvoice",
+                            ParentId = 13
+                        },
+                        new
+                        {
+                            Id = 421,
+                            EnglishName = "View Sales Invoice",
+                            Name = "SalesInvoice.View",
+                            ParentId = 420
+                        },
+                        new
+                        {
+                            Id = 422,
+                            EnglishName = "Print Sales Invoice",
+                            Name = "SalesInvoice.Print",
+                            ParentId = 420
+                        },
+                        new
+                        {
+                            Id = 14,
+                            EnglishName = "Dashboard",
+                            Name = "Dashboard",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 440,
+                            EnglishName = "View Dashboard",
+                            Name = "Dashboard.View",
+                            ParentId = 14
                         });
                 });
 

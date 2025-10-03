@@ -20,6 +20,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
             _UnitOfWork = UnitOfWork;
             _UserManager = userManager;
         }
+        [Authorize(Policy = "SalesInvoice.View")]
         public async Task<IActionResult> Index(SalesInvoicesVM vm)
         {
             if (vm.PageId < 1)
@@ -91,6 +92,7 @@ namespace PresentationLayer.Areas.Sales.Controllers
             return View(vm);
         }
 
+        [Authorize(Policy = "SalesInvoice.Print")]
         public IActionResult GetReceipt(int id)
         {
             // just redirect to the API endpoint

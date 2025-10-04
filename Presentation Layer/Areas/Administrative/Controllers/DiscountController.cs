@@ -116,7 +116,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
             if (!ModelState.IsValid)
                 return View(discountVM);
 
-            // Saving a Newly-Added Tax
+            // Saving a Newly-Added Discount
             if (discountVM.Id == 0)
             {
                 // Checking Name Uniqueness
@@ -135,7 +135,7 @@ namespace PresentationLayer.Areas.administrative.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Saving an Existing Tax
+            // Saving an Existing Discount
             if ((await _UnitOfWork.Discounts.GetOneAsync(b => b.Id == discountVM.Id, null, tracked: false)) is Discount)
             {
                 // Checking Name Uniqueness

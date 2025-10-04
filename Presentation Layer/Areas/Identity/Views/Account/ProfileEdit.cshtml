@@ -1,8 +1,8 @@
 ﻿@model ProfileEditVM
 
 @{
-    ViewData["Title"] = "Profile";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "Profile";
+	Layout = "~/Views/Shared/_Layout.cshtml";
 
 }
 <div class="container">
@@ -11,43 +11,50 @@
 			<h1>Edit your Profile</h1>
 
 
-                <form asp-action="ProfileEdit" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+			<form asp-action="ProfileEdit" method="post">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<input type="hidden" asp-for="UserId" value="@Model.UserId" />
 
-                    <div class="form-group">
-                        <label asp-for="UserName" class="control-label">User Name</label>
-                        <input asp-for="UserName" class="form-control" />
-                        <span asp-validation-for="UserName" class="text-danger"></span>
-                    </div>
+				@if (User.Identity!.Name == "SuperAdmin")
+				{
+					<input asp-for="UserName" type="hidden" value="@Model.UserName" />
+				}
+				else
+				{
+					<div class="form-group">
+						<label asp-for="UserName" class="control-label">User Name</label>
+						<input asp-for="UserName" class="form-control" />
+						<span asp-validation-for="UserName" class="text-danger"></span>
+					</div>
+				}
 
-                    <div class="form-group">
-                        <label asp-for="Email" class="control-label"></label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+				<div class="form-group">
+					<label asp-for="Email" class="control-label"></label>
+					<input asp-for="Email" class="form-control" />
+					<span asp-validation-for="Email" class="text-danger"></span>
+				</div>
 
-                    <div class="form-actions mt-2">
-                        <button type="submit" class="btn btn-primary">
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
-            <form id="directResetForm" asp-area="Identity" asp-controller="Account" asp-action="ForgetPassword"
-                  method="post">
-                <input type="hidden" name="UserNameOrEmail" value="@(Model.Email ?? Model.UserName)" />
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-secondary">
-                         Change Password 
-                    </button>
-                </div>
-            </form>
+				<div class="form-actions mt-2">
+					<button type="submit" class="btn btn-primary">
+						Save Changes
+					</button>
+				</div>
+			</form>
+			<form id="directResetForm" asp-area="Identity" asp-controller="Account" asp-action="ForgetPassword"
+				  method="post">
+				<input type="hidden" name="UserNameOrEmail" value="@(Model.Email ?? Model.UserName)" />
+				<div class="form-actions">
+					<button type="submit" class="btn btn-secondary" style="margin-top:10px;">
+						Change Password
+					</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
 @section Scripts {
 
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 }

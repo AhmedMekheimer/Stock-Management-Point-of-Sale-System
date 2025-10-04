@@ -365,11 +365,18 @@ namespace PresentationLayer.Areas.Item.Controllers
                 }
             }
 
+            try
+            {
             _db.ItemTypes.RemoveRange(entities);
             await _db.SaveChangesAsync();
             await tx.CommitAsync();
-
             return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                TempData["Error"] = "Item Type is in use of a CLothing Item";
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

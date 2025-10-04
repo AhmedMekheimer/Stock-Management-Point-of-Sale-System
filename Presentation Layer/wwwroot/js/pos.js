@@ -282,7 +282,6 @@
                 <div class="item-card-media">
                     ${mediaContent}
                     ${hasDiscount ? `<div class="badge discount-badge">-${discountRate}%</div>` : ''}
-                    <div class="badge qty-badge">${inStock ? qtyText : '0'}</div>
                 </div>
                 <div class="item-name-single text-truncate">${item.name}</div>
                 <div class="item-card-body">
@@ -774,6 +773,7 @@
     $(document).on('click', '#confirmCheckoutBtn', function () {
         const paidCash = parseFloat($('#paidCashInput').val()) || 0;
         const roundedTotal = parseFloat($('#roundedTotal').text()) || 0;
+
 
         // Validate Paid Cash
         if (paidCash < roundedTotal) {

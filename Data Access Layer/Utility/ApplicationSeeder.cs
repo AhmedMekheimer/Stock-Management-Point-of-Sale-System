@@ -177,10 +177,10 @@ namespace InfrastructureLayer.Utility
         public static void SeedItemTypes()
         {
             _builder!.Entity<ItemType>().HasData(
-                new ItemType { Id = 1, Name = "Clothing", Image = "clothing.png", ItemTypeId = null },
+                new ItemType { Id = 1, Name = "Shirts", Image = "clothing.png", ItemTypeId = null },
                 new ItemType { Id = 2, Name = "Shoes", Image = "shoes.png", ItemTypeId = null },
-                new ItemType { Id = 3, Name = "T-Shirts", Image = "tshirts.png", ItemTypeId = 1 }, // child of Clothing
-                new ItemType { Id = 4, Name = "Sneakers", Image = "sneakers.png", ItemTypeId = 2 } // child of Shoes
+                new ItemType { Id = 3, Name = "Short Sleeve Shirts", Image = "tshirts.png", ItemTypeId = 1 }, // child of Clothing
+                new ItemType { Id = 4, Name = "Sporting Shoes", Image = "sneakers.png", ItemTypeId = 2 } // child of Shoes
             );
         }
         public static void SeedSizes()

@@ -1,45 +1,29 @@
-# 📊 Project Progress Dashboard
+# Stock Management & POS System
 
+This web application targets a clothing retail store franchise. The franchinse manager is able to manage the store's branches, clothing items and their variants. Clothing items can be bought from suppliers and added to a branch through Receive Orders and each branch has its point of sale to sell the items to retail customers through sales invoices. Lastly, the system has role-based access control, meaning roles can be created to give each user certain priviliges.
 
-## 🚀 Development Phases
+## 🌟 Key Features
 
+### 👥 CRUD Operations
+- **Clothing Items' Management**
+- **Item Variants Management**
+- **Branches' Management**
+- ****
 
-### Phase One
-[![Drive](https://img.shields.io/badge/View-Drive%20Folder-green?logo=google-drive)](https://drive.google.com/drive/folders/1kZgXwLWGEFpQtJhDeq3bleaSgnHeWIl0?usp=drive_link)
+### 🔐 Identity Management
+- **User Registration & Login** - Complete user account management
+- **OTP-based Password Recovery** - One-time password for secure password reset
+- **User Profile Editing** - Personal information management
 
-- ✅ Requirements & Features Document
-- ✅ ERD Diagram
-- ✅ N-Tier Architecture
-- ✅ Models and Db Migration
-- ✅ Unit Of Work (Repositories in SOLID)
-- ✅ Identity & Admin Areas
-- ✅ Showcase of the site progress so far
-- ✅ Explanation of the ERD diagram
-
-### Phase Two
-
-- ✅ CRUD for Models (Branch, Items, Item Variants, Each Branchs' Items, Partner(Customer or Supplier), Tax, Discount)
-- ✅ Role-based access control
-- ✅ Point Of Sale interface powered by AJAX-driven APIs with PDF receipt generation.
-
-
-## 📅 Next Phase
-
-### Current Progress
-
-- ✅ List of Sales Invoices Page
-- 🔄 Adding Pagination & Filters for Various Pages
-- 🔄 Receive Order from Suppliers Operation
-- ⬜ Stock and Branches' Charts on Dashboard Page
-- ⬜ Testing
-- ⬜ Publishing
-
-
-## 📈 Progress Summary
-
-- ✅ Completed Tasks: 70%
-- 🔄 In Progress: 15%
-- ⬜ Pending: 15%
+### ⚙️ Admin Area
+- **Complete CRUD Operations** for:
+  - Books management
+  - Authors management
+  - Publishers management
+  - Categories management
+  - Users administration
+- **Media Uploads** - Support for images and videos
+- **Server-Side Validations** - Robust data validation
 
 
 ## 👨‍💻 Team Members
